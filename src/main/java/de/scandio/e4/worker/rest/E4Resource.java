@@ -2,13 +2,15 @@ package de.scandio.e4.worker.rest;
 
 import de.scandio.e4.worker.services.ApplicationStatusService;
 import de.scandio.e4.worker.services.TestRunnerService;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@Component
 @Path("/e4")
 public class E4Resource {
 	private final TestRunnerService testRunnerService;
@@ -37,6 +39,7 @@ public class E4Resource {
 
 	@POST
 	@Path("/prepare")
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response stop(Map<String, Object> parameters) {
 		//testRunnerService.stopTests();
 		return Response.status(500, "not yet implemented").build();
@@ -50,8 +53,10 @@ public class E4Resource {
 
 	@GET
 	@Path("/status")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStatus() {
 		final Map<String, Object> applicationStatus = applicationStatusService.getApplicationStatus();
+
 		return Response.status(200).entity(applicationStatus).build();
 	}
 
