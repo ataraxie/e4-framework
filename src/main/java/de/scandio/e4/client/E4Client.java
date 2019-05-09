@@ -18,7 +18,7 @@ public class E4Client {
 		this.parsedArgs = parsedArgs;
 	}
 
-	public void start() {
+	public void start() throws Exception {
 		final String configPath = parsedArgs.getOptionValue("config");
 		final ClientConfig clientConfig = ConfigUtil.readConfigFromFile(configPath);
 
@@ -41,7 +41,7 @@ public class E4Client {
 		}
 	}
 
-	private void orchestrateLocal(ClientConfig clientConfig) {
+	private void orchestrateLocal(ClientConfig clientConfig) throws Exception {
 		final HashMap<String, Object> props = new HashMap<String, Object>(){{
 			if (parsedArgs.hasOption("port")) {
 				put("server.port", parsedArgs.getOptionValue("port"));
@@ -74,7 +74,7 @@ public class E4Client {
 		}
 	}
 
-	private void orchestrateRemote(ClientConfig clientConfig) {
+	private void orchestrateRemote(ClientConfig clientConfig) throws Exception {
 		for (String workerURL: clientConfig.getWorkers()) {
 			try {
 				final int statusCode = WorkerRestUtil.getStatus(workerURL).getStatusCodeValue();

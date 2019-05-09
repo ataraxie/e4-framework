@@ -23,7 +23,9 @@ public class ClientConfig {
 	}
 
 	public int getConcurrentUsers() {
-		// 0 = 1 user?
+		if (concurrentUsers <= 0) {
+			concurrentUsers = 1;
+		}
 		return concurrentUsers;
 	}
 

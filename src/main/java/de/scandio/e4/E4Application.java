@@ -25,7 +25,7 @@ public class E4Application {
 		}
 	}
 
-	public static void startClient(CommandLine parsedArgs) {
+	public static void startClient(CommandLine parsedArgs) throws Exception {
 		System.out.println("Starting E4 Client... Enjoy!");
 		final E4Client e4Client = new E4Client(parsedArgs);
 		e4Client.start();
