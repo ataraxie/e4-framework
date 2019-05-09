@@ -23,7 +23,7 @@ public class E4Application {
 	public static void startClient(CommandLine parsedArgs) {
 		System.out.println("Starting E4 Client... Enjoy!");
 		final E4Client e4Client = new E4Client(parsedArgs);
-		e4Client.enjoy();
+		e4Client.start();
 	}
 
 	public static void startWorkerOnly(CommandLine parsedArgs) {

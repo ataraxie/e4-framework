@@ -30,7 +30,7 @@ public class TestRunnerService {
 	public synchronized void runTestPackage(String testPackageKey) throws Exception {
 		// TODO: Test if no other package is running first
 		if (areTestsRunning()) {
-			throw new IllegalStateException("Can't enjoy a new TestPackage when another TestPackage is already running.");
+			throw new IllegalStateException("Can't start a new TestPackage when another TestPackage is already running.");
 		}
 
 		currentlyRunningTestPackage = testPackageKey;
@@ -56,7 +56,7 @@ public class TestRunnerService {
 				Scenario scenario = scenarioClass.newInstance();
 
 				try {
-					scenario.execute();
+					//scenario.execute();
 					scenario.getTimeTaken();
 				} catch (Exception e) {
 					// record scenario as failed
