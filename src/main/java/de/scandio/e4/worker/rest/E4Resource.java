@@ -2,11 +2,13 @@ package de.scandio.e4.worker.rest;
 
 import de.scandio.e4.worker.services.ApplicationStatusService;
 import de.scandio.e4.worker.services.TestRunnerService;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
+@RestController
 @Path("/e4")
 public class E4Resource {
 	private final TestRunnerService testRunnerService;
@@ -18,7 +20,7 @@ public class E4Resource {
 	}
 
 	@GET
-	@Path("/enjoy")
+	@Path("/start")
 	public Response start(@QueryParam("key")String testPackageKey) {
 		Response response;
 

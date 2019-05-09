@@ -2,8 +2,10 @@ package de.scandio.e4;
 
 import de.scandio.e4.client.E4Client;
 import org.apache.commons.cli.*;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import java.util.HashMap;
 
 @SpringBootApplication
 public class E4Application {
@@ -20,7 +22,6 @@ public class E4Application {
 
 	public static void startClient(CommandLine parsedArgs) {
 		System.out.println("Starting E4 Client... Enjoy!");
-
 		final E4Client e4Client = new E4Client(parsedArgs);
 		e4Client.enjoy();
 	}
@@ -28,15 +29,19 @@ public class E4Application {
 	public static void startWorkerOnly(CommandLine parsedArgs) {
 		String port = parsedArgs.getOptionValue("port");
 
+		// we could also check if the port is actually a valid port
 		if (port == null) {
 			port = "4444";
-		} else {
-			// TODO: we could check if the port is actually a legit port...
 		}
 
 		System.out.println("Starting E4 in worker-only mode on port "+port+"... Enjoy!");
 
-		SpringApplication.run(E4Application.class, "Dserver.port="+port);
+		final HashMap<String, Object> props = new HashMap<>();
+		props.put("server.port", port);
+		new SpringApplicationBuilder()
+				.sources(E4Application.class)
+				.properties(props)
+				.run();
 	}
 
 	/**
