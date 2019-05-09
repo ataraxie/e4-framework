@@ -1,4 +1,4 @@
-package de.scandio.e4.interfaces;
+package de.scandio.e4.worker.interfaces;
 
 import java.util.List;
 

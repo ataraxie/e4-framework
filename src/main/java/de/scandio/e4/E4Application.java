@@ -1,11 +1,9 @@
 package de.scandio.e4;
 
+import de.scandio.e4.client.E4Client;
 import org.apache.commons.cli.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootApplication
 public class E4Application {
@@ -14,29 +12,37 @@ public class E4Application {
 		final CommandLine parsedArgs = parseArgs(args);
 
 		if (parsedArgs.hasOption("worker-only")) {
-			System.out.println("Starting E4 Worker only...");
-			SpringApplication.run(E4Application.class, args);
-
+			startWorkerOnly(parsedArgs);
 		} else {
-			System.out.println("Starting E4 Client...");
-
-			final String configPath = parsedArgs.getOptionValue("config");
-
-			if (configPath == null) {
-				System.out.println("Not starting E4 in worker-only mode means you have to supply a config file. See --help for usage.");
-				System.exit(1);
-			}
-
-			System.out.println(configPath);
-			// make rest calls to worker nodes from config
+			startClient(parsedArgs);
 		}
+	}
+
+	public static void startClient(CommandLine parsedArgs) {
+		System.out.println("Starting E4 Client... Enjoy!");
+
+		final E4Client e4Client = new E4Client(parsedArgs);
+		e4Client.enjoy();
+	}
+
+	public static void startWorkerOnly(CommandLine parsedArgs) {
+		String port = parsedArgs.getOptionValue("port");
+
+		if (port == null) {
+			port = "4444";
+		} else {
+			// TODO: we could check if the port is actually a legit port...
+		}
+
+		System.out.println("Starting E4 in worker-only mode on port "+port+"... Enjoy!");
+
+		SpringApplication.run(E4Application.class, "Dserver.port="+port);
 	}
 
 	/**
 	 * Parses the arguments and returns them or shuts down the application if an error occours.
 	 * @param args The program args.
 	 */
-
 	private static CommandLine parseArgs(String[] args) {
 		final Options options = new Options();
 
@@ -47,6 +53,11 @@ public class E4Application {
 		final Option workerOnlyOption = new Option("w", "worker-only", false, "Run this E4 instance in worker-only-mode and listen for commands from an E4 client.");
 		workerOnlyOption.setRequired(false);
 		options.addOption(workerOnlyOption);
+
+		final Option portOption = new Option("p", "port", true, "Port to run the E4 Worker on if running in worker-only mode.");
+		portOption.setRequired(false);
+		options.addOption(portOption);
+
 
 		final CommandLineParser parser = new DefaultParser();
 

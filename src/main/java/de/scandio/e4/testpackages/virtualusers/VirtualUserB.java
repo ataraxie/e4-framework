@@ -1,7 +1,7 @@
-package de.scandio.e4.virtualusers;
+package de.scandio.e4.testpackages.virtualusers;
 
-import de.scandio.e4.interfaces.Scenario;
-import de.scandio.e4.interfaces.VirtualUser;
+import de.scandio.e4.worker.interfaces.Scenario;
+import de.scandio.e4.worker.interfaces.VirtualUser;
 
 import java.util.List;
 

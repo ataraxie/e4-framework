@@ -1,4 +1,4 @@
-package de.scandio.e4.interfaces;
+package de.scandio.e4.worker.interfaces;
 
 import java.util.List;
 
@@ -9,7 +9,5 @@ import java.util.List;
  * The scenarios should be run in a separate thread.
  */
 public interface VirtualUser {
-
     List<Class<Scenario>> getScenarios();
-
 }
