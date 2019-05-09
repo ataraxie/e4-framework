@@ -3,7 +3,7 @@ package de.scandio.e4.client;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class WorkerStatusUtil {
+public class WorkerRestUtil {
 
 	public static ResponseEntity<String> getStatus(String workerUrl) {
 		final RestTemplate restTemplate = new RestTemplate();

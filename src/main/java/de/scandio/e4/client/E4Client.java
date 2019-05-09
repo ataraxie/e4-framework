@@ -7,6 +7,7 @@ import org.apache.commons.cli.CommandLine;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,33 +34,20 @@ public class E4Client {
 
 		if (workers == null || workers.size() == 0) {
 			System.out.println("No workers provided, starting a local worker...");
-			startLocal(clientConfig);
+			orchestrateLocal(clientConfig);
 		} else {
 			System.out.println("Found remote workers! Let's see if we can connect to them.");
-
-			for (String workerURL: workers) {
-				try {
-					final int statusCode = WorkerStatusUtil.getStatus(workerURL).getStatusCodeValue();
-					if (statusCode == 200) {
-						System.out.println(workerURL + "e4/status returned 200 - OK!");
-					} else {
-						throw new Exception("Status code wasn't 200 but " + statusCode);
-					}
-				} catch (Exception ex) {
-					System.out.println("Worker unavailable: "+workerURL);
-					System.out.println(ex.getMessage());
-					System.exit(1);
-				}
-			}
-
-			//startRemote();
-			System.out.println("TODO: implement orchestration of remote workers");
+			orchestrateRemote(clientConfig);
 		}
 	}
 
-	private void startLocal(ClientConfig clientConfig) {
+	private void orchestrateLocal(ClientConfig clientConfig) {
 		final HashMap<String, Object> props = new HashMap<String, Object>(){{
-			put("server.port", 0); // random port
+			if (parsedArgs.hasOption("port")) {
+				put("server.port", parsedArgs.getOptionValue("port"));
+			} else {
+				put("server.port", 0); // random port
+			}
 		}};
 
 		final ConfigurableApplicationContext run = new SpringApplicationBuilder()
@@ -73,14 +61,35 @@ public class E4Client {
 		System.out.println("Started local worker at: " + localWorkerURL);
 		System.out.println("Checking if local worker is healthy via: "+localWorkerURL+"e4/status");
 
-		final int statusCode = WorkerStatusUtil.getStatus(localWorkerURL).getStatusCodeValue();
+		final int statusCode = WorkerRestUtil.getStatus(localWorkerURL).getStatusCodeValue();
 
 		if (statusCode == 200) {
 			System.out.println("Local worker is healthy and enjoying itself!");
+			clientConfig.setWorkers(Collections.singletonList(localWorkerURL));
+			OrchestrationUtil.orchestrateWorkers(clientConfig);
 		} else {
 			System.out.println("Local worker is unhealthy. Status code was: " + statusCode);
 			System.out.println("Aborting...");
 			System.exit(1);
 		}
+	}
+
+	private void orchestrateRemote(ClientConfig clientConfig) {
+		for (String workerURL: clientConfig.getWorkers()) {
+			try {
+				final int statusCode = WorkerRestUtil.getStatus(workerURL).getStatusCodeValue();
+				if (statusCode == 200) {
+					System.out.println(workerURL + "e4/status returned 200 - OK!");
+				} else {
+					throw new Exception("Status code wasn't 200 but " + statusCode);
+				}
+			} catch (Exception ex) {
+				System.out.println("Worker unavailable: "+workerURL);
+				System.out.println(ex.getMessage());
+				System.exit(1);
+			}
+		}
+
+		OrchestrationUtil.orchestrateWorkers(clientConfig);
 	}
 }

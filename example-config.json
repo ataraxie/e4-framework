@@ -12,7 +12,7 @@
     "C:\\Users\\Sven\\git\\diary\\target\\diary-2.0.0.jar"
   ],
 
-  "testPackage": "de.scandio.e4.testpackages.DelayMacroTestpackage",
+  "testPackage": "de.scandio.e4.testpackages.DelayMacroTestPackage",
 
   "workers": [
     "http://192.10.0.1/e4",

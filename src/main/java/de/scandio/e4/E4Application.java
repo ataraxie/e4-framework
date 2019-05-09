@@ -4,7 +4,6 @@ import de.scandio.e4.client.E4Client;
 import org.apache.commons.cli.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-
 import java.util.HashMap;
 
 @SpringBootApplication
@@ -13,10 +12,16 @@ public class E4Application {
 	public static void main(String[] args) {
 		final CommandLine parsedArgs = parseArgs(args);
 
-		if (parsedArgs.hasOption("worker-only")) {
-			startWorkerOnly(parsedArgs);
-		} else {
-			startClient(parsedArgs);
+		try {
+			if (parsedArgs.hasOption("worker-only")) {
+				startWorkerOnly(parsedArgs);
+			} else {
+				startClient(parsedArgs);
+			}
+		} catch (Exception ex) {
+			System.out.println("Encountered unenjoyable exception:");
+			ex.printStackTrace();
+			System.exit(1);
 		}
 	}
 
@@ -43,7 +48,7 @@ public class E4Application {
 				.properties(props)
 				.run();
 
-		System.out.println("E4 Worker is running on port: "+port);
+		System.out.println("E4 Worker is running on: http://localhost:"+port+"/");
 	}
 
 	/**
@@ -61,7 +66,7 @@ public class E4Application {
 		workerOnlyOption.setRequired(false);
 		options.addOption(workerOnlyOption);
 
-		final Option portOption = new Option("p", "port", true, "Port to run the E4 Worker on if running in worker-only mode.");
+		final Option portOption = new Option("p", "port", true, "Port to run the E4 Worker on. Required for worker-only mode.");
 		portOption.setRequired(false);
 		options.addOption(portOption);
 
