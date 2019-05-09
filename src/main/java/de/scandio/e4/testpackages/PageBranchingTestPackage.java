@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PageBranchingTestPackage implements TestPackage {
-    @Override
-    public List<Class<? extends VirtualUser>> getVirtualUsers() {
-        return Arrays.asList(
-                VirtualUserA.class,
-                VirtualUserB.class
-        );
-    }
+	@Override
+	public List<Class<? extends VirtualUser>> getVirtualUsers() {
+		return Arrays.asList(
+				VirtualUserA.class,
+				VirtualUserB.class
+		);
+	}
 }

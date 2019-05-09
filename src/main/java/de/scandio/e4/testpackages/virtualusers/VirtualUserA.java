@@ -7,12 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class VirtualUserA implements VirtualUser {
-    @Override
-    public List<Class<Scenario>> getScenarios() {
+	@Override
+	public List<Class<Scenario>> getScenarios() {
 
-        return Arrays.asList(
-                null,
-                null
-        );
-    }
+		return Arrays.asList(
+				null,
+				null
+		);
+	}
 }

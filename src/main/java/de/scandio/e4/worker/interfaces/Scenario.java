@@ -2,10 +2,10 @@ package de.scandio.e4.worker.interfaces;
 
 public interface Scenario {
 
-    void execute() throws Exception;
+	void execute() throws Exception;
 
-    // scenario ABCD took 50ms
-    String getKey();
+	// scenario ABCD took 50ms
+	String getKey();
 
-    long getTimeTaken();
+	long getTimeTaken();
 }
