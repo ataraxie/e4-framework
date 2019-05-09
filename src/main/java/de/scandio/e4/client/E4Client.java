@@ -6,8 +6,6 @@ import de.scandio.e4.client.config.ConfigUtil;
 import org.apache.commons.cli.CommandLine;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +23,7 @@ public class E4Client {
 
 		System.out.println();
 		System.out.println(clientConfig);
+		System.out.println();
 
 		// TODO: validate config instead of just throwing exceptions in getters
 		// TODO: test if we can connect to the target
@@ -36,10 +35,25 @@ public class E4Client {
 			System.out.println("No workers provided, starting a local worker...");
 			startLocal(clientConfig);
 		} else {
-			System.out.println("Found workers, see if we can connect to workers.");
-			// TODO: test if we can connect to workers
-			// We are doing a remote run!
+			System.out.println("Found remote workers! Let's see if we can connect to them.");
+
+			for (String workerURL: workers) {
+				try {
+					final int statusCode = WorkerStatusUtil.getStatus(workerURL).getStatusCodeValue();
+					if (statusCode == 200) {
+						System.out.println(workerURL + "e4/status returned 200 - OK!");
+					} else {
+						throw new Exception("Status code wasn't 200 but " + statusCode);
+					}
+				} catch (Exception ex) {
+					System.out.println("Worker unavailable: "+workerURL);
+					System.out.println(ex.getMessage());
+					System.exit(1);
+				}
+			}
+
 			//startRemote();
+			System.out.println("TODO: implement orchestration of remote workers");
 		}
 	}
 
@@ -53,25 +67,20 @@ public class E4Client {
 				.properties(props)
 				.run();
 
-		final String localWorkerURL = "http://localhost:" + run.getEnvironment().getProperty("local.server.port") + "/";
-		final String localWorkerStatusURL = localWorkerURL + "e4/status";
+		final String localWorkerPort = run.getEnvironment().getProperty("local.server.port");
+		final String localWorkerURL = "http://localhost:" + localWorkerPort + "/";
 
 		System.out.println("Started local worker at: " + localWorkerURL);
-		System.out.println("Polling "+localWorkerStatusURL+" until it returns 200...");
+		System.out.println("Checking if local worker is healthy via: "+localWorkerURL+"e4/status");
 
-		final RestTemplate restTemplate = new RestTemplate();
-		boolean responseCodeIs200;
-		try {
-			do {
-				Thread.sleep(1000);
-				final ResponseEntity<String> response = restTemplate.getForEntity(localWorkerStatusURL, String.class);
-				responseCodeIs200 = response.getStatusCodeValue() == 200;
-				System.out.println("Polled endpoint, response code was: " + response.getStatusCodeValue());
-			} while (!responseCodeIs200);
+		final int statusCode = WorkerStatusUtil.getStatus(localWorkerURL).getStatusCodeValue();
 
-			System.out.println("Local worker is ready to go!");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (statusCode == 200) {
+			System.out.println("Local worker is healthy and enjoying itself!");
+		} else {
+			System.out.println("Local worker is unhealthy. Status code was: " + statusCode);
+			System.out.println("Aborting...");
+			System.exit(1);
 		}
 	}
 }

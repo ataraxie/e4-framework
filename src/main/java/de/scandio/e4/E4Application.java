@@ -34,7 +34,7 @@ public class E4Application {
 			port = "4444";
 		}
 
-		System.out.println("Starting E4 in worker-only mode on port "+port+"... Enjoy!");
+		System.out.println("Starting E4 in worker-only mode... Enjoy!");
 
 		final HashMap<String, Object> props = new HashMap<>();
 		props.put("server.port", port);
@@ -42,6 +42,8 @@ public class E4Application {
 				.sources(E4Application.class)
 				.properties(props)
 				.run();
+
+		System.out.println("E4 Worker is running on port: "+port);
 	}
 
 	/**
