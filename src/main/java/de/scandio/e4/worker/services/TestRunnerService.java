@@ -82,8 +82,6 @@ public class TestRunnerService {
 			for (Scenario scenario : scenarios) {
 				log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
 				try {
-					scenario.setUsername(username);
-					scenario.setPassword(password);
 					scenario.execute(webClient, restClient);
 					scenario.getTimeTaken();
 				} catch (Exception e) {
