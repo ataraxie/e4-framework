@@ -2,6 +2,7 @@ package de.scandio.e4.worker.rest;
 
 import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.client.config.WorkerConfig;
+import de.scandio.e4.dto.ApplicationStatusResponse;
 import de.scandio.e4.worker.services.ApplicationStatusService;
 import de.scandio.e4.worker.services.PreparationService;
 import de.scandio.e4.worker.services.TestRunnerService;
@@ -76,8 +77,9 @@ public class E4Resource {
 	@Path("/status")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStatus() {
-		log.info("[ENDPOINT] /status");
-		return Response.status(200).entity(applicationStatusService.getApplicationStatus()).build();
+		final ApplicationStatusResponse applicationStatus = applicationStatusService.getApplicationStatus();
+		log.info("[ENDPOINT] /status\n{}", applicationStatus);
+		return Response.status(200).entity(applicationStatus).build();
 	}
 
 

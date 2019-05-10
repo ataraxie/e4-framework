@@ -42,4 +42,13 @@ public class ApplicationStatusResponse {
 	public void setTestsStatus(TestsStatus testsStatus) {
 		this.testsStatus = testsStatus;
 	}
+
+	@Override
+	public String toString() {
+		return "ApplicationStatusResponse{" +
+				"config=" + config +
+				", preparationStatus=" + preparationStatus +
+				", testsStatus=" + testsStatus +
+				'}';
+	}
 }
