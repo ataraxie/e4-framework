@@ -24,6 +24,10 @@ public class OrchestrationUtil {
 		final OrchestrationPhase runPhase = new RunPhase(clientConfig);
 		runPhase.executePhase();
 
+
+		System.out.println();
+		System.out.println("We are done - we just need to analyze the data now.");
+
 		// TODO: PHASE 3 - Gather & Analyze
 		// after each phase check status of all workers
 	}

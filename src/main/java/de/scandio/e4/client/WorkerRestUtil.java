@@ -4,8 +4,6 @@ import de.scandio.e4.dto.ApplicationStatusResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
