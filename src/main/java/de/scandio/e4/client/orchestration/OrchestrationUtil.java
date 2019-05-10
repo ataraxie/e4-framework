@@ -5,6 +5,7 @@ import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.client.orchestration.phases.OrchestrationPhase;
 import de.scandio.e4.client.orchestration.phases.PreparationPhase;
 import de.scandio.e4.client.orchestration.phases.RunPhase;
+import de.scandio.e4.dto.TestsStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +26,20 @@ public class OrchestrationUtil {
 		runPhase.executePhase();
 
 
-		System.out.println();
+		System.out.println("Waiting until tests finish...");
+		for (String workerURL : clientConfig.getWorkers()) {
+			WorkerRestUtil.pollStatusUntil(workerURL, 5000, 1000, workerStatusResponse -> {
+				if (workerStatusResponse.getTestsStatus().equals(TestsStatus.ERROR)) {
+					throw new IllegalStateException("Worker "+workerURL+" failed tests!");
+				}
+				System.out.println("Worker "+workerURL+" tests status: " + workerStatusResponse.getTestsStatus());
+				return workerStatusResponse.getTestsStatus().equals(TestsStatus.FINISHED);
+			});
+		}
+
+
+		System.out.println("Tests are done!");
+		System.out.println("SO. ENJOYABLE.");
 		System.out.println("We are done - we just need to analyze the data now.");
 
 		// TODO: PHASE 3 - Gather & Analyze

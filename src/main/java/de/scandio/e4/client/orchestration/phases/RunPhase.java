@@ -32,11 +32,11 @@ public class RunPhase implements OrchestrationPhase {
 
 		for (String workerURL : workers) {
 			System.out.println("Checking TestsStatus of "+workerURL+" ...");
-			WorkerRestUtil.pollStatusUntil(workerURL, 1000, 30, workerStatusResponse -> {
+			WorkerRestUtil.pollStatusUntil(workerURL, 2000, 30, workerStatusResponse -> {
 				if (workerStatusResponse.getTestsStatus().equals(TestsStatus.ERROR)) {
 					throw new IllegalStateException("Worker "+workerURL+" failed to start tests!");
 				}
-
+				System.out.println("Worker "+workerURL+" tests status: " + workerStatusResponse.getTestsStatus());
 				return workerStatusResponse.getTestsStatus().equals(TestsStatus.RUNNING);
 			});
 		}
