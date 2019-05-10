@@ -66,8 +66,7 @@ public class PreparationService {
 
             for (Scenario scenario : setupScenarios) {
                 scenario.execute(webClient, restClient);
-                long timeTaken = scenario.getTimeTaken();
-                System.out.println("Finished prep scenario "+scenario.getClass().getSimpleName()+" - took: "+timeTaken+"ms");
+                System.out.println("Finished prep scenario "+scenario.getClass().getSimpleName());
             }
 
             System.out.println("[E4W] Preparations are finished!");
