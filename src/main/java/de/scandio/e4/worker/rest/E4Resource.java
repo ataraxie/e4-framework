@@ -3,6 +3,8 @@ package de.scandio.e4.worker.rest;
 import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.ApplicationStatusResponse;
+import de.scandio.e4.dto.PreparationStatus;
+import de.scandio.e4.dto.TestsStatus;
 import de.scandio.e4.worker.services.ApplicationStatusService;
 import de.scandio.e4.worker.services.PreparationService;
 import de.scandio.e4.worker.services.TestRunnerService;
@@ -39,11 +41,18 @@ public class E4Resource {
 		Response response;
 
 		try {
-			testRunnerService.runTestPackage();
+			new Thread(() -> {
+				try {
+					testRunnerService.runTestPackage();
+				} catch (Exception e) {
+					e.printStackTrace();
+					applicationStatusService.setTestsStatus(TestsStatus.ERROR);
+				}
+			}).start();
 			response = Response.ok().build();
 		} catch (Exception e) {
 			log.error("Error in /start endpoint: ", e);
-			response = Response.status(400).build();
+			response = Response.status(500).entity(e).build();
 		}
 
 		return response;
@@ -57,11 +66,18 @@ public class E4Resource {
 		log.info("[ENDPOINT] /prepare - config:" + workerConfig);
 		Response response;
 		try {
-			preparationService.prepare(workerConfig);
+			new Thread(() -> {
+				try {
+					preparationService.prepare(workerConfig);
+				} catch (Exception e) {
+					e.printStackTrace();
+					applicationStatusService.setPreparationStatus(PreparationStatus.ERROR);
+				}
+			}).start();
 			response = Response.ok().build();
 		} catch (Exception e) {
 			log.error("Error in /prepare endpoint: ", e);
-			response = Response.status(400).build();
+			response = Response.status(500).entity(e).build();
 		}
 		return response;
 	}

@@ -6,9 +6,7 @@ import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PreparationPhase implements OrchestrationPhase {
 	private final ClientConfig clientConfig;
@@ -38,7 +36,7 @@ public class PreparationPhase implements OrchestrationPhase {
 
 		for (String workerURL : workers) {
 			System.out.println("Waiting for "+workerURL+" to finish preparing...");
-			WorkerRestUtil.pollStatusUntil(workerURL, 2000, 10, response -> {
+			WorkerRestUtil.pollStatusUntil(workerURL, 1000, 30, response -> {
 				final PreparationStatus preparationStatus = response.getPreparationStatus();
 
 				if (preparationStatus.equals(PreparationStatus.ONGOING) || preparationStatus.equals(PreparationStatus.UNPREPARED)) {

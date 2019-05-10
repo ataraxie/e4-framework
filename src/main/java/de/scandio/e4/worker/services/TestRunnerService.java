@@ -52,38 +52,16 @@ public class TestRunnerService {
 
 		final List<Thread> virtualUserThreads = new ArrayList<>();
 
-		for (VirtualUser virtualUser : virtualUsers) {
+		log.info("This worker needs to start " + config.getVirtualUsers() + " users.");
 
-			final Thread virtualUserThread = new Thread(() -> {
-				log.debug("Executing virtual user {{}}", virtualUser.getClass().getSimpleName());
-
-				// 1 virtual == 1 thread TODO: make a new thread for this user
-				// The threads need to be saved somewhere so we can stop them again
-				// Whether there are saved threads can also be used to determine if there is a test running
-
-
-				// TODO: this might need to be an infinite loop later if repeatTests == true
-				for (Scenario scenario : virtualUser.getScenarios()) {
-					try {
-						// TODO: right now only using hardcoded admin - later use UserCredentialsService
-						final WebClient webClient = WorkerUtils.newWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
-						final RestClient restClient = WorkerUtils.newRestClient(targetUrl, "admin", "admin");
-
-						log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
-
-						scenario.execute(webClient, restClient);
-						scenario.getTimeTaken();
-					} catch (Exception e) {
-						log.error("FAILED SCENARIO: "+scenario.getClass().getSimpleName());
-						// TODO: record scenario as failed somewhere
-						e.printStackTrace();
-					}
-				}
-			});
-			virtualUserThread.start();
+		for (int i = 0; i < config.getVirtualUsers(); i++) {
+			final VirtualUser virtualUser = virtualUsers.get((int)(i % virtualUsers.size()));
+			final Thread virtualUserThread = createUserThread(virtualUser, config);
 			virtualUserThreads.add(virtualUserThread);
+			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
 		}
 
+		virtualUserThreads.forEach(Thread::start);
 
 		// TODO: check whether tests need to be repeated instead of just blindly waiting for the threads
 		System.out.println("Waiting for tests to finish...");
@@ -93,6 +71,34 @@ public class TestRunnerService {
 		System.out.println("All tests are finished!");
 
 		applicationStatusService.setTestsStatus(TestsStatus.FINISHED);
+	}
+
+	private Thread createUserThread(VirtualUser virtualUser, WorkerConfig config) {
+		final String targetUrl = config.getTarget();
+
+		final Thread virtualUserThread = new Thread(() -> {
+			log.debug("Executing virtual user {{}}", virtualUser.getClass().getSimpleName());
+
+			// TODO: this might need to be an infinite loop later if repeatTests == true
+			for (Scenario scenario : virtualUser.getScenarios()) {
+				try {
+					// TODO: right now only using hardcoded admin - later use UserCredentialsService
+					final WebClient webClient = WorkerUtils.newWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
+					final RestClient restClient = WorkerUtils.newRestClient(targetUrl, "admin", "admin");
+
+					log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
+
+					scenario.execute(webClient, restClient);
+					scenario.getTimeTaken();
+				} catch (Exception e) {
+					log.error("FAILED SCENARIO: "+scenario.getClass().getSimpleName());
+					// TODO: record scenario as failed somewhere
+					e.printStackTrace();
+				}
+			}
+		});
+		virtualUserThread.setDaemon(true);
+		return virtualUserThread;
 	}
 
 }
