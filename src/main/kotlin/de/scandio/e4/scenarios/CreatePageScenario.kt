@@ -1,7 +1,7 @@
 package de.scandio.e4.scenarios
 
-import de.scandio.e4.worker.abstracts.RestConfluence
-import de.scandio.e4.worker.abstracts.WebConfluence
+import de.scandio.e4.confluence.web.WebConfluence
+import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.Scenario
 import de.scandio.e4.worker.interfaces.WebClient

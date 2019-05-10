@@ -1,11 +1,12 @@
 package de.scandio.e4.worker.services;
 
-import de.scandio.e4.worker.abstracts.RestConfluence;
-import de.scandio.e4.worker.abstracts.WebConfluence;
+import de.scandio.e4.confluence.web.WebConfluence;
+import de.scandio.e4.worker.confluence.rest.RestConfluence;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.Scenario;
 import de.scandio.e4.worker.interfaces.TestPackage;
 import de.scandio.e4.worker.interfaces.WebClient;
+import de.scandio.e4.worker.util.WorkerUtils;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.List;
 
 @Service
@@ -30,7 +32,7 @@ public class PreparationService {
         return preparationsAreFinished;
     }
 
-    public void prepare(String targetUrl, String testPackageKey, String username, String password) throws Exception {
+    public void prepare(String targetUrl, String testPackageKey, String username, String password, String screenshotDir) throws Exception {
         System.out.println("[E4W] Starting to prepare...");
 
         log.info("Running prepare for package {{}} against URL {{}}", testPackageKey, targetUrl);
@@ -38,10 +40,10 @@ public class PreparationService {
         final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
         final TestPackage testPackageInstance = testPackage.newInstance();
         final List<Scenario> setupScenarios = testPackageInstance.getSetupScenarios();
+        final WebClient webClient = WorkerUtils.newWebClient(targetUrl, screenshotDir);
+        final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 
         for (Scenario scenario : setupScenarios) {
-            WebClient webClient = createWebClient(targetUrl);
-            RestClient restClient = createRestClient(targetUrl, username, password);
             scenario.execute(webClient, restClient);
         }
 
@@ -61,16 +63,4 @@ public class PreparationService {
         preparationsAreFinished = true;
     }
 
-    private WebClient createWebClient(String targetUrl) {
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless");
-        WebDriver driver = new ChromeDriver(chromeOptions);
-        return new WebConfluence(driver);
-    }
-
-    private RestClient createRestClient(String targetUrl, String username, String password) {
-        RestClient restClient = new RestConfluence(targetUrl, username, password);
-        return restClient;
-    }
 }

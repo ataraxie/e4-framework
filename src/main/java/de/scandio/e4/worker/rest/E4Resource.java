@@ -39,7 +39,8 @@ public class E4Resource {
 		try {
 			String targetUrl = (String) parameters.get("targetUrl");
 			String testPackage = (String) parameters.get("testPackage");
-			testRunnerService.runTestPackage(targetUrl, testPackage);
+			String screenshotDir = (String) parameters.get("screenshotDir");
+			testRunnerService.runTestPackage(targetUrl, testPackage, screenshotDir);
 			response = Response.ok().build();
 		} catch (Exception e) {
 			log.error("Error in E4Resource: ", e);
@@ -61,7 +62,8 @@ public class E4Resource {
 			String testPackage = (String) parameters.get("testPackage");
 			String username = (String) parameters.get("username");
 			String password = (String) parameters.get("password");
-			preparationService.prepare(targetUrl, testPackage, username, password);
+			String screenshotDir = (String) parameters.get("screenshotDir");
+			preparationService.prepare(targetUrl, testPackage, username, password, screenshotDir);
 			response = Response.ok().build();
 		} catch (Exception e) {
 			log.error("Error in E4Resource: ", e);

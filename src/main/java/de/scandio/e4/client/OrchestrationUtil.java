@@ -14,7 +14,7 @@ public class OrchestrationUtil {
 
 		preparationPhase(clientConfig);
 
-		//runPhase(clientConfig);
+		runPhase(clientConfig);
 
 		// TODO: PHASE 3 - Gather & Analyze
 		// after each phase check status of all workers
@@ -34,6 +34,7 @@ public class OrchestrationUtil {
 			put("testPackage", clientConfig.getTestPackage());
 			put("repeatTests", clientConfig.getDurationInSeconds() > 0);
 			put("virtualUsers", usersPerWorker);
+			put("screenshotDir", clientConfig.getScreenshotDir());
 		}};
 
 		System.out.println("Distributing config to workers:");
@@ -67,6 +68,7 @@ public class OrchestrationUtil {
 		final Map<String, Object> startParameters = new HashMap<String, Object>(){{
 			put("targetUrl", clientConfig.getTarget().getUrl());
 			put("testPackage", clientConfig.getTestPackage());
+			put("screenshotDir", clientConfig.getScreenshotDir());
 		}};
 
 		for (String workerURL : workers) {

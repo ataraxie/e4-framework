@@ -17,5 +17,7 @@
   "workers": [
     "http://192.10.0.1/e4",
     "http://192.10.0.2/e4"
-  ]
+  ],
+
+  "screenshotDir": "/tmp/selenium"
 }

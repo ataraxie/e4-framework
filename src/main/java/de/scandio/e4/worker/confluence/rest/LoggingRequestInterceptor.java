@@ -1,4 +1,4 @@
-package de.scandio.e4.worker.abstracts;
+package de.scandio.e4.worker.confluence.rest;
 
 import java.io.BufferedReader;
 import java.io.IOException;

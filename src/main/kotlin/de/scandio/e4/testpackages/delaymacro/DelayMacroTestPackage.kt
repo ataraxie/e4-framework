@@ -2,6 +2,7 @@ package de.scandio.e4.testpackages.delaymacro
 
 import de.scandio.e4.scenarios.CreatePageScenario
 import de.scandio.e4.scenarios.CreateSpaceScenario
+import de.scandio.e4.testpackages.delaymacro.virtualusers.VirtualUserA
 import de.scandio.e4.worker.interfaces.Scenario
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.VirtualUser
@@ -21,6 +22,7 @@ class DelayMacroTestPackage : TestPackage {
 
     override fun getVirtualUsers(): List<VirtualUser> {
         val list = arrayListOf<VirtualUser>()
+        list.add(VirtualUserA())
         return list
     }
 

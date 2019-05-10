@@ -1,4 +1,4 @@
-package de.scandio.e4.worker.abstracts;
+package de.scandio.e4.worker.confluence.rest;
 
 import de.scandio.e4.worker.interfaces.RestClient;
 import org.apache.commons.codec.binary.Base64;

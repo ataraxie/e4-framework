@@ -11,6 +11,16 @@ public class ClientConfig {
 	private List<String> appsToInstall;
 	private List<String> workers;
 
+	private String screenshotDir;
+
+	public String getScreenshotDir() {
+		return screenshotDir;
+	}
+
+	public void setScreenshotDir(String screenshotDir) {
+		this.screenshotDir = screenshotDir;
+	}
+
 	public TargetConfig getTarget() {
 		if (target == null) {
 			throw new IllegalArgumentException("A target is required.");
@@ -85,6 +95,7 @@ public class ClientConfig {
 				",\n\ttestPackage='" + testPackage + '\'' +
 				",\n\tappsToInstall=" + appsToInstall +
 				",\n\tworkers=" + workers +
+				",\n\tscreenshotDir=" + screenshotDir +
 				"\n}";
 	}
 

@@ -8,19 +8,19 @@ import java.time.Duration
 class LoginPage(
     private val driver: WebDriver
 ) {
-    private val loginFormLocator = By.id("login-form")
+    private val loginFormLocator = By.name("loginform")
 
     fun logIn(
         user: User
     ): DashboardPage {
         driver.wait(
-            Duration.ofMinutes(4),
+            Duration.ofSeconds(20),
             ExpectedConditions.presenceOfElementLocated(loginFormLocator)
         )
         val loginForm = driver.findElement(loginFormLocator)
         loginForm.findElement(By.name("os_username")).sendKeys(user.name)
         loginForm.findElement(By.name("os_password")).sendKeys(user.password)
-        loginForm.findElement(By.id("login-form-submit")).click()
+        loginForm.findElement(By.id("loginButton")).click()
         return DashboardPage(driver)
     }
 }
