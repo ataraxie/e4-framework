@@ -24,7 +24,7 @@ class CreateSpaceScenario(
         confluence.takeScreenshot("after-login")
         this.start = Date().time
         confluence.navigateTo("spaces/createspace-start.action")
-        dom.awaitElementPresent("#create-space-form")
+        dom.awaitElementPresent("#create-space-form", 45)
         confluence.takeScreenshot("createspace")
         dom.insertText("#create-space-form input[name='key']", spaceKey)
         dom.insertText("#create-space-form input[name='name']", spaceName)
