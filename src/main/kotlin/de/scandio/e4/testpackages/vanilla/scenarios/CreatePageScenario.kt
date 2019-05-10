@@ -30,7 +30,7 @@ class CreatePageScenario(
         dom.awaitElementPresent("#wysiwyg")
         confluence.takeScreenshot("create-page-1")
         dom.click("#content-title-div")
-        dom.insertText("#content-title", "TEST")
+        dom.insertText("#content-title", this.pageTitle)
         confluence.takeScreenshot("create-page-2")
         dom.click("#wysiwygTextarea_ifr")
         dom.insertTextTinyMce("<h1>Lorem Ipsum</h1><p>$loremIpsum</p>")

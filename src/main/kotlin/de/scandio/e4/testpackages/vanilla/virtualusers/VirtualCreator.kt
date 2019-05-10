@@ -25,8 +25,8 @@ class VirtualCreator : VirtualUser {
         return list
     }
 
-    fun getRandomNumber(min: Int, max: Int): Double {
-        return Math.floor(Math.random() * (max - min + 1) + min)
+    fun getRandomNumber(min: Int, max: Int): Long {
+        return Math.round(Math.random() * (max - min + 1) + min)
     }
 
 }
