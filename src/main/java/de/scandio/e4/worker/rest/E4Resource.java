@@ -30,17 +30,17 @@ public class E4Resource {
 		this.preparationService = preparationService;
 	}
 
-	@POST
+	@GET
 	@Path("/start")
 	public Response start() {
-		log.info("[E4W] /start");
+		log.info("[ENDPOINT] /start");
 		Response response;
 
 		try {
 			testRunnerService.runTestPackage();
 			response = Response.ok().build();
 		} catch (Exception e) {
-			log.error("Error in E4Resource: ", e);
+			log.error("Error in /start endpoint: ", e);
 			response = Response.status(400).build();
 		}
 
@@ -52,13 +52,13 @@ public class E4Resource {
 	@Path("/prepare")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response prepare(Map<String, Object> parameters) {
-		log.info("[E4W] /prepare: " + parameters);
+		log.info("[ENDPOINT] /prepare: " + parameters);
 		Response response;
 		try {
 			preparationService.prepare(parameters);
 			response = Response.ok().build();
 		} catch (Exception e) {
-			log.error("Error in E4Resource: ", e);
+			log.error("Error in /prepare endpoint: ", e);
 			response = Response.status(400).build();
 		}
 		return response;
@@ -67,7 +67,7 @@ public class E4Resource {
 	@POST
 	@Path("/stop")
 	public Response stop() {
-		log.info("[E4W] /stop");
+		log.info("[ENDPOINT] /stop");
 		return Response.status(500, "not yet implemented").build();
 	}
 
@@ -75,7 +75,7 @@ public class E4Resource {
 	@Path("/status")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStatus() {
-		log.info("[E4W] /status");
+		log.info("[ENDPOINT] /status");
 		return Response.status(200).entity(applicationStatusService.getApplicationStatus()).build();
 	}
 

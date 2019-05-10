@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -36,9 +37,9 @@ public class WorkerRestUtil {
 		return restTemplate.postForEntity(workerPrepareURL, preparationParameters, String.class);
 	}
 
-	public static ResponseEntity<String> postStart(String workerUrl) {
+	public static ResponseEntity<String> getStart(String workerUrl) {
 		final RestTemplate restTemplate = new RestTemplate();
 		final String workerPrepareURL = workerUrl + "e4/start";
-		return restTemplate.postForEntity(workerPrepareURL, Collections.emptyMap(), String.class);
+		return restTemplate.getForEntity(workerPrepareURL, String.class);
 	}
 }

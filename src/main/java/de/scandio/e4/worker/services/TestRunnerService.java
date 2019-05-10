@@ -107,7 +107,7 @@ public class TestRunnerService {
 		// TODO: check whether tests need to be repeated instead of just blindly waiting for the threads
 		System.out.println("Waiting for tests to finish...");
 		for (Thread virtualUserThread : virtualUserThreads) {
-			virtualUserThread.wait();
+			virtualUserThread.join();
 		}
 		System.out.println("All tests are finished!");
 

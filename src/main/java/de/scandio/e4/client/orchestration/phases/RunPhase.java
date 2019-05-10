@@ -22,7 +22,7 @@ public class RunPhase implements OrchestrationPhase {
 
 		for (String workerURL : workers) {
 			System.out.println("Telling "+workerURL+" to start running tests.");
-			final ResponseEntity<String> response = WorkerRestUtil.postStart(workerURL);
+			final ResponseEntity<String> response = WorkerRestUtil.getStart(workerURL);
 			if (response.getStatusCodeValue() != 200) {
 				throw new Exception("Worker "+workerURL+" responded with "+response.getStatusCodeValue()+" for /e4/start.");
 			}
