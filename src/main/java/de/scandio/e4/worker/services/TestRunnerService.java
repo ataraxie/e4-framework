@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @Service
@@ -60,7 +61,14 @@ public class TestRunnerService {
 			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
 		}
 
-		virtualUserThreads.forEach(Thread::start);
+		virtualUserThreads.forEach(thread -> {
+			try {
+				Thread.sleep(new Random().nextInt(50));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			thread.start();
+		});
 		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
 		// TODO: check whether tests need to be repeated instead of just blindly waiting for the threads
