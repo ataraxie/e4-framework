@@ -66,6 +66,7 @@ public class E4Client {
 			System.out.println("Local worker is healthy and enjoying itself!");
 			clientConfig.setWorkers(Collections.singletonList(localWorkerURL));
 			OrchestrationUtil.executePhases(clientConfig);
+			System.exit(0);
 		} else {
 			System.out.println("Local worker is unhealthy. Status code was: " + statusCode);
 			System.out.println("Aborting...");
