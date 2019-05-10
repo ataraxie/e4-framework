@@ -49,11 +49,11 @@ class DomHelper(
         js.executeScript("arguments[0].CodeMirror.setValue(\"$value\");", findElement(".CodeMirror"));
     }
 
-    fun awaitElementPresent(selector: String, duration: Long = 10) {
+    fun awaitElementPresent(selector: String, duration: Long = 60) {
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
-    fun awaitElementNotPresent(selector: String, duration: Long = 10) {
+    fun awaitElementNotPresent(selector: String, duration: Long = 60) {
         wait(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector))), duration)
         Thread.sleep(100)
     }

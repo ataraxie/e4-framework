@@ -24,7 +24,7 @@ class CreateSpaceScenario(
         confluence.takeScreenshot("after-login")
         this.start = Date().time
         confluence.navigateTo("spaces/createspace-start.action")
-        dom.awaitElementPresent("#create-space-form", 45)
+        dom.awaitElementPresent("#create-space-form")
         confluence.takeScreenshot("createspace")
         dom.insertText("#create-space-form input[name='key']", spaceKey)
         dom.insertText("#create-space-form input[name='name']", spaceName)
@@ -33,7 +33,7 @@ class CreateSpaceScenario(
         dom.await(1000)
         confluence.takeScreenshot("createspace-3")
         dom.click("#create-space-form .aui-button[name='create']")
-        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]", 30)
+        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
         confluence.takeScreenshot("createspace-final")
         this.end = Date().time
     }

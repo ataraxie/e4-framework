@@ -58,7 +58,7 @@ class WebConfluence(
     fun takeScreenshot(screenshotName: String): String {
         val ts = driver as TakesScreenshot
         val source: File = ts.getScreenshotAs(OutputType.FILE)
-        val dest = "$screenshotDir/$screenshotName.png"
+        val dest = "$screenshotDir/${Thread.currentThread().id}-$screenshotName.png"
         log.info("[SCREENSHOT] {{}}", dest)
         System.out.println(dest)
         val destination: File = File(dest)
