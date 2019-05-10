@@ -1,41 +1,50 @@
 package de.scandio.e4.worker.services;
 
-import de.scandio.e4.confluence.web.WebConfluence;
-import de.scandio.e4.worker.confluence.rest.RestConfluence;
+import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.Scenario;
 import de.scandio.e4.worker.interfaces.TestPackage;
 import de.scandio.e4.worker.interfaces.WebClient;
 import de.scandio.e4.worker.util.WorkerUtils;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PreparationService {
     private static final Logger log = LoggerFactory.getLogger(PreparationService.class);
 
-    private boolean preparationsAreFinished = false;
+    private final ApplicationStatusService applicationStatusService;
 
-    public void reset() {
-        preparationsAreFinished = false;
+    public PreparationService(ApplicationStatusService applicationStatusService) {
+        this.applicationStatusService = applicationStatusService;
     }
 
-    public boolean arePreparationsFinished() {
-        return preparationsAreFinished;
-    }
-
-    public void prepare(String targetUrl, String testPackageKey, String username, String password, String screenshotDir) throws Exception {
+    public void prepare(Map<String, Object> parameters) throws Exception {
         System.out.println("[E4W] Starting to prepare...");
+        applicationStatusService.setPreparationStatus(PreparationStatus.ONGOING);
+        applicationStatusService.setConfig(parameters);
 
-        log.info("Running prepare for package {{}} against URL {{}}", testPackageKey, targetUrl);
+
+
+
+        // TODO: read from CommandLine / applicationProperties and not here
+        final String screenshotDir = (String) parameters.get("screenshotDir");
+
+
+
+
+
+        final Map<String, Object> config = applicationStatusService.getConfig();
+        final String testPackageKey = (String) config.get("testPackage");
+        final String targetUrl = (String) config.get("target");
+        final String username = (String) config.get("username");
+        final String password = (String) config.get("password");
+
+        log.info("Running prepare scenarios of package {{}} against URL {{}}", testPackageKey, targetUrl);
 
         final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
         final TestPackage testPackageInstance = testPackage.newInstance();
@@ -46,6 +55,8 @@ public class PreparationService {
         for (Scenario scenario : setupScenarios) {
             scenario.execute(webClient, restClient);
         }
+
+
 
         // TODO: create users
         // TODO: store the user credentials
@@ -59,8 +70,10 @@ public class PreparationService {
 //            e.printStackTrace();
 //        }
 
+
+
         System.out.println("[E4W] Preparations are finished...");
-        preparationsAreFinished = true;
+        applicationStatusService.setPreparationStatus(PreparationStatus.FINISHED);
     }
 
 }

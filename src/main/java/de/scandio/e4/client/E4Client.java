@@ -27,8 +27,6 @@ public class E4Client {
 		System.out.println();
 
 		// TODO: validate config instead of just throwing exceptions in getters
-		// TODO: test if we can connect to the target
-		// TODO: test if pluginsToInstall can be found
 
 		final List<String> workers = clientConfig.getWorkers();
 

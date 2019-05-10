@@ -32,15 +32,12 @@ public class E4Resource {
 
 	@POST
 	@Path("/start")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response start(Map<String, Object> parameters) {
-		log.info("[ENDPOINT] /start: " + parameters);
+	public Response start() {
+		log.info("[E4W] /start");
 		Response response;
+
 		try {
-			String targetUrl = (String) parameters.get("targetUrl");
-			String testPackage = (String) parameters.get("testPackage");
-			String screenshotDir = (String) parameters.get("screenshotDir");
-			testRunnerService.runTestPackage(targetUrl, testPackage, screenshotDir);
+			testRunnerService.runTestPackage();
 			response = Response.ok().build();
 		} catch (Exception e) {
 			log.error("Error in E4Resource: ", e);
@@ -55,15 +52,10 @@ public class E4Resource {
 	@Path("/prepare")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response prepare(Map<String, Object> parameters) {
-		log.info("[ENDPOINT] /prepare: " + parameters);
+		log.info("[E4W] /prepare: " + parameters);
 		Response response;
 		try {
-			String targetUrl = (String) parameters.get("target");
-			String testPackage = (String) parameters.get("testPackage");
-			String username = (String) parameters.get("username");
-			String password = (String) parameters.get("password");
-			String screenshotDir = (String) parameters.get("screenshotDir");
-			preparationService.prepare(targetUrl, testPackage, username, password, screenshotDir);
+			preparationService.prepare(parameters);
 			response = Response.ok().build();
 		} catch (Exception e) {
 			log.error("Error in E4Resource: ", e);
@@ -75,7 +67,7 @@ public class E4Resource {
 	@POST
 	@Path("/stop")
 	public Response stop() {
-		log.info("[ENDPOINT] /stop");
+		log.info("[E4W] /stop");
 		return Response.status(500, "not yet implemented").build();
 	}
 
@@ -83,10 +75,16 @@ public class E4Resource {
 	@Path("/status")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStatus() {
-		log.info("[ENDPOINT] /status");
-		final Map<String, Object> applicationStatus = applicationStatusService.getApplicationStatus();
-		return Response.status(200).entity(applicationStatus).build();
+		log.info("[E4W] /status");
+		return Response.status(200).entity(applicationStatusService.getApplicationStatus()).build();
 	}
+
+
+
+
+
+
+
 
 
 	// This is only for later when we are actually doing distributed tests

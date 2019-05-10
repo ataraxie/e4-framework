@@ -34,6 +34,9 @@ class ViewDelayPageScenario(
         dom.awaitElementPresent("#main-content", 10)
         confluence.takeScreenshot("viewpage")
         this.startTime = Date().time
+        //webClient.goToLogin()
+        webClient.takeScreenshot("login")
+        this.endTime = Date().time
     }
 
     override fun getTimeTaken(): Long {

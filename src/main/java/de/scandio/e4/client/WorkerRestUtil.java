@@ -1,5 +1,6 @@
 package de.scandio.e4.client;
 
+import de.scandio.e4.dto.ApplicationStatusResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -8,14 +9,14 @@ import java.util.function.Predicate;
 
 public class WorkerRestUtil {
 
-	public static ResponseEntity<WorkerStatusResponse> getStatus(String workerUrl) {
+	public static ResponseEntity<ApplicationStatusResponse> getStatus(String workerUrl) {
 		final RestTemplate restTemplate = new RestTemplate();
 		final String workerStatusURL = workerUrl + "e4/status";
-		return restTemplate.getForEntity(workerStatusURL, WorkerStatusResponse.class);
+		return restTemplate.getForEntity(workerStatusURL, ApplicationStatusResponse.class);
 	}
 
-	public static void pollStatusUntil(String workerUrl, int intervalMs, int maxPolls, Predicate<WorkerStatusResponse> predicate) throws Exception {
-		ResponseEntity<WorkerStatusResponse> response;
+	public static void pollStatusUntil(String workerUrl, int intervalMs, int maxPolls, Predicate<ApplicationStatusResponse> predicate) throws Exception {
+		ResponseEntity<ApplicationStatusResponse> response;
 		int polls = 0;
 
 		do {

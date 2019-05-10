@@ -1,32 +1,36 @@
 package de.scandio.e4.worker.services;
 
+import de.scandio.e4.dto.ApplicationStatusResponse;
+import de.scandio.e4.dto.PreparationStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class ApplicationStatusService {
 
-	private final TestRunnerService testRunnerService;
-	private final PreparationService preparationService;
-	private final UserCredentialsService userCredentialsService;
+	private Map<String, Object> config; // TODO: replace Map with WorkerConfig entity
+	private PreparationStatus preparationStatus = PreparationStatus.UNPREPARED;
 
-	public ApplicationStatusService(TestRunnerService testRunnerService,
-									PreparationService preparationService,
-									UserCredentialsService userCredentialsService) {
-		this.testRunnerService = testRunnerService;
-		this.preparationService = preparationService;
-		this.userCredentialsService = userCredentialsService;
+	public ApplicationStatusResponse getApplicationStatus() {
+		//applicationStatus.put("areTestsRunning", testRunnerService.areTestsRunning());
+		//applicationStatus.put("storedUsers", userCredentialsService.getAllUsers());
+		return new ApplicationStatusResponse(config, preparationStatus);
 	}
 
-	public Map<String, Object> getApplicationStatus() {
-		final Map<String, Object> applicationStatus = new HashMap<>();
+	public Map<String, Object> getConfig() {
+		return config;
+	}
 
-		applicationStatus.put("areTestsRunning", testRunnerService.areTestsRunning());
-		applicationStatus.put("arePreparationsFinished", preparationService.arePreparationsFinished());
-		applicationStatus.put("storedUsers", userCredentialsService.getAllUsers());
+	public void setConfig(Map<String, Object> config) {
+		this.config = config;
+	}
 
-		return applicationStatus;
+	public void setPreparationStatus(PreparationStatus preparationStatus) {
+		this.preparationStatus = preparationStatus;
+	}
+
+	public PreparationStatus getPreparationStatus() {
+		return preparationStatus;
 	}
 }
