@@ -3,6 +3,7 @@ package de.scandio.e4.client;
 import de.scandio.e4.E4Application;
 import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.client.config.ConfigUtil;
+import de.scandio.e4.client.orchestration.OrchestrationUtil;
 import org.apache.commons.cli.CommandLine;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -64,7 +65,7 @@ public class E4Client {
 		if (statusCode == 200) {
 			System.out.println("Local worker is healthy and enjoying itself!");
 			clientConfig.setWorkers(Collections.singletonList(localWorkerURL));
-			OrchestrationUtil.orchestrateWorkers(clientConfig);
+			OrchestrationUtil.executePhases(clientConfig);
 		} else {
 			System.out.println("Local worker is unhealthy. Status code was: " + statusCode);
 			System.out.println("Aborting...");
@@ -88,6 +89,6 @@ public class E4Client {
 			}
 		}
 
-		OrchestrationUtil.orchestrateWorkers(clientConfig);
+		OrchestrationUtil.executePhases(clientConfig);
 	}
 }

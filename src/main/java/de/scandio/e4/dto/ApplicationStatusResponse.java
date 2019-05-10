@@ -5,12 +5,16 @@ import java.util.Map;
 public class ApplicationStatusResponse {
 	private Map<String, Object> config;
 	private PreparationStatus preparationStatus;
+	private TestsStatus testsStatus;
 
 	public ApplicationStatusResponse() {}
 
-	public ApplicationStatusResponse(Map<String, Object> config, PreparationStatus preparationStatus) {
+	public ApplicationStatusResponse(Map<String, Object> config,
+									 PreparationStatus preparationStatus,
+									 TestsStatus testsStatus) {
 		this.config = config;
 		this.preparationStatus = preparationStatus;
+		this.testsStatus = testsStatus;
 	}
 
 	public Map<String, Object> getConfig() {
@@ -27,5 +31,13 @@ public class ApplicationStatusResponse {
 
 	public void setPreparationStatus(PreparationStatus preparationStatus) {
 		this.preparationStatus = preparationStatus;
+	}
+
+	public TestsStatus getTestsStatus() {
+		return testsStatus;
+	}
+
+	public void setTestsStatus(TestsStatus testsStatus) {
+		this.testsStatus = testsStatus;
 	}
 }

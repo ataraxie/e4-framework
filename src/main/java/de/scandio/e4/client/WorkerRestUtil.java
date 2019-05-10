@@ -4,6 +4,7 @@ import de.scandio.e4.dto.ApplicationStatusResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -35,9 +36,9 @@ public class WorkerRestUtil {
 		return restTemplate.postForEntity(workerPrepareURL, preparationParameters, String.class);
 	}
 
-	public static ResponseEntity<String> postStart(String workerUrl, Map<String, Object> startParameters) {
+	public static ResponseEntity<String> postStart(String workerUrl) {
 		final RestTemplate restTemplate = new RestTemplate();
 		final String workerPrepareURL = workerUrl + "e4/start";
-		return restTemplate.postForEntity(workerPrepareURL, startParameters, String.class);
+		return restTemplate.postForEntity(workerPrepareURL, Collections.emptyMap(), String.class);
 	}
 }
