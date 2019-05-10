@@ -37,7 +37,7 @@ public class RunPhase implements OrchestrationPhase {
 					throw new IllegalStateException("Worker "+workerURL+" failed to start tests!");
 				}
 
-				return workerStatusResponse.getTestsStatus().equals(TestsStatus.FINISHED);
+				return workerStatusResponse.getTestsStatus().equals(TestsStatus.RUNNING);
 			});
 		}
 

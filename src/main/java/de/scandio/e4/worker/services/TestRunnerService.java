@@ -48,7 +48,6 @@ public class TestRunnerService {
 
 		log.debug("Found {{}} virtual users for test package", virtualUsers.size());
 
-		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
 		final List<Thread> virtualUserThreads = new ArrayList<>();
 
@@ -61,6 +60,7 @@ public class TestRunnerService {
 			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
 		}
 
+		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 		virtualUserThreads.forEach(Thread::start);
 
 		// TODO: check whether tests need to be repeated instead of just blindly waiting for the threads
