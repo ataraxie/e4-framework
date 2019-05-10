@@ -10,6 +10,4 @@ import java.util.List;
  */
 public interface VirtualUser {
 	List<Scenario> getScenarios();
-	String getUsername();
-	String getPassword();
 }

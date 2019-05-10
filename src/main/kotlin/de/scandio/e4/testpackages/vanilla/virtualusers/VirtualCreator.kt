@@ -1,12 +1,13 @@
-package de.scandio.e4.testpackages.delaymacro.virtualusers
+package de.scandio.e4.testpackages.vanilla.virtualusers
 
 import de.scandio.e4.worker.interfaces.Scenario
 import de.scandio.e4.worker.interfaces.VirtualUser
 
-class VirtualUserB : VirtualUser {
+class VirtualCreator : VirtualUser {
 
-    override fun getScenarios(): List<Scenario> {
+    override fun getScenarios(): MutableList<Scenario> {
         val list = arrayListOf<Scenario>()
         return list
     }
+
 }

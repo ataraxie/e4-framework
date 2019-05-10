@@ -25,12 +25,16 @@ class WebConfluence(
         return this.driver
     }
 
+    fun goToDashboard() {
+
+    }
+
     fun navigateTo(path: String) {
         log.info("[SELENIUM] Navigating to {{}}", path)
         driver.navigate().to(base.resolve(path).toURL())
     }
 
-    fun navigateToPage(spaceKey: String, pageTitle: String) {
+    fun goToPage(spaceKey: String, pageTitle: String) {
         val encodedPageTitle = URLEncoder.encode(pageTitle, "UTF-8")
         navigateTo("display/$spaceKey/$encodedPageTitle")
     }

@@ -60,10 +60,9 @@ public class TestRunnerService {
 			// TODO: assign a username to a virtualUser (so we can have a logged in user for the scenarios)
 
 			final List<Scenario> scenarios = virtualUser.getScenarios();
-			final String username = virtualUser.getUsername();
-			final String password = virtualUser.getPassword();
 			final WebClient webClient = WorkerUtils.newWebClient(targetUrl, screenshotDir);
-			final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
+			// TODO: credentials!
+			final RestClient restClient = WorkerUtils.newRestClient(targetUrl, "admin", "admin");
 
 			for (Scenario scenario : scenarios) {
 				log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
