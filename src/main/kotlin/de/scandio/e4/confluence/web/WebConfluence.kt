@@ -26,12 +26,27 @@ class WebConfluence(
     }
 
     fun goToDashboard() {
+        navigateTo("dashboard.action")
+        dom.awaitElementPresent("#addSpaceLink")
+    }
 
+    fun login(username: String, password: String) {
+        navigateTo("login.action")
+        dom.awaitElementPresent("form[name='loginform']", 10)
+        dom.insertText("#os_username", username)
+        dom.insertText("#os_password", password)
+        dom.click("#loginButton")
+        dom.awaitElementPresent(".pagebody", 10)
     }
 
     fun navigateTo(path: String) {
-        log.info("[SELENIUM] Navigating to {{}}", path)
-        driver.navigate().to(base.resolve(path).toURL())
+        log.info("[SELENIUM] Navigating to {{}} with current URL {{}}", path, driver.currentUrl)
+        if (!driver.currentUrl.endsWith(path)) {
+            driver.navigate().to(base.resolve(path).toURL())
+        } else {
+            log.info("[SELENIUM] Already on page")
+        }
+
     }
 
     fun goToPage(spaceKey: String, pageTitle: String) {

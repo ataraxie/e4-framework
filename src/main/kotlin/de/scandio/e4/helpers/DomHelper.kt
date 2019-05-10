@@ -46,6 +46,7 @@ class DomHelper(
 
     fun awaitElementNotPresent(selector: String, duration: Long = 5) {
         wait(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector))), duration)
+        Thread.sleep(100)
     }
 
     fun awaitHasText(selector: String, text: String) {
@@ -58,6 +59,10 @@ class DomHelper(
 
     fun insertText(selector: String, text: String) {
         findElement(selector).sendKeys(text)
+    }
+
+    fun clearText(selector: String) {
+        findElement(selector).clear()
     }
 
     fun click(selector: String) {

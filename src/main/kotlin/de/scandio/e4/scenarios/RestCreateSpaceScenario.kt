@@ -7,7 +7,7 @@ import de.scandio.e4.worker.interfaces.Scenario
 import de.scandio.e4.worker.interfaces.WebClient
 import org.slf4j.LoggerFactory
 
-class CreateSpaceScenario(
+class RestCreateSpaceScenario(
         private val spaceKey: String,
         private val spaceName: String
 ): Scenario {
@@ -17,7 +17,7 @@ class CreateSpaceScenario(
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         val restConfluence = restClient as RestConfluence
-        log.debug("CreateSpaceScenario.execute with web driver {{}}", webConfluence.driver)
+        log.debug("RestCreateSpaceScenario.execute with web driver {{}}", webConfluence.driver)
 
         // TODO rest call not working yet
         //restConfluence.createSpace(spaceKey, spaceName)

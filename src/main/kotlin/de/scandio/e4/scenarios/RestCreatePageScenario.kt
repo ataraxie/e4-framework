@@ -7,7 +7,7 @@ import de.scandio.e4.worker.interfaces.Scenario
 import de.scandio.e4.worker.interfaces.WebClient
 import org.slf4j.LoggerFactory
 
-class CreatePageScenario (
+class RestCreatePageScenario (
         private val pageTitle: String,
         private val spaceKey: String,
         private val pageContent: String,
@@ -19,7 +19,7 @@ class CreatePageScenario (
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         val restConfluence = restClient as RestConfluence
-        log.debug("CreatePageScenario.execute with web driver {{}}", webConfluence.driver)
+        log.debug("RestCreatePageScenario.execute with web driver {{}}", webConfluence.driver)
 
         // TODO not working yet
         //restConfluence.createPage(pageTitle, spaceKey, pageContent, parentPageId)

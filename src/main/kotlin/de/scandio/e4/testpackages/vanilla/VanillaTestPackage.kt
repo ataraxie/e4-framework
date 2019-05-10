@@ -1,5 +1,6 @@
 package de.scandio.e4.testpackages.vanilla
 
+import de.scandio.e4.testpackages.vanilla.virtualusers.VirtualCreator
 import de.scandio.e4.worker.interfaces.Scenario
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.VirtualUser
@@ -13,6 +14,7 @@ class VanillaTestPackage: TestPackage {
 
     override fun getVirtualUsers(): List<VirtualUser> {
         val list = arrayListOf<VirtualUser>()
+        list.add(VirtualCreator())
         return list
     }
 
