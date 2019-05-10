@@ -12,6 +12,18 @@ public class E4Application {
 	public static void main(String[] args) {
 		final CommandLine parsedArgs = parseArgs(args);
 
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			System.out.println("Shutdown signal received.. shutting down threads.");
+			Thread.getAllStackTraces().keySet().forEach(thread -> {
+				try {
+					thread.interrupt();
+				} catch (Exception ex) {
+					System.out.println("Error interrupting thread " + thread);
+					ex.printStackTrace();
+				}
+			});
+		}));
+
 		try {
 			if (parsedArgs.hasOption("worker-only")) {
 				startWorkerOnly(parsedArgs);
