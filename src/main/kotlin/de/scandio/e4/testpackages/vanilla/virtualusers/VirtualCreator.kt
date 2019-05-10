@@ -9,7 +9,7 @@ class VirtualCreator : VirtualUser {
 
     override fun getScenarios(): MutableList<Scenario> {
         val list = arrayListOf<Scenario>()
-        list.add(CreateSpaceScenario("E4", "E4 Space"))
+        list.add(CreateSpaceScenario("E44", "E4 Space"))
         return list
     }
 
