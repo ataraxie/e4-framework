@@ -9,6 +9,7 @@ import de.scandio.e4.worker.interfaces.WebClient;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,15 +35,6 @@ public class PreparationService {
         applicationStatusService.setConfig(parameters);
 
 
-
-
-        // TODO: read from CommandLine / applicationProperties and not here
-        final String screenshotDir = (String) parameters.get("screenshotDir");
-
-
-
-
-
         // replace with WorkerConfig dto
         final Map<String, Object> config = applicationStatusService.getConfig();
         final String testPackageKey = (String) config.get("testPackage");
@@ -55,7 +47,7 @@ public class PreparationService {
         final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
         final TestPackage testPackageInstance = testPackage.newInstance();
         final List<Scenario> setupScenarios = testPackageInstance.getSetupScenarios();
-        final WebClient webClient = WorkerUtils.newWebClient(targetUrl, screenshotDir);
+        final WebClient webClient = WorkerUtils.newWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
         final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 
         try {

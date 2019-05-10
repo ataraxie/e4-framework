@@ -30,9 +30,6 @@ public class PreparationPhase implements OrchestrationPhase {
 			put("testPackage", clientConfig.getTestPackage());
 			put("repeatTests", clientConfig.getDurationInSeconds() > 0);
 			put("virtualUsers", usersPerWorker);
-
-			// TODO: only pass this to worker via CommandLine not workerConfig
-			put("screenshotDir", clientConfig.getScreenshotDir());
 		}};
 
 		System.out.println("Distributing config to workers:");

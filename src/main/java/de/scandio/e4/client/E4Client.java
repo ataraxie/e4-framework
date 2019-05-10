@@ -47,6 +47,11 @@ public class E4Client {
 			} else {
 				put("server.port", 0); // random port
 			}
+
+			if (parsedArgs.hasOption("screenshots-dir")) {
+				put("screenshots.dir", parsedArgs.getOptionValue("screenshots-dir"));
+				System.out.println("Set custom screenshots dir: " + get("screenshots.dir"));
+			}
 		}};
 
 		final ConfigurableApplicationContext run = new SpringApplicationBuilder()

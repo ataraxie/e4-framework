@@ -43,6 +43,12 @@ public class E4Application {
 
 		final HashMap<String, Object> props = new HashMap<>();
 		props.put("server.port", port);
+
+		if (parsedArgs.hasOption("screenshots-dir")) {
+			props.put("screenshots.dir", parsedArgs.getOptionValue("screenshots-dir"));
+			System.out.println("Set custom screenshots dir: " + props.get("screenshots.dir"));
+		}
+
 		new SpringApplicationBuilder()
 				.sources(E4Application.class)
 				.properties(props)
@@ -70,6 +76,9 @@ public class E4Application {
 		portOption.setRequired(false);
 		options.addOption(portOption);
 
+		final Option screenshotsOption = new Option("s", "screenshots-dir", true, "Directory to save screenshots to. By default this will be './screenshots'.");
+		screenshotsOption.setRequired(false);
+		options.addOption(screenshotsOption);
 
 		final CommandLineParser parser = new DefaultParser();
 
