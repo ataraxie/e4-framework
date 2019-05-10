@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -45,8 +44,7 @@ public class PreparationService {
         final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 
         for (Scenario scenario : setupScenarios) {
-            long timeTaken = WorkerUtils.runAndMeasure(webClient, restClient, scenario);
-            log.info("[MEASURE] Time taken for scenario {{}}: {{}}", scenario.getClass().getSimpleName(), timeTaken);
+            scenario.execute(webClient, restClient);
         }
 
         // TODO: create users

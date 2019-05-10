@@ -68,8 +68,8 @@ public class TestRunnerService {
 			for (Scenario scenario : scenarios) {
 				log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
 				try {
-					long timeTaken = WorkerUtils.runAndMeasure(webClient, restClient, scenario);
-					log.info("[MEASURE] Time taken for scenario {{}}: {{}}", scenario.getClass().getSimpleName(), timeTaken);
+					scenario.execute(webClient, restClient);
+					scenario.getTimeTaken();
 				} catch (Exception e) {
 					// record scenario as failed
 					e.printStackTrace();
