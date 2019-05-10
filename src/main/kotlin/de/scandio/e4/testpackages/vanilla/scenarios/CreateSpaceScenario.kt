@@ -7,7 +7,6 @@ import de.scandio.e4.worker.interfaces.WebClient
 class CreateSpaceScenario : Scenario {
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
-        webClient.goToDashboard()
     }
 
     override fun getTimeTaken(): Long {

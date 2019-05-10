@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory
 import java.util.*
 
 class ViewDelayPageScenario(
-        val username: String,
-        val password: String
+        val username: String = "admin",
+        val password: String = "admin"
 ) : Scenario {
 
     private val log = LoggerFactory.getLogger(javaClass)
