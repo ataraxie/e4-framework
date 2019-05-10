@@ -1,31 +1,26 @@
 package de.scandio.e4.worker.services;
 
+import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.worker.interfaces.*;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import static de.scandio.e4.E4Application.*;
-
 import java.util.List;
+import java.util.Map;
 
 
 @Service
 public class TestRunnerService {
-
 	private static final Logger log = LoggerFactory.getLogger(TestRunnerService.class);
-
 	private final UserCredentialsService userCredentialsService;
+	private final ApplicationStatusService applicationStatusService;
 
-	private String currentlyRunningTestPackage;
-
-	public TestRunnerService(UserCredentialsService userCredentialsService) {
+	public TestRunnerService(UserCredentialsService userCredentialsService,
+							 ApplicationStatusService applicationStatusService) {
 		this.userCredentialsService = userCredentialsService;
-	}
-
-	public boolean areTestsRunning() {
-		return currentlyRunningTestPackage != null;
+		this.applicationStatusService = applicationStatusService;
 	}
 
 	public void stopTests() throws Exception {
@@ -33,15 +28,30 @@ public class TestRunnerService {
 		throw new Exception("stopping tests not yet implemented");
 	}
 
-	public synchronized void runTestPackage(String targetUrl, String testPackageKey, String screenshotDir) throws Exception {
-		// TODO: Test if no other package is running first
-		if (areTestsRunning()) {
-			throw new IllegalStateException("Can't start a new TestPackage when another TestPackage is already running.");
+	public synchronized void runTestPackage() throws Exception {
+		// TODO: Also test if no other package is running
+		if (!applicationStatusService.getPreparationStatus().equals(PreparationStatus.FINISHED)) {
+			throw new Exception("Cant run test package when preparations are not finished!");
 		}
 
-		log.info("Running test package {{}} against URL {{}}", testPackageKey, targetUrl);
+		final Map<String, Object> config = applicationStatusService.getConfig();
+		final String testPackageKey = (String) config.get("testPackage");
+		final String targetUrl = (String) config.get("target");
 
-		currentlyRunningTestPackage = testPackageKey;
+
+
+
+
+
+		// TODO: read from CommandLine / applicationProperties and not here
+		final String screenshotDir = (String) config.get("screenshotDir");
+
+
+
+
+
+
+		log.info("Running test package {{}} against URL {{}}", testPackageKey, targetUrl);
 
 		final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
 		final TestPackage testPackageInstance = testPackage.newInstance();
@@ -58,16 +68,22 @@ public class TestRunnerService {
 			// Whether there are saved threads can also be used to determine if there is a test running
 
 			// TODO: assign a username to a virtualUser (so we can have a logged in user for the scenarios)
+			// TODO: right now only using hardcoded admin - later use UserCredentialsService
+			final String username = "admin";
+			final String password = "admin";
 
 			final List<Scenario> scenarios = virtualUser.getScenarios();
-			final String username = virtualUser.getUsername();
-			final String password = virtualUser.getPassword();
+
+
+
 			final WebClient webClient = WorkerUtils.newWebClient(targetUrl, screenshotDir);
 			final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 
 			for (Scenario scenario : scenarios) {
 				log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
 				try {
+					scenario.setUsername(username);
+					scenario.setPassword(password);
 					scenario.execute(webClient, restClient);
 					scenario.getTimeTaken();
 				} catch (Exception e) {

@@ -8,4 +8,8 @@ public interface Scenario {
 
 	// scenario ABCD took 50ms
 	long getTimeTaken();
+
+
+	void setUsername(String username);
+	void setPassword(String setPassword);
 }

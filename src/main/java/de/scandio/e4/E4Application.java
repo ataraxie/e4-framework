@@ -34,7 +34,7 @@ public class E4Application {
 	public static void startWorkerOnly(CommandLine parsedArgs) {
 		String port = parsedArgs.getOptionValue("port");
 
-		// we could also check if the port is actually a valid port
+		// we could also check if the port is actually a valid port - not necessary right now
 		if (port == null) {
 			port = "4444";
 		}
@@ -48,7 +48,7 @@ public class E4Application {
 				.properties(props)
 				.run();
 
-		System.out.println("E4 Worker is running on: http://localhost:"+port+"/");
+		System.out.println("E4 Worker is running on: http://localhost:"+port+"/ and waiting for commands.");
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class E4Application {
 			return parser.parse(options, args);
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
-			new HelpFormatter().printHelp("utility-name", options);
+			new HelpFormatter().printHelp("java -jar your-e4.jar", options);
 			System.exit(1);
 		}
 
