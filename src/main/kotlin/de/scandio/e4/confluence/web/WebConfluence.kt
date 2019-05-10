@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URI
+import java.net.URLEncoder
 
 class WebConfluence(
         val driver: WebDriver,
@@ -24,15 +25,14 @@ class WebConfluence(
         return this.driver
     }
 
-    fun goToLogin() {
-        navigateTo("login.action")
-        dom.awaitElementPresent("form[name='loginform']", 10)
-        takeScreenshot("login")
+    fun navigateTo(path: String) {
+        log.info("[SELENIUM] Navigating to {{}}", path)
+        driver.navigate().to(base.resolve(path).toURL())
     }
 
-    fun navigateTo(path: String) {
-        log.info("[SELENIUM] Navigating to login page")
-        driver.navigate().to(base.resolve(path).toURL())
+    fun navigateToPage(spaceKey: String, pageTitle: String) {
+        val encodedPageTitle = URLEncoder.encode(pageTitle, "UTF-8")
+        navigateTo("display/$spaceKey/$encodedPageTitle")
     }
 
     fun takeScreenshot(screenshotName: String): String {
@@ -40,6 +40,7 @@ class WebConfluence(
         val source: File = ts.getScreenshotAs(OutputType.FILE)
         val dest = "$screenshotDir/$screenshotName.png"
         log.info("[SCREENSHOT] {{}}", dest)
+        System.out.println(dest)
         val destination: File = File(dest)
         FileUtils.copyFile(source, destination)
         return dest

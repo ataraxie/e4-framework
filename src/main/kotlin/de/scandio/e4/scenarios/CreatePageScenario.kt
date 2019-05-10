@@ -25,8 +25,4 @@ class CreatePageScenario (
         //restConfluence.createPage(pageTitle, spaceKey, pageContent, parentPageId)
     }
 
-    override fun getTimeTaken(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
 }

@@ -6,6 +6,4 @@ public interface Scenario {
 
 	void execute(@NotNull WebClient webClient, @NotNull RestClient restClient) throws Exception;
 
-	// scenario ABCD took 50ms
-	long getTimeTaken();
 }

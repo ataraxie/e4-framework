@@ -22,10 +22,4 @@ class CreateSpaceScenario(
         // TODO rest call not working yet
         //restConfluence.createSpace(spaceKey, spaceName)
     }
-
-    override fun getTimeTaken(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-
 }

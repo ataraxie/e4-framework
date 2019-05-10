@@ -15,7 +15,7 @@ class VirtualUserA : VirtualUser {
 
     override fun getScenarios(): List<Scenario> {
         val list = arrayListOf<Scenario>()
-        list.add(ViewDelayPageScenario())
+        list.add(ViewDelayPageScenario(username, password))
         return list
     }
 }
