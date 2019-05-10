@@ -24,7 +24,7 @@ public class MainClass {
 		chromeOptions.addArguments("--headless");
 		WebDriver driver = new ChromeDriver(chromeOptions);
 		WebConfluence webConfluence = new WebConfluence(driver, new URI(URL), SCREENSHOT_DIR);
-		MainKotlin mainKotlin = new MainKotlin(driver, webConfluence, new DomHelper(webConfluence));
+		MainKotlin mainKotlin = new MainKotlin(driver, webConfluence, new DomHelper(webConfluence), URL);
 		mainKotlin.execute();
 	}
 

@@ -41,7 +41,7 @@ class CreateSpaceScenario(
         val createButtonSelector = "#create-dialog .create-dialog-commonPage + .dialog-button-panel .create-dialog-create-button"
         dom.awaitAttributeNotPresent(createButtonSelector, "disabled")
         confluence.takeScreenshot("createspace-7")
-        dom.click(createButtonSelector)
+        dom.click(createButtonSelector) // TODO: duplicate but it doesn't work without somehow
         dom.await(1000) // TODO: condition
         dom.click(createButtonSelector)
         confluence.takeScreenshot("createspace-8")
