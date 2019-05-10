@@ -30,21 +30,25 @@ class DomHelper(
         wait(ExpectedConditions.attributeContains(findElement(selector), attrName, attrValue))
     }
 
+    fun await(ms: Long) {
+        Thread.sleep(ms)
+    }
+
     fun setSelectedOption(selector: String, value: String) {
         val datasourceSelect = Select(findElement(selector))
         datasourceSelect.selectByValue(value)
     }
 
-    fun setEditorValue(value: String) {
+    fun insertTextCodeMirror(value: String) {
         val js = confluence.driver as JavascriptExecutor
         js.executeScript("arguments[0].CodeMirror.setValue(\"$value\");", findElement(".CodeMirror"));
     }
 
-    fun awaitElementPresent(selector: String, duration: Long = 5) {
+    fun awaitElementPresent(selector: String, duration: Long = 10) {
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
-    fun awaitElementNotPresent(selector: String, duration: Long = 5) {
+    fun awaitElementNotPresent(selector: String, duration: Long = 10) {
         wait(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector))), duration)
         Thread.sleep(100)
     }
@@ -59,6 +63,11 @@ class DomHelper(
 
     fun insertText(selector: String, text: String) {
         findElement(selector).sendKeys(text)
+    }
+
+    fun insertTextTinyMce(text: String) {
+        val js = confluence.driver as JavascriptExecutor
+        js.executeScript("tinyMCE.activeEditor.setContent('${text.replace("'", "\\'")}')")
     }
 
     fun clearText(selector: String) {

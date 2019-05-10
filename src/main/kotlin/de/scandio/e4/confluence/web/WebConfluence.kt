@@ -65,4 +65,9 @@ class WebConfluence(
         return dest
     }
 
+    fun goToSpaceHomepage(spaceKey: String) {
+        navigateTo("display/$spaceKey")
+        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
+    }
+
 }

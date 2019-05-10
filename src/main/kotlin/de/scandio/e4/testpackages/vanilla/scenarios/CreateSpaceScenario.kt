@@ -9,7 +9,9 @@ import java.util.*
 
 class CreateSpaceScenario(
         val spaceKey: String,
-        val spaceName: String
+        val spaceName: String,
+        val username: String = "admin",
+        val password: String = "admin"
 ) : Scenario {
 
     private var start: Long = 0
@@ -17,8 +19,8 @@ class CreateSpaceScenario(
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val confluence = webClient as WebConfluence
-        val dom: DomHelper = DomHelper(confluence)
-        confluence.login("admin", "admin")
+        val dom = DomHelper(confluence)
+        confluence.login(this.username, this.password)
         confluence.takeScreenshot("after-login")
         confluence.goToDashboard()
         this.start = Date().time
