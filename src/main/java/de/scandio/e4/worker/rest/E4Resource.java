@@ -1,8 +1,11 @@
 package de.scandio.e4.worker.rest;
 
+import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.worker.services.ApplicationStatusService;
 import de.scandio.e4.worker.services.PreparationService;
 import de.scandio.e4.worker.services.TestRunnerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
@@ -17,6 +20,8 @@ public class E4Resource {
 	private final ApplicationStatusService applicationStatusService;
 	private final PreparationService preparationService;
 
+	private static final Logger log = LoggerFactory.getLogger(E4Resource.class);
+
 	public E4Resource(TestRunnerService testRunnerService,
 					  ApplicationStatusService applicationStatusService,
 					  PreparationService preparationService) {
@@ -25,15 +30,19 @@ public class E4Resource {
 		this.preparationService = preparationService;
 	}
 
-	@GET
+	@POST
 	@Path("/start")
-	public Response start(@QueryParam("key")String testPackageKey) {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response start(Map<String, Object> parameters) {
+		log.info("[ENDPOINT] /start: " + parameters);
 		Response response;
-
 		try {
-			testRunnerService.runTestPackage(testPackageKey);
+			String targetUrl = (String) parameters.get("targetUrl");
+			String testPackage = (String) parameters.get("testPackage");
+			testRunnerService.runTestPackage(targetUrl, testPackage);
 			response = Response.ok().build();
 		} catch (Exception e) {
+			log.error("Error in E4Resource: ", e);
 			response = Response.status(400).build();
 		}
 
@@ -44,14 +53,27 @@ public class E4Resource {
 	@POST
 	@Path("/prepare")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response stop(Map<String, Object> parameters) {
-		preparationService.prepare(parameters);
-		return Response.status(200).build();
+	public Response prepare(Map<String, Object> parameters) {
+		log.info("[ENDPOINT] /prepare: " + parameters);
+		Response response;
+		try {
+			String targetUrl = (String) parameters.get("target");
+			String testPackage = (String) parameters.get("testPackage");
+			String username = (String) parameters.get("username");
+			String password = (String) parameters.get("password");
+			preparationService.prepare(targetUrl, testPackage, username, password);
+			response = Response.ok().build();
+		} catch (Exception e) {
+			log.error("Error in E4Resource: ", e);
+			response = Response.status(400).build();
+		}
+		return response;
 	}
 
 	@POST
 	@Path("/stop")
-	public Response prepare() {
+	public Response stop() {
+		log.info("[ENDPOINT] /stop");
 		return Response.status(500, "not yet implemented").build();
 	}
 
@@ -59,6 +81,7 @@ public class E4Resource {
 	@Path("/status")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStatus() {
+		log.info("[ENDPOINT] /status");
 		final Map<String, Object> applicationStatus = applicationStatusService.getApplicationStatus();
 		return Response.status(200).entity(applicationStatus).build();
 	}

@@ -14,7 +14,7 @@ public class OrchestrationUtil {
 
 		preparationPhase(clientConfig);
 
-		runPhase(clientConfig);
+		//runPhase(clientConfig);
 
 		// TODO: PHASE 3 - Gather & Analyze
 		// after each phase check status of all workers
@@ -29,6 +29,8 @@ public class OrchestrationUtil {
 
 		final Map<String, Object> preparationParameters = new HashMap<String, Object>(){{
 			put("target", clientConfig.getTarget().getUrl());
+			put("username", clientConfig.getTarget().getAdminUser());
+			put("password", clientConfig.getTarget().getAdminPassword());
 			put("testPackage", clientConfig.getTestPackage());
 			put("repeatTests", clientConfig.getDurationInSeconds() > 0);
 			put("virtualUsers", usersPerWorker);
@@ -62,8 +64,18 @@ public class OrchestrationUtil {
 		final List<String> workers = clientConfig.getWorkers();
 
 		System.out.println("\n[PHASE - RUN]\n");
+		final Map<String, Object> startParameters = new HashMap<String, Object>(){{
+			put("targetUrl", clientConfig.getTarget().getUrl());
+			put("testPackage", clientConfig.getTestPackage());
+		}};
 
-		// TODO: start runs
+		for (String workerURL : workers) {
+			System.out.println("Telling "+workerURL+" to run.");
+			final ResponseEntity<String> response = WorkerRestUtil.postStart(workerURL, startParameters);
+			if (response.getStatusCodeValue() != 200) {
+				throw new Exception("Worker "+workerURL+" responded with "+response.getStatusCodeValue()+" for /e4/start.");
+			}
+		}
 
 		for (String workerURL : workers) {
 			System.out.println("Waiting for "+workerURL+" to start runs...");

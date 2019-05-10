@@ -9,5 +9,5 @@ import java.util.List;
  * The scenarios should be run in a separate thread.
  */
 public interface VirtualUser {
-	List<Class<Scenario>> getScenarios();
+	List<Scenario> getScenarios();
 }

@@ -33,4 +33,10 @@ public class WorkerRestUtil {
 		final String workerPrepareURL = workerUrl + "e4/prepare";
 		return restTemplate.postForEntity(workerPrepareURL, preparationParameters, String.class);
 	}
+
+	public static ResponseEntity<String> postStart(String workerUrl, Map<String, Object> startParameters) {
+		final RestTemplate restTemplate = new RestTemplate();
+		final String workerPrepareURL = workerUrl + "e4/start";
+		return restTemplate.postForEntity(workerPrepareURL, startParameters, String.class);
+	}
 }
