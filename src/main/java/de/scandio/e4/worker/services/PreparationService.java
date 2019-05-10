@@ -1,5 +1,6 @@
 package de.scandio.e4.worker.services;
 
+import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
 import de.scandio.e4.worker.interfaces.RestClient;
@@ -9,11 +10,8 @@ import de.scandio.e4.worker.interfaces.WebClient;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class PreparationService {
@@ -25,30 +23,22 @@ public class PreparationService {
         this.applicationStatusService = applicationStatusService;
     }
 
-    public void prepare(Map<String, Object> parameters) throws Exception {
+    public void prepare(WorkerConfig config) throws Exception {
         if (applicationStatusService.getTestsStatus().equals(TestsStatus.RUNNING)) {
             throw new Exception("Can not prepare while tests are running!");
         }
 
         System.out.println("[E4W] Preparing...");
         applicationStatusService.setPreparationStatus(PreparationStatus.ONGOING);
-        applicationStatusService.setConfig(parameters);
+        applicationStatusService.setConfig(config);
 
+        log.info("Running prepare scenarios of package {{}} against URL {{}}", config.getTestPackage(), config.getTarget());
 
-        // replace with WorkerConfig dto
-        final Map<String, Object> config = applicationStatusService.getConfig();
-        final String testPackageKey = (String) config.get("testPackage");
-        final String targetUrl = (String) config.get("target");
-        final String username = (String) config.get("username");
-        final String password = (String) config.get("password");
-
-        log.info("Running prepare scenarios of package {{}} against URL {{}}", testPackageKey, targetUrl);
-
-        final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
+        final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(config.getTestPackage());
         final TestPackage testPackageInstance = testPackage.newInstance();
         final List<Scenario> setupScenarios = testPackageInstance.getSetupScenarios();
-        final WebClient webClient = WorkerUtils.newWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
-        final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
+        final WebClient webClient = WorkerUtils.newWebClient(config.getTarget(), applicationStatusService.getScreenshotsDir());
+        final RestClient restClient = WorkerUtils.newRestClient(config.getTarget(), config.getUsername(), config.getPassword());
 
         try {
 

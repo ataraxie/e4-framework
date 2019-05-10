@@ -1,5 +1,6 @@
 package de.scandio.e4.client;
 
+import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.ApplicationStatusResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +30,7 @@ public class WorkerRestUtil {
 		} while (!predicate.test(response.getBody()));
 	}
 
-	public static ResponseEntity<String> postPrepare(String workerUrl, Map<String, Object> preparationParameters) {
+	public static ResponseEntity<String> postPrepare(String workerUrl, WorkerConfig preparationParameters) {
 		final RestTemplate restTemplate = new RestTemplate();
 		final String workerPrepareURL = workerUrl + "e4/prepare";
 		return restTemplate.postForEntity(workerPrepareURL, preparationParameters, String.class);

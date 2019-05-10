@@ -1,17 +1,16 @@
 package de.scandio.e4.worker.services;
 
+import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
 import de.scandio.e4.worker.interfaces.*;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -37,9 +36,9 @@ public class TestRunnerService {
 			throw new Exception("There is already a TestPackage running!");
 		}
 
-		final Map<String, Object> config = applicationStatusService.getConfig();
-		final String testPackageKey = (String) config.get("testPackage");
-		final String targetUrl = (String) config.get("target");
+		final WorkerConfig config = applicationStatusService.getConfig();
+		final String testPackageKey = config.getTestPackage();
+		final String targetUrl = config.getTarget();
 
 		log.info("Running test package {{}} against URL {{}}", testPackageKey, targetUrl);
 

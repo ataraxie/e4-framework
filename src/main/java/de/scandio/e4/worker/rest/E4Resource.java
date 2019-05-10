@@ -1,6 +1,7 @@
 package de.scandio.e4.worker.rest;
 
 import de.scandio.e4.client.config.ClientConfig;
+import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.worker.services.ApplicationStatusService;
 import de.scandio.e4.worker.services.PreparationService;
 import de.scandio.e4.worker.services.TestRunnerService;
@@ -51,11 +52,11 @@ public class E4Resource {
 	@POST
 	@Path("/prepare")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response prepare(Map<String, Object> parameters) {
-		log.info("[ENDPOINT] /prepare: " + parameters);
+	public Response prepare(WorkerConfig workerConfig) {
+		log.info("[ENDPOINT] /prepare - config:" + workerConfig);
 		Response response;
 		try {
-			preparationService.prepare(parameters);
+			preparationService.prepare(workerConfig);
 			response = Response.ok().build();
 		} catch (Exception e) {
 			log.error("Error in /prepare endpoint: ", e);

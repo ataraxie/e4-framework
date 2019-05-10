@@ -2,6 +2,7 @@ package de.scandio.e4.client.orchestration.phases;
 
 import de.scandio.e4.client.WorkerRestUtil;
 import de.scandio.e4.client.config.ClientConfig;
+import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,15 +24,7 @@ public class PreparationPhase implements OrchestrationPhase {
 
 		System.out.println("\n[PHASE - PREPARE]\n");
 
-		final Map<String, Object> workerConfig = new HashMap<String, Object>(){{
-			put("target", clientConfig.getTarget().getUrl());
-			put("username", clientConfig.getTarget().getAdminUser());
-			put("password", clientConfig.getTarget().getAdminPassword());
-			put("testPackage", clientConfig.getTestPackage());
-			put("repeatTests", clientConfig.getDurationInSeconds() > 0);
-			put("virtualUsers", usersPerWorker);
-		}};
-
+		final WorkerConfig workerConfig = WorkerConfig.from(clientConfig);
 		System.out.println("Distributing config to workers:");
 		System.out.println(workerConfig);
 
@@ -53,8 +46,7 @@ public class PreparationPhase implements OrchestrationPhase {
 					return false;
 				}
 
-				if (preparationStatus.equals(PreparationStatus.ERROR) ||
-						(preparationStatus.equals(PreparationStatus.FINISHED) && !response.getConfig().equals(workerConfig))) {
+				if (preparationStatus.equals(PreparationStatus.ERROR)) {
 					throw new IllegalStateException("Worker "+workerURL+" errored while preparing!");
 				}
 

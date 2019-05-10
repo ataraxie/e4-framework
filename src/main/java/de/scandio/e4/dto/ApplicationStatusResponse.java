@@ -1,15 +1,17 @@
 package de.scandio.e4.dto;
 
+import de.scandio.e4.client.config.WorkerConfig;
+
 import java.util.Map;
 
 public class ApplicationStatusResponse {
-	private Map<String, Object> config;
+	private WorkerConfig config;
 	private PreparationStatus preparationStatus;
 	private TestsStatus testsStatus;
 
 	public ApplicationStatusResponse() {}
 
-	public ApplicationStatusResponse(Map<String, Object> config,
+	public ApplicationStatusResponse(WorkerConfig config,
 									 PreparationStatus preparationStatus,
 									 TestsStatus testsStatus) {
 		this.config = config;
@@ -17,11 +19,11 @@ public class ApplicationStatusResponse {
 		this.testsStatus = testsStatus;
 	}
 
-	public Map<String, Object> getConfig() {
+	public WorkerConfig getConfig() {
 		return config;
 	}
 
-	public void setConfig(Map<String, Object> config) {
+	public void setConfig(WorkerConfig config) {
 		this.config = config;
 	}
 
