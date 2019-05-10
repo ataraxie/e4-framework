@@ -15,10 +15,11 @@ class MainKotlin(
 ) {
 
     fun execute() {
-        val spaceKey: String = "E4X"
-        CreateSpaceScenario(spaceKey, "E4 Home").execute(confluence, RestConfluence(baseUrl, "admin", "admin"))
-        val pageTitle: String = "E4 Test Page"
-        CreatePageScenario(spaceKey, pageTitle)
+        val restConfluence = RestConfluence(baseUrl, "admin", "admin")
+        val spaceKey = "E48"
+        CreateSpaceScenario(spaceKey, "E4 Home").execute(confluence, restConfluence)
+        val pageTitle = "E4 Test Page"
+        CreatePageScenario(spaceKey, pageTitle).execute(confluence, restConfluence)
     }
 
 }

@@ -23,10 +23,8 @@ class CreatePageScenario(
         val dom = DomHelper(confluence)
         confluence.login(this.username, this.password)
         confluence.takeScreenshot("after-login")
-        confluence.goToSpaceHomepage(spaceKey)
-        confluence.takeScreenshot("spacehomepage")
         this.start = Date().time
-        dom.click("#quick-create-page-button")
+        confluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey")
         dom.awaitElementPresent("#wysiwyg")
         confluence.takeScreenshot("create-page-1")
         dom.click("#content-title-div")

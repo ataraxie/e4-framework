@@ -22,30 +22,18 @@ class CreateSpaceScenario(
         val dom = DomHelper(confluence)
         confluence.login(this.username, this.password)
         confluence.takeScreenshot("after-login")
-        confluence.goToDashboard()
         this.start = Date().time
-        dom.clickCreateSpace()
+        confluence.navigateTo("spaces/createspace-start.action")
+        dom.awaitElementPresent("#create-space-form")
         confluence.takeScreenshot("createspace")
-        dom.awaitElementPresent("li.template.selected")
+        dom.insertText("#create-space-form input[name='key']", spaceKey)
+        dom.insertText("#create-space-form input[name='name']", spaceName)
         confluence.takeScreenshot("createspace-2")
-        dom.click("#create-dialog .create-dialog-create-button")
+        dom.awaitAttributeNotPresent("#create-space-form .aui-button[name='create']", "disabled")
+        dom.await(1000)
         confluence.takeScreenshot("createspace-3")
-        dom.awaitElementPresent("form.common-space-form")
-        confluence.takeScreenshot("createspace-4")
-        dom.insertText("form.common-space-form input[name='name']", spaceName)
-        dom.await(1000) // TODO: condition
-        dom.clearText("form.common-space-form input[name='spaceKey']")
-        confluence.takeScreenshot("createspace-5")
-        dom.insertText("form.common-space-form input[name='spaceKey']", spaceKey)
-        confluence.takeScreenshot("createspace-6")
-        val createButtonSelector = "#create-dialog .create-dialog-commonPage + .dialog-button-panel .create-dialog-create-button"
-        dom.awaitAttributeNotPresent(createButtonSelector, "disabled")
-        confluence.takeScreenshot("createspace-7")
-        dom.click(createButtonSelector) // TODO: duplicate but it doesn't work without somehow
-        dom.await(1000) // TODO: condition
-        dom.click(createButtonSelector)
-        confluence.takeScreenshot("createspace-8")
-        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]", 20)
+        dom.click("#create-space-form .aui-button[name='create']")
+        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]", 30)
         confluence.takeScreenshot("createspace-final")
         this.end = Date().time
     }
