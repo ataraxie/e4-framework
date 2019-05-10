@@ -6,6 +6,8 @@ public class ApplicationStatusResponse {
 	private Map<String, Object> config;
 	private PreparationStatus preparationStatus;
 
+	public ApplicationStatusResponse() {}
+
 	public ApplicationStatusResponse(Map<String, Object> config, PreparationStatus preparationStatus) {
 		this.config = config;
 		this.preparationStatus = preparationStatus;
