@@ -17,7 +17,7 @@ class ViewDelayPageScenario: Scenario {
         log.info("Executing ViewDelayPageScenario")
         webClient as WebConfluence
         this.startTime = Date().time
-        webClient.goToLogin()
+        //webClient.goToLogin()
         webClient.takeScreenshot("login")
         this.endTime = Date().time
     }
