@@ -60,8 +60,8 @@ public class TestRunnerService {
 			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
 		}
 
-		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 		virtualUserThreads.forEach(Thread::start);
+		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
 		// TODO: check whether tests need to be repeated instead of just blindly waiting for the threads
 		System.out.println("Waiting for tests to finish...");
