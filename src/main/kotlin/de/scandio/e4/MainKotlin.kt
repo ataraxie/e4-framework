@@ -11,13 +11,13 @@ class MainKotlin(
 ) {
 
     fun execute() {
-//        createSpace()
-        createPage()
+        createSpace()
+//        createPage()
     }
 
     fun createPage() {
         val loremIpsum = "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc."
-        val spaceKey: String = "E4"
+        val spaceKey: String = "AAA"
         val parentPageTitle: String = "E4 Home"
         val pageTitle: String = "E4 Test Page"
 
@@ -59,14 +59,13 @@ class MainKotlin(
     }
 
     fun createSpace() {
-        val spaceKey: String = "E4"
+        val spaceKey: String = "E43"
         val spaceName: String = "E4 Space"
 
         confluence.login("admin", "admin")
         confluence.takeScreenshot("after-login")
         confluence.goToDashboard()
-        confluence.takeScreenshot("dashboard")
-        dom.click("#addSpaceLink")
+        dom.clickCreateSpace()
         confluence.takeScreenshot("createspace")
         dom.awaitElementPresent("li.template.selected")
         confluence.takeScreenshot("createspace-2")
@@ -75,6 +74,7 @@ class MainKotlin(
         dom.awaitElementPresent("form.common-space-form")
         confluence.takeScreenshot("createspace-4")
         dom.insertText("form.common-space-form input[name='name']", spaceName)
+        dom.await(1000) // TODO: condition
         dom.clearText("form.common-space-form input[name='spaceKey']")
         confluence.takeScreenshot("createspace-5")
         dom.insertText("form.common-space-form input[name='spaceKey']", spaceKey)
@@ -83,8 +83,11 @@ class MainKotlin(
         dom.awaitAttributeNotPresent(createButtonSelector, "disabled")
         confluence.takeScreenshot("createspace-7")
         dom.click(createButtonSelector)
-        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]", 20)
+        dom.await(1000) // TODO: condition
+        dom.click(createButtonSelector)
         confluence.takeScreenshot("createspace-8")
+        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]", 20)
+        confluence.takeScreenshot("createspace-final")
     }
 
 }

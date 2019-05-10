@@ -14,6 +14,11 @@ class DomHelper(
         val confluence: WebConfluence
 ) {
 
+    fun clickCreateSpace() {
+        val js = confluence.driver as JavascriptExecutor
+        js.executeScript("Confluence.SpaceBlueprint.Dialog.launch();")
+    }
+
     fun awaitNoClass(selector: String, className: String, duration: Long = 5) {
         awaitElementPresent("$selector:not(.$className)",duration)
     }

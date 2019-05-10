@@ -24,7 +24,7 @@ class CreateSpaceScenario(
         confluence.takeScreenshot("after-login")
         confluence.goToDashboard()
         this.start = Date().time
-        dom.click("#addSpaceLink")
+        dom.clickCreateSpace()
         confluence.takeScreenshot("createspace")
         dom.awaitElementPresent("li.template.selected")
         confluence.takeScreenshot("createspace-2")
@@ -33,6 +33,7 @@ class CreateSpaceScenario(
         dom.awaitElementPresent("form.common-space-form")
         confluence.takeScreenshot("createspace-4")
         dom.insertText("form.common-space-form input[name='name']", spaceName)
+        dom.await(1000) // TODO: condition
         dom.clearText("form.common-space-form input[name='spaceKey']")
         confluence.takeScreenshot("createspace-5")
         dom.insertText("form.common-space-form input[name='spaceKey']", spaceKey)
@@ -41,6 +42,9 @@ class CreateSpaceScenario(
         dom.awaitAttributeNotPresent(createButtonSelector, "disabled")
         confluence.takeScreenshot("createspace-7")
         dom.click(createButtonSelector)
+        dom.await(1000) // TODO: condition
+        dom.click(createButtonSelector)
+        confluence.takeScreenshot("createspace-8")
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]", 20)
         confluence.takeScreenshot("createspace-final")
         this.end = Date().time

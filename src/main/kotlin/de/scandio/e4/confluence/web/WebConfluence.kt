@@ -4,6 +4,7 @@ import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
 import de.scandio.e4.enjoy.LoginPage
 import de.scandio.e4.worker.interfaces.WebClient
 import org.apache.commons.io.FileUtils
+import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.WebDriver

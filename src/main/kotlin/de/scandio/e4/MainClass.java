@@ -15,7 +15,7 @@ import java.net.URI;
 
 public class MainClass {
 
-	private static final String URL = "http://localhost:8090/";
+	private static final String URL = "http://contabo:8090/";
 	private static final String SCREENSHOT_DIR = "/tmp/selenium";
 
 	public static void main(String[] args) throws Exception {
