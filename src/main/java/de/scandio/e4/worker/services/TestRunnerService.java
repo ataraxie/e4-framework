@@ -89,9 +89,10 @@ public class TestRunnerService {
 
 			// TODO: this might need to be an infinite loop later if repeatTests == true
 			for (Scenario scenario : virtualUser.getScenarios()) {
+				WebClient webClient = null;
 				try {
 					// TODO: right now only using hardcoded admin - later use UserCredentialsService
-					final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
+					webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
 					final RestClient restClient = WorkerUtils.newRestClient(targetUrl, "admin", "admin");
 
 					log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
@@ -102,6 +103,10 @@ public class TestRunnerService {
 					log.error("FAILED SCENARIO: "+scenario.getClass().getSimpleName());
 					// TODO: record scenario as failed somewhere
 					e.printStackTrace();
+				} finally {
+					if (webClient != null) {
+						webClient.exit();
+					}
 				}
 			}
 		});

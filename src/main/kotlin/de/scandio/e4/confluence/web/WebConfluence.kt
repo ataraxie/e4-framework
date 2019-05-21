@@ -26,6 +26,10 @@ class WebConfluence(
         return this.driver
     }
 
+    override fun exit() {
+        this.driver.quit()
+    }
+
     fun goToDashboard() {
         navigateTo("dashboard.action")
         dom.awaitElementPresent("#addSpaceLink")

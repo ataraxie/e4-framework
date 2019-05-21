@@ -24,7 +24,6 @@ public class WorkerUtils {
 
 	public static WebClient newPhantomJsWebClient(String targetUrl, String screenshotDir) throws Exception {
 		WebDriverManager.phantomjs().setup();
-		ChromeOptions chromeOptions = new ChromeOptions();
 		WebDriver driver = new PhantomJSDriver();
 		return new WebConfluence(driver, new URI(targetUrl), screenshotDir);
 	}
