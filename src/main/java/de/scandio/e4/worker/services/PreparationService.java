@@ -37,7 +37,7 @@ public class PreparationService {
         final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(config.getTestPackage());
         final TestPackage testPackageInstance = testPackage.newInstance();
         final List<Scenario> setupScenarios = testPackageInstance.getSetupScenarios();
-        final WebClient webClient = WorkerUtils.newWebClient(config.getTarget(), applicationStatusService.getScreenshotsDir());
+        final WebClient webClient = WorkerUtils.newPhantomJsWebClient(config.getTarget(), applicationStatusService.getScreenshotsDir());
         final RestClient restClient = WorkerUtils.newRestClient(config.getTarget(), config.getUsername(), config.getPassword());
 
         try {
