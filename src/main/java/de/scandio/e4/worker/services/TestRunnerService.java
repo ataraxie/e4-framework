@@ -91,7 +91,7 @@ public class TestRunnerService {
 			for (Scenario scenario : virtualUser.getScenarios()) {
 				try {
 					// TODO: right now only using hardcoded admin - later use UserCredentialsService
-					final WebClient webClient = WorkerUtils.newWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
+					final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
 					final RestClient restClient = WorkerUtils.newRestClient(targetUrl, "admin", "admin");
 
 					log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());

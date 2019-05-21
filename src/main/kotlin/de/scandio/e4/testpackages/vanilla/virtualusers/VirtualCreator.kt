@@ -10,7 +10,7 @@ class VirtualCreator : VirtualUser {
     override fun getScenarios(): MutableList<Scenario> {
         val list = arrayListOf<Scenario>()
         val spaceKey = "E4${getRandomNumber(1, 999)}"
-        val spaceName = "E4 Space ${getRandomNumber(1, 999)}"
+        val spaceName = "01 E4 Space ${getRandomNumber(1, 999)}"
         var pageTitle = "E4 Page ${getRandomNumber(1, 999)}"
         list.add(CreateSpaceScenario(spaceKey, spaceName))
         list.add(CreatePageScenario(spaceKey, pageTitle))
