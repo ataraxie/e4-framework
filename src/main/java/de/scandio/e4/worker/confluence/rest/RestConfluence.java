@@ -17,22 +17,22 @@ public class RestConfluence implements RestClient {
 
 	private static final Logger log = LoggerFactory.getLogger(RestConfluence.class);
 
-	private String restBaseUrl;
 	private String username;
 	private String password;
+	private String baseUrl;
 
 	public RestConfluence(String baseUrl, String username, String password) {
+		this.baseUrl = baseUrl;
 		if (!baseUrl.endsWith("/")) {
-			baseUrl += "/";
+			this.baseUrl += "/";
 		}
-		this.restBaseUrl = baseUrl + "rest/api/";
 		this.username = username;
 		this.password = password;
 	}
 
 	public String findPage(String spaceKey, String title) {
-		String urlAfterBaseUrl = String.format("content?title=%s&spaceKey=%s", title, spaceKey);
-		return sendGetRequest(urlAfterBaseUrl);
+		String urlAfterBaseUrl = String.format("rest/api/content?title=%s&spaceKey=%s", title, spaceKey);
+		return sendGetRequestReturnBody(urlAfterBaseUrl);
 	}
 
 	public String createPage(String pageTitle, String spaceKey, String content, String parentPageId) {
@@ -46,11 +46,11 @@ public class RestConfluence implements RestClient {
 //		String bodyTemplate = "{\"key\":\"%s\",\"name\":\"%s\",\"description\":{\"plain\":{\"value\":\"%s\",\"representation\":\"plain\"}},\"metadata\":{}}";
 		String bodyTemplate = "{\"key\":\"TST\",\"name\":\"Example space\",\"description\":{\"plain\":{\"value\":\"This is an example space\",\"representation\":\"plain\"}},\"metadata\":{}}";
 		String body = String.format(bodyTemplate, spaceKey, spaceName, spaceDesc);
-		return sendPostRequest("content/", body);
+		return sendPostRequest("rest/api/content/", body);
 	}
 
 	private String sendPostRequest(String urlAfterBaseUrl, String body) {
-		final String url = this.restBaseUrl += urlAfterBaseUrl;
+		final String url = this.baseUrl + urlAfterBaseUrl;
 		RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 		interceptors.add(new LoggingRequestInterceptor());
@@ -69,8 +69,19 @@ public class RestConfluence implements RestClient {
 		return responseText;
 	}
 
-	private String sendGetRequest(String urlAfterBaseUrl) {
-		final String url = this.restBaseUrl += urlAfterBaseUrl;
+	public int sendGetRequestReturnStatus(String urlAfterBaseUrl) {
+		return sendGetRequestReturnResponse(urlAfterBaseUrl).getStatusCodeValue();
+	}
+
+	public String sendGetRequestReturnBody(String urlAfterBaseUrl) {
+		ResponseEntity<String> response = sendGetRequestReturnResponse(urlAfterBaseUrl);
+		String responseText = response.getBody();
+		log.debug("Response text {{}}", responseText);
+		return responseText;
+	}
+
+	private ResponseEntity<String> sendGetRequestReturnResponse(String urlAfterBaseUrl) {
+		final String url = this.baseUrl += urlAfterBaseUrl;
 		final RestTemplate restTemplate = new RestTemplate();
 
 		log.debug("Sending GET request {{}}", url);
@@ -79,11 +90,8 @@ public class RestConfluence implements RestClient {
 		headers.add("Authorization", getBasicAuth());
 
 		HttpEntity<String> request = new HttpEntity<>(headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-		String responseText = response.getBody();
-
-		log.debug("Response text {{}}", responseText);
-		return responseText;
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+		return response;
 	}
 
 	private String getBasicAuth() {

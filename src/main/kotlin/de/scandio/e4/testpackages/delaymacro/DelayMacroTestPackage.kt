@@ -3,6 +3,8 @@ package de.scandio.e4.testpackages.delaymacro
 import de.scandio.e4.scenarios.RestCreatePageScenario
 import de.scandio.e4.scenarios.RestCreateSpaceScenario
 import de.scandio.e4.testpackages.delaymacro.virtualusers.VirtualUserA
+import de.scandio.e4.worker.collections.ScenarioCollection
+import de.scandio.e4.worker.collections.VirtualUserCollection
 import de.scandio.e4.worker.interfaces.Scenario
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.VirtualUser
@@ -10,8 +12,8 @@ import java.util.*
 
 class DelayMacroTestPackage : TestPackage {
 
-    override fun getSetupScenarios(): List<Scenario> {
-        val list = arrayListOf<Scenario>()
+    override fun getSetupScenarios(): ScenarioCollection {
+        val list = ScenarioCollection()
         val time = Date().time
         list.add(RestCreateSpaceScenario("E4", "E4 Test Space"))
         val pageContent = "<p>Hallo</p>"
@@ -20,9 +22,9 @@ class DelayMacroTestPackage : TestPackage {
         return list
     }
 
-    override fun getVirtualUsers(): List<VirtualUser> {
-        val list = arrayListOf<VirtualUser>()
-        list.add(VirtualUserA())
+    override fun getVirtualUsers(): VirtualUserCollection {
+        val list = VirtualUserCollection()
+        list.add(VirtualUserA(), 1.0)
         return list
     }
 

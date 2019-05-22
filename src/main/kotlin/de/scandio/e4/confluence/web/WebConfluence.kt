@@ -1,10 +1,9 @@
 package de.scandio.e4.confluence.web
 
 import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
-import de.scandio.e4.enjoy.LoginPage
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.util.WorkerUtils
 import org.apache.commons.io.FileUtils
-import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.WebDriver
@@ -16,7 +15,9 @@ import java.net.URLEncoder
 class WebConfluence(
         val driver: WebDriver,
         val base: URI,
-        val screenshotDir: String
+        val screenshotDir: String,
+        val username: String,
+        val password: String
 ): WebClient {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -32,14 +33,15 @@ class WebConfluence(
 
     fun goToDashboard() {
         navigateTo("dashboard.action")
-        dom.awaitElementPresent("#addSpaceLink")
+        takeScreenshot("TEST")
+        dom.awaitElementPresent("#page")
     }
 
-    fun login(username: String, password: String) {
+    fun login() {
         navigateTo("login.action")
         dom.awaitElementPresent("form[name='loginform']", 10)
-        dom.insertText("#os_username", username)
-        dom.insertText("#os_password", password)
+        dom.insertText("#os_username", this.username)
+        dom.insertText("#os_password", this.password)
         dom.click("#loginButton")
         dom.awaitElementPresent(".pagebody", 10)
     }
@@ -57,15 +59,16 @@ class WebConfluence(
     fun goToPage(spaceKey: String, pageTitle: String) {
         val encodedPageTitle = URLEncoder.encode(pageTitle, "UTF-8")
         navigateTo("display/$spaceKey/$encodedPageTitle")
+        dom.awaitElementPresent("#main-content")
     }
 
     fun takeScreenshot(screenshotName: String): String {
         val ts = driver as TakesScreenshot
         val source: File = ts.getScreenshotAs(OutputType.FILE)
-        val dest = "$screenshotDir/${Thread.currentThread().id}-$screenshotName.png"
+        val dest = "$screenshotDir/${WorkerUtils.getRuntimeName()}-$screenshotName.png"
         log.info("[SCREENSHOT] {{}}", dest)
         System.out.println(dest)
-        val destination: File = File(dest)
+        val destination = File(dest)
         FileUtils.copyFile(source, destination)
         return dest
     }
@@ -73,6 +76,11 @@ class WebConfluence(
     fun goToSpaceHomepage(spaceKey: String) {
         navigateTo("display/$spaceKey")
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
+    }
+
+    fun goToBlogpost(spaceKey: String, blogpostTitle: String, blogpostCreationDate: String) {
+        val encodedTitle = URLEncoder.encode(blogpostTitle, "UTF-8")
+        navigateTo("display/$spaceKey/$blogpostCreationDate/$encodedTitle")
     }
 
 }

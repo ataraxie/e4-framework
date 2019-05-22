@@ -14,22 +14,27 @@ import java.net.URI;
 
 public class WorkerUtils {
 
-	public static WebClient newChromeWebClient(String targetUrl, String screenshotDir) throws Exception {
+	public static WebClient newChromeWebClient(String targetUrl, String screenshotDir, String username, String password) throws Exception {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions chromeOptions = new ChromeOptions();
 		chromeOptions.addArguments("--headless");
 		WebDriver driver = new ChromeDriver(chromeOptions);
-		return new WebConfluence(driver, new URI(targetUrl), screenshotDir);
+		return new WebConfluence(driver, new URI(targetUrl), screenshotDir, username, password);
 	}
 
-	public static WebClient newPhantomJsWebClient(String targetUrl, String screenshotDir) throws Exception {
+	public static WebClient newPhantomJsWebClient(String targetUrl, String screenshotDir, String username, String password) throws Exception {
 		WebDriverManager.phantomjs().setup();
 		WebDriver driver = new PhantomJSDriver();
-		return new WebConfluence(driver, new URI(targetUrl), screenshotDir);
+		return new WebConfluence(driver, new URI(targetUrl), screenshotDir, username, password);
 	}
 
 	public static RestClient newRestClient(String targetUrl, String username, String password) {
 		RestClient restClient = new RestConfluence(targetUrl, username, password);
 		return restClient;
+	}
+
+	public static String getRuntimeName() {
+		Thread currentThread = Thread.currentThread();
+		return currentThread.getName() + "-" + currentThread.getId();
 	}
 }

@@ -8,25 +8,28 @@ import de.scandio.e4.worker.interfaces.WebClient
 import java.net.URLEncoder
 import java.util.*
 
-open class ViewPageScenario (
+class ViewBlogpostScenario (
 
     val spaceKey: String,
-    val pageTitle: String
+    val blogpostTitle: String,
+    val blogpostCreationDate: String
     ) : Scenario {
 
-    protected var start: Long = 0
-    protected var end: Long = 0
+    private var start: Long = 0
+    private var end: Long = 0
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val confluence = webClient as WebConfluence
-        val encodedPageTitle = URLEncoder.encode(pageTitle, "utf-8")
+        val dom = DomHelper(confluence)
+        val encodedPageTitle = URLEncoder.encode(this.blogpostTitle, "utf-8")
         confluence.login()
         confluence.takeScreenshot("after-login")
 
         this.start = Date().time
-        confluence.goToPage(spaceKey, pageTitle)
-        this.end = Date().time
+        confluence.goToBlogpost("E4", this.blogpostTitle, this.blogpostCreationDate)
+        dom.awaitElementPresent("#main-content")
         confluence.takeScreenshot("view-page-$spaceKey-$encodedPageTitle")
+        this.end = Date().time
     }
 
     override fun getTimeTaken(): Long {

@@ -9,9 +9,7 @@ import java.util.*
 
 class CreatePageScenario(
         val spaceKey: String,
-        val pageTitle: String,
-        val username: String = "admin",
-        val password: String = "admin"
+        val pageTitle: String
 ) : Scenario {
 
     private val loremIpsum = "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc."
@@ -21,7 +19,7 @@ class CreatePageScenario(
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val confluence = webClient as WebConfluence
         val dom = DomHelper(confluence)
-        confluence.login(this.username, this.password)
+        confluence.login()
         confluence.takeScreenshot("after-login")
         this.start = Date().time
         confluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey")

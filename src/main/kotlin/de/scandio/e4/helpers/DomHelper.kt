@@ -14,16 +14,18 @@ class DomHelper(
         val confluence: WebConfluence
 ) {
 
+    private val DEFAULT_DURATION: Long = 60
+
     fun clickCreateSpace() {
         val js = confluence.driver as JavascriptExecutor
         js.executeScript("Confluence.SpaceBlueprint.Dialog.launch();")
     }
 
-    fun awaitNoClass(selector: String, className: String, duration: Long = 5) {
+    fun awaitNoClass(selector: String, className: String, duration: Long = DEFAULT_DURATION) {
         awaitElementPresent("$selector:not(.$className)",duration)
     }
 
-    fun awaitClass(selector: String, className: String, duration: Long = 5) {
+    fun awaitClass(selector: String, className: String, duration: Long = DEFAULT_DURATION) {
         awaitElementPresent("$selector.$className", duration)
     }
 
@@ -53,9 +55,17 @@ class DomHelper(
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
-    fun awaitElementNotPresent(selector: String, duration: Long = 60) {
+    fun awaitElementNotPresent(selector: String, duration: Long = DEFAULT_DURATION) {
         wait(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector))), duration)
         Thread.sleep(100)
+    }
+
+    fun awaitElementClickable(selector: String, duration: Long = DEFAULT_DURATION) {
+        wait(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)), duration)
+    }
+
+    fun awaitElementNotClickable(selector: String, duration: Long = DEFAULT_DURATION) {
+        wait(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(By.cssSelector(selector))), duration)
     }
 
     fun awaitHasText(selector: String, text: String) {
@@ -87,7 +97,7 @@ class DomHelper(
         return confluence.driver.findElement(By.cssSelector(cssSelector))
     }
 
-    fun <T> wait(condition: ExpectedCondition<T>, duration: Long = 5) {
+    fun <T> wait(condition: ExpectedCondition<T>, duration: Long = DEFAULT_DURATION) {
         confluence.driver.wait(
                 Duration.ofSeconds(duration),
                 condition

@@ -37,7 +37,7 @@ public class E4Resource {
 	@GET
 	@Path("/start")
 	public Response start() {
-		log.info("[ENDPOINT] /start");
+		log.debug("[ENDPOINT] /start");
 		Response response;
 
 		try {
@@ -63,7 +63,7 @@ public class E4Resource {
 	@Path("/prepare")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response prepare(WorkerConfig workerConfig) {
-		log.info("[ENDPOINT] /prepare - config:" + workerConfig);
+		log.debug("[ENDPOINT] /prepare - config:" + workerConfig);
 		Response response;
 		try {
 			new Thread(() -> {
@@ -85,7 +85,7 @@ public class E4Resource {
 	@POST
 	@Path("/stop")
 	public Response stop() {
-		log.info("[ENDPOINT] /stop");
+		log.debug("[ENDPOINT] /stop");
 		return Response.status(500, "not yet implemented").build();
 	}
 
@@ -94,7 +94,7 @@ public class E4Resource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStatus() {
 		final ApplicationStatusResponse applicationStatus = applicationStatusService.getApplicationStatus();
-		log.info("[ENDPOINT] /status\n{}", applicationStatus);
+		log.debug("[ENDPOINT] /status\n{}", applicationStatus);
 		return Response.status(200).entity(applicationStatus).build();
 	}
 

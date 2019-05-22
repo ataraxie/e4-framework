@@ -3,6 +3,7 @@ package de.scandio.e4.worker.services;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
+import de.scandio.e4.worker.collections.ScenarioCollection;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.Scenario;
 import de.scandio.e4.worker.interfaces.TestPackage;
@@ -18,6 +19,9 @@ public class PreparationService {
     private static final Logger log = LoggerFactory.getLogger(PreparationService.class);
 
     private final ApplicationStatusService applicationStatusService;
+
+    private final String USERNAME = "admin"; // TODO!!
+    private final String PASSWORD = "admin"; // TODO!!
 
     public PreparationService(ApplicationStatusService applicationStatusService) {
         this.applicationStatusService = applicationStatusService;
@@ -36,8 +40,8 @@ public class PreparationService {
 
         final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(config.getTestPackage());
         final TestPackage testPackageInstance = testPackage.newInstance();
-        final List<Scenario> setupScenarios = testPackageInstance.getSetupScenarios();
-        final WebClient webClient = WorkerUtils.newPhantomJsWebClient(config.getTarget(), applicationStatusService.getScreenshotsDir());
+        final ScenarioCollection setupScenarios = testPackageInstance.getSetupScenarios();
+        final WebClient webClient = WorkerUtils.newPhantomJsWebClient(config.getTarget(), applicationStatusService.getScreenshotsDir(), USERNAME, PASSWORD);
         final RestClient restClient = WorkerUtils.newRestClient(config.getTarget(), config.getUsername(), config.getPassword());
 
         try {

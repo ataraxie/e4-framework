@@ -3,6 +3,8 @@ package de.scandio.e4.worker.services;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
+import de.scandio.e4.worker.collections.VirtualUserCollection;
+import de.scandio.e4.worker.collections.VirtualUserWithWeight;
 import de.scandio.e4.worker.interfaces.*;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
@@ -18,9 +20,14 @@ import java.util.Random;
 public class TestRunnerService {
 	private static final Logger log = LoggerFactory.getLogger(TestRunnerService.class);
 	private final ApplicationStatusService applicationStatusService;
+	private final StorageService storageService;
 
-	public TestRunnerService(ApplicationStatusService applicationStatusService) {
+	private final String USERNAME = "admin"; // TODO!!
+	private final String PASSWORD = "admin"; // TODO!!
+
+	public TestRunnerService(ApplicationStatusService applicationStatusService, StorageService storageService) {
 		this.applicationStatusService = applicationStatusService;
+		this.storageService = storageService;
 	}
 
 	public void stopTests() throws Exception {
@@ -45,7 +52,7 @@ public class TestRunnerService {
 
 		final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
 		final TestPackage testPackageInstance = testPackage.newInstance();
-		final List<? extends VirtualUser> virtualUsers = testPackageInstance.getVirtualUsers();
+		final VirtualUserCollection virtualUsers = testPackageInstance.getVirtualUsers();
 
 		log.debug("Found {{}} virtual users for test package", virtualUsers.size());
 
@@ -55,7 +62,8 @@ public class TestRunnerService {
 		log.info("This worker needs to start " + config.getVirtualUsers() + " users.");
 
 		for (int i = 0; i < config.getVirtualUsers(); i++) {
-			final VirtualUser virtualUser = virtualUsers.get((int)(i % virtualUsers.size()));
+			final VirtualUserWithWeight virtualUserWithWeight = virtualUsers.get(i % virtualUsers.size());
+			final VirtualUser virtualUser = virtualUserWithWeight.getVirtualUser();
 			final Thread virtualUserThread = createUserThread(virtualUser, config);
 			virtualUserThreads.add(virtualUserThread);
 			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
@@ -92,16 +100,17 @@ public class TestRunnerService {
 				WebClient webClient = null;
 				try {
 					// TODO: right now only using hardcoded admin - later use UserCredentialsService
-					webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getScreenshotsDir());
-					final RestClient restClient = WorkerUtils.newRestClient(targetUrl, "admin", "admin");
+					webClient = WorkerUtils.newPhantomJsWebClient(targetUrl, applicationStatusService.getScreenshotsDir(), USERNAME, PASSWORD);
+					final RestClient restClient = WorkerUtils.newRestClient(targetUrl, USERNAME, PASSWORD);
 
 					log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
 
 					scenario.execute(webClient, restClient);
-					scenario.getTimeTaken();
+					final long timeTaken = scenario.getTimeTaken();
+					storageService.recordMeasurement(virtualUser, scenario, Thread.currentThread(), timeTaken);
 				} catch (Exception e) {
 					log.error("FAILED SCENARIO: "+scenario.getClass().getSimpleName());
-					// TODO: record scenario as failed somewhere
+					// TODO: recordMeasurement scenario as failed somewhere
 					e.printStackTrace();
 				} finally {
 					if (webClient != null) {
