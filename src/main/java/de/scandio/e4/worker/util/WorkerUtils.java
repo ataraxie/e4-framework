@@ -5,6 +5,7 @@ import de.scandio.e4.worker.confluence.rest.RestConfluence;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.WebClient;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -25,6 +26,7 @@ public class WorkerUtils {
 	public static WebClient newPhantomJsWebClient(String targetUrl, String screenshotDir, String username, String password) throws Exception {
 		WebDriverManager.phantomjs().setup();
 		WebDriver driver = new PhantomJSDriver();
+		driver.manage().window().setSize(new Dimension(1400, 1000));
 		return new WebConfluence(driver, new URI(targetUrl), screenshotDir, username, password);
 	}
 

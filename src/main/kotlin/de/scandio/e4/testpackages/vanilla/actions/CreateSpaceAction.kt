@@ -1,16 +1,16 @@
-package de.scandio.e4.testpackages.vanilla.scenarios
+package de.scandio.e4.testpackages.vanilla.actions
 
 import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
 import de.scandio.e4.confluence.web.WebConfluence
 import de.scandio.e4.worker.interfaces.RestClient
-import de.scandio.e4.worker.interfaces.Scenario
+import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
-class CreateSpaceScenario(
+class CreateSpaceAction(
         val spaceKey: String,
         val spaceName: String
-) : Scenario {
+) : Action {
 
     private var start: Long = 0
     private var end: Long = 0

@@ -6,6 +6,6 @@ public interface WebClient {
 
 	WebDriver getWebDriver();
 
-	void exit();
+	void quit();
 
 }

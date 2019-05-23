@@ -1,5 +1,6 @@
 package de.scandio.e4.testpackages.vanilla.virtualusers
 
+import de.scandio.e4.testpackages.vanilla.actions.ViewDashboardAction
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.interfaces.VirtualUser
 
@@ -8,18 +9,18 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  * Confluence Commentor VirtualUser.
  *
  * Assumptions:
- * TODO: list assumptions
+ * - No specific assumptions (only need a dashboard)
  *
  * Actions:
- * TODO: list actions
+ * - View the Confluence dashboard (SELENIUM)
  *
  * @author Felix Grund
  */
-class Commentor : VirtualUser {
+class Dashboarder : VirtualUser {
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
-        TODO("Add Scenarios")
+        actions.add(ViewDashboardAction())
         return actions
     }
 }

@@ -96,25 +96,25 @@ public class TestRunnerService {
 			log.debug("Executing virtual user {{}}", virtualUser.getClass().getSimpleName());
 
 			// TODO: this might need to be an infinite loop later if repeatTests == true
-			for (Scenario scenario : virtualUser.getScenarios()) {
+			for (Action action : virtualUser.getActions()) {
 				WebClient webClient = null;
 				try {
 					// TODO: right now only using hardcoded admin - later use UserCredentialsService
 					webClient = WorkerUtils.newPhantomJsWebClient(targetUrl, applicationStatusService.getScreenshotsDir(), USERNAME, PASSWORD);
 					final RestClient restClient = WorkerUtils.newRestClient(targetUrl, USERNAME, PASSWORD);
 
-					log.debug("Executing scenario {{}}", scenario.getClass().getSimpleName());
+					log.debug("Executing action {{}}", action.getClass().getSimpleName());
 
-					scenario.execute(webClient, restClient);
-					final long timeTaken = scenario.getTimeTaken();
-					storageService.recordMeasurement(virtualUser, scenario, Thread.currentThread(), timeTaken);
+					action.execute(webClient, restClient);
+					final long timeTaken = action.getTimeTaken();
+					storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
 				} catch (Exception e) {
-					log.error("FAILED SCENARIO: "+scenario.getClass().getSimpleName());
-					// TODO: recordMeasurement scenario as failed somewhere
+					log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
+					// TODO: recordMeasurement action as failed somewhere
 					e.printStackTrace();
 				} finally {
 					if (webClient != null) {
-						webClient.exit();
+						webClient.quit();
 					}
 				}
 			}

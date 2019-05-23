@@ -3,16 +3,15 @@ package de.scandio.e4.worker.services;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
-import de.scandio.e4.worker.collections.ScenarioCollection;
+import de.scandio.e4.worker.collections.ActionCollection;
 import de.scandio.e4.worker.interfaces.RestClient;
-import de.scandio.e4.worker.interfaces.Scenario;
+import de.scandio.e4.worker.interfaces.Action;
 import de.scandio.e4.worker.interfaces.TestPackage;
 import de.scandio.e4.worker.interfaces.WebClient;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 public class PreparationService {
@@ -36,11 +35,11 @@ public class PreparationService {
         applicationStatusService.setPreparationStatus(PreparationStatus.ONGOING);
         applicationStatusService.setConfig(config);
 
-        log.info("Running prepare scenarios of package {{}} against URL {{}}", config.getTestPackage(), config.getTarget());
+        log.info("Running prepare actions of package {{}} against URL {{}}", config.getTestPackage(), config.getTarget());
 
         final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(config.getTestPackage());
         final TestPackage testPackageInstance = testPackage.newInstance();
-        final ScenarioCollection setupScenarios = testPackageInstance.getSetupScenarios();
+        final ActionCollection setupScenarios = testPackageInstance.getSetupScenarios();
         final WebClient webClient = WorkerUtils.newPhantomJsWebClient(config.getTarget(), applicationStatusService.getScreenshotsDir(), USERNAME, PASSWORD);
         final RestClient restClient = WorkerUtils.newRestClient(config.getTarget(), config.getUsername(), config.getPassword());
 
@@ -50,15 +49,15 @@ public class PreparationService {
             // TODO: or just accept user credentials in worker config ??? every virtual user needs a user
             // TODO: log into every user once (to verify credentials) and click through the first time login intro
 
-            for (Scenario scenario : setupScenarios) {
-                scenario.execute(webClient, restClient);
-                System.out.println("Finished prep scenario "+scenario.getClass().getSimpleName());
+            for (Action action : setupScenarios) {
+                action.execute(webClient, restClient);
+                System.out.println("Finished prep action "+ action.getClass().getSimpleName());
             }
 
             System.out.println("[E4W] Preparations are finished!");
             applicationStatusService.setPreparationStatus(PreparationStatus.FINISHED);
         } catch (Exception ex) {
-            log.error("Preparation Scenario failed.");
+            log.error("Preparation Action failed.");
             ex.printStackTrace();
             applicationStatusService.setPreparationStatus(PreparationStatus.ERROR);
         }

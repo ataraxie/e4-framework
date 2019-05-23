@@ -27,14 +27,12 @@ class WebConfluence(
         return this.driver
     }
 
-    override fun exit() {
+    override fun quit() {
         this.driver.quit()
     }
 
-    fun goToDashboard() {
-        navigateTo("dashboard.action")
-        takeScreenshot("TEST")
-        dom.awaitElementPresent("#page")
+    fun getDomHelper(): DomHelper {
+        return this.dom
     }
 
     fun login() {
@@ -56,12 +54,6 @@ class WebConfluence(
 
     }
 
-    fun goToPage(spaceKey: String, pageTitle: String) {
-        val encodedPageTitle = URLEncoder.encode(pageTitle, "UTF-8")
-        navigateTo("display/$spaceKey/$encodedPageTitle")
-        dom.awaitElementPresent("#main-content")
-    }
-
     fun takeScreenshot(screenshotName: String): String {
         val ts = driver as TakesScreenshot
         val source: File = ts.getScreenshotAs(OutputType.FILE)
@@ -73,14 +65,16 @@ class WebConfluence(
         return dest
     }
 
+    fun dumpHtml(dumpName: String): String {
+        val dest = "$screenshotDir/${WorkerUtils.getRuntimeName()}-$dumpName.html"
+        FileUtils.writeStringToFile(File(dest), driver.pageSource, "UTF-8", false);
+        System.out.println(dest)
+        return dest
+    }
+
     fun goToSpaceHomepage(spaceKey: String) {
         navigateTo("display/$spaceKey")
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
-    }
-
-    fun goToBlogpost(spaceKey: String, blogpostTitle: String, blogpostCreationDate: String) {
-        val encodedTitle = URLEncoder.encode(blogpostTitle, "UTF-8")
-        navigateTo("display/$spaceKey/$blogpostCreationDate/$encodedTitle")
     }
 
 }

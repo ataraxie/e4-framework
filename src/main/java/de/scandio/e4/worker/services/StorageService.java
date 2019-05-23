@@ -1,6 +1,6 @@
 package de.scandio.e4.worker.services;
 
-import de.scandio.e4.worker.interfaces.Scenario;
+import de.scandio.e4.worker.interfaces.Action;
 import de.scandio.e4.worker.interfaces.VirtualUser;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
@@ -15,11 +15,11 @@ public class StorageService {
 
 	public void recordMeasurement(
 			VirtualUser virtualUser,
-			Scenario scenario,
+			Action action,
 			Thread virtualUserThread,
 			long timeTaken) throws Exception {
 
 		log.warn("[RECORD] {{}} | {{}} | {{}} | {{}}", timeTaken, WorkerUtils.getRuntimeName(),
-				virtualUser.getClass().getSimpleName(), scenario.getClass().getSimpleName());
+				virtualUser.getClass().getSimpleName(), action.getClass().getSimpleName());
 	}
 }

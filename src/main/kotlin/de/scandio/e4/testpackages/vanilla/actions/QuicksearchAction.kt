@@ -1,14 +1,14 @@
-package de.scandio.e4.testpackages.vanilla.scenarios
+package de.scandio.e4.testpackages.vanilla.actions
 
 import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.RestClient
-import de.scandio.e4.worker.interfaces.Scenario
+import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
-class QuicksearchScenario (
+class QuicksearchAction (
     val searchString: String
-    ) : Scenario {
+    ) : Action {
 
     protected var start: Long = 0
     protected var end: Long = 0

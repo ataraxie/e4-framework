@@ -5,7 +5,7 @@ import de.scandio.e4.worker.interfaces.VirtualUser
 
 
 /**
- * Confluence Commentor VirtualUser.
+ * Confluence Editor VirtualUser.
  *
  * Assumptions:
  * TODO: list assumptions
@@ -15,7 +15,7 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  *
  * @author Felix Grund
  */
-class Commentor : VirtualUser {
+class Editor : VirtualUser {
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()

@@ -37,10 +37,6 @@ class DomHelper(
         wait(ExpectedConditions.attributeContains(findElement(selector), attrName, attrValue))
     }
 
-    fun await(ms: Long) {
-        Thread.sleep(ms)
-    }
-
     fun setSelectedOption(selector: String, value: String) {
         val datasourceSelect = Select(findElement(selector))
         datasourceSelect.selectByValue(value)
@@ -51,13 +47,16 @@ class DomHelper(
         js.executeScript("arguments[0].CodeMirror.setValue(\"$value\");", findElement(".CodeMirror"));
     }
 
+    fun awaitElementInsivible(selector: String, duration: Long = DEFAULT_DURATION) {
+        wait(ExpectedConditions.invisibilityOf(findElement(selector)), duration)
+    }
+
     fun awaitElementPresent(selector: String, duration: Long = 60) {
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
     fun awaitElementNotPresent(selector: String, duration: Long = DEFAULT_DURATION) {
         wait(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector))), duration)
-        Thread.sleep(100)
     }
 
     fun awaitElementClickable(selector: String, duration: Long = DEFAULT_DURATION) {
@@ -93,11 +92,24 @@ class DomHelper(
         findElement(selector).click()
     }
 
+    fun click(element: WebElement) {
+        element.click()
+    }
+
     fun findElement(cssSelector: String): WebElement {
         return confluence.driver.findElement(By.cssSelector(cssSelector))
     }
 
+    fun findElements(cssSelector: String): List<WebElement> {
+        return confluence.driver.findElements(By.cssSelector(cssSelector))
+    }
+
+    fun await(ms: Long) {
+        Thread.sleep(ms)
+    }
+
     fun <T> wait(condition: ExpectedCondition<T>, duration: Long = DEFAULT_DURATION) {
+        await(100)
         confluence.driver.wait(
                 Duration.ofSeconds(duration),
                 condition
