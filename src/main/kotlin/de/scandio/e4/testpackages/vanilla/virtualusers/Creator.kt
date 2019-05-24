@@ -17,22 +17,22 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  */
 class Creator : VirtualUser {
 
-    override fun getActions(): MutableList<Action> {
+    override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         TODO("Add Scenarios")
 //        val spaceKey = "E4${getRandomNumber(1, 999)}"
 //        val spaceName = "01 E4 Space ${getRandomNumber(1, 999)}"
-//        var pageTitle = "E4 Page ${getRandomNumber(1, 999)}"
+//        var originPageTitle = "E4 Page ${getRandomNumber(1, 999)}"
 //        actions.add(CreateSpaceAction(spaceKey, spaceName))
-//        actions.add(CreatePageAction(spaceKey, pageTitle))
-//        pageTitle = "E4 Page ${getRandomNumber(1, 999)}"
-//        actions.add(CreatePageAction(spaceKey, pageTitle))
-//        pageTitle = "E4 Page ${getRandomNumber(1, 999)}"
-//        actions.add(CreatePageAction(spaceKey, pageTitle))
-//        pageTitle = "E4 Page ${getRandomNumber(1, 999)}"
-//        actions.add(CreatePageAction(spaceKey, pageTitle))
-//        pageTitle = "E4 Page ${getRandomNumber(1, 999)}"
-//        actions.add(CreatePageAction(spaceKey, pageTitle))
+//        actions.add(CreatePageAction(spaceKey, originPageTitle))
+//        originPageTitle = "E4 Page ${getRandomNumber(1, 999)}"
+//        actions.add(CreatePageAction(spaceKey, originPageTitle))
+//        originPageTitle = "E4 Page ${getRandomNumber(1, 999)}"
+//        actions.add(CreatePageAction(spaceKey, originPageTitle))
+//        originPageTitle = "E4 Page ${getRandomNumber(1, 999)}"
+//        actions.add(CreatePageAction(spaceKey, originPageTitle))
+//        originPageTitle = "E4 Page ${getRandomNumber(1, 999)}"
+//        actions.add(CreatePageAction(spaceKey, originPageTitle))
         return actions
     }
 

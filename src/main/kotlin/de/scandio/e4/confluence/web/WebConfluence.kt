@@ -36,12 +36,15 @@ class WebConfluence(
     }
 
     fun login() {
-        navigateTo("login.action")
-        dom.awaitElementPresent("form[name='loginform']", 10)
-        dom.insertText("#os_username", this.username)
-        dom.insertText("#os_password", this.password)
-        dom.click("#loginButton")
-        dom.awaitElementPresent(".pagebody", 10)
+        // PhantomJS: about:blank, Chrome: data:,
+        if (driver.currentUrl.equals("about:blank") || driver.currentUrl.equals("data:,")) { // only login once!
+            navigateTo("login.action")
+            dom.awaitElementPresent("form[name='loginform']", 10)
+            dom.insertText("#os_username", this.username)
+            dom.insertText("#os_password", this.password)
+            dom.click("#loginButton")
+            dom.awaitElementPresent(".pagebody", 10)
+        }
     }
 
     fun navigateTo(path: String) {
@@ -75,6 +78,68 @@ class WebConfluence(
     fun goToSpaceHomepage(spaceKey: String) {
         navigateTo("display/$spaceKey")
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
+    }
+
+    fun goToPage(spaceKey: String, pageTitle: String) {
+        val encodedPageTitle = URLEncoder.encode(pageTitle, "UTF-8")
+        navigateTo("display/$spaceKey/$encodedPageTitle")
+        dom.awaitElementPresent("#main-content")
+    }
+
+    fun goToEditPage() {
+        dom.awaitElementClickable("#editPageLink")
+        dom.click("#editPageLink")
+        dom.awaitElementPresent("#inviteToEditLink", 30)
+    }
+
+    fun goToBlogpost(spaceKey: String, blogpostTitle: String, blogpostCreationDate: String) {
+        val encodedTitle = URLEncoder.encode(blogpostTitle, "UTF-8")
+        navigateTo("display/$spaceKey/$blogpostCreationDate/$encodedTitle")
+    }
+
+    fun insertMacro(macroId: String, macroSearchTerm: String) {
+        dom.click("#rte-button-insert")
+        dom.click("#rte-insert-macro")
+        dom.insertText("#macro-browser-search", macroSearchTerm)
+        dom.click("#macro-$macroId")
+        dom.click("#macro-details-page button.ok", 5)
+        dom.awaitElementClickable("#rte-button-publish")
+//        dom.awaitElementPresent("#macro-$macroId")
+//        dom.click("#macro-$macroId")
+    }
+
+    fun savePage() {
+        dom.click("#rte-button-publish")
+        dom.awaitElementPresent("#main-content")
+    }
+
+    fun createDefaultPage(spaceKey: String, pageTitle: String) {
+        val loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer eget aliquet nibh praesent. Platea dictumst quisque sagittis purus sit amet volutpat consequat mauris. Montes nascetur ridiculus mus mauris vitae ultricies leo integer. In fermentum posuere urna nec. Viverra vitae congue eu consequat ac felis. Sed egestas egestas fringilla phasellus faucibus scelerisque eleifend donec pretium. Non diam phasellus vestibulum lorem sed risus ultricies. Amet tellus cras adipiscing enim eu turpis egestas pretium. A pellentesque sit amet porttitor eget dolor morbi. Integer quis auctor elit sed vulputate mi sit amet. Leo in vitae turpis massa sed elementum tempus egestas. Non odio euismod lacinia at quis risus sed vulputate odio. Nunc scelerisque viverra mauris in. Tortor at risus viverra adipiscing at. Bibendum at varius vel pharetra vel turpis."
+        navigateTo("pages/createpage.action?spaceKey=$spaceKey")
+        dom.awaitElementPresent("#wysiwyg")
+        dom.click("#content-title-div")
+        dom.insertText("#content-title", pageTitle)
+        dom.click("#wysiwygTextarea_ifr")
+        dom.insertTextTinyMce("<h1>Lorem Ipsum</h1><p>$loremIpsum</p>")
+        dom.click("#rte-button-publish")
+        dom.awaitElementPresent("#main-content")
+
+        //        webConfluence.takeScreenshot("create-page-4")
+//        dom.awaitElementPresent("#macro-browser-dialog[aria-hidden]")
+//        webConfluence.takeScreenshot("create-page-5")
+//        dom.insertText("#macro-browser-search", this.contentMacro)
+//        dom.awaitElementPresent("#macro-info")
+//        webConfluence.takeScreenshot("create-page-6")
+//        dom.click("#macro-info")
+//        dom.awaitElementPresent("#macro-param-title")
+//        dom.insertText("#macro-param-title", this.pageTitle)
+//        webConfluence.takeScreenshot("create-page-7")
+//        dom.click("#macro-details-page button.ok")
+//        dom.await(2000) // TODO: condition!
+//        webConfluence.takeScreenshot("create-page-8")
+//        dom.click("#rte-button-publish")
+//        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
+//        webConfluence.takeScreenshot("create-page-9")
     }
 
 }

@@ -1,5 +1,8 @@
 package de.scandio.e4.testpackages.pagebranching.virtualusers
 
+import de.scandio.e4.testpackages.pagebranching.actions.CreateBranchAction
+import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
+import de.scandio.e4.testpackages.vanilla.actions.ViewPageAction
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.interfaces.VirtualUser
 import java.util.*
@@ -10,16 +13,15 @@ import java.util.*
  *
  * Assumptions:
  * - Space with key "PB"
- * - 3 pages in space "PB" with titles "BranchCreator Origin 1", "BranchCreator Origin 2",
- *   "BranchCreator Origin 3"
+ *
+ * Preparation:
+ * - Create 3 pages in space "PB" with titles
+ *   - "PB Origin 1 (TIMESTAMP)"
+ *   - "PB Origin 2 (TIMESTAMP)"
+ *   - "PB Origin 3 (TIMESTAMP)"
  *
  * Actions (all SELENIUM):
- * - Create branch of page "BranchCreator Origin 1" with title "BranchCreator Origin 1-1 (START_TIME)"
- * - Create another branch of page "BranchCreator Origin 1" with title "BranchCreator Origin 1-2 (START_TIME)"
- * - Create branch of page "BranchCreator Origin 2" with title "BranchCreator Origin 2-1 (START_TIME)"
- * - Create another branch of page "BranchCreator Origin 2" with title "BranchCreator Origin 2-2 (START_TIME)"
- * - Create branch of page "BranchCreator Origin 3" with title "BranchCreator Origin 3-1 (START_TIME)"
- * - Create another branch of page "BranchCreator Origin 3" with title "BranchCreator Origin 3-2 (START_TIME)"
+ * - Create 2 branches of each page with branch name "Branch X", where X is the index of creation
  *
  * @author Felix Grund
  */
@@ -27,12 +29,24 @@ open class BranchCreator : VirtualUser {
 
     protected var virtualUserStartTime: Long = 0
 
-    protected var start: Long = 0
-    protected var end: Long = 0
-
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         virtualUserStartTime = Date().time
+
+        // PREPARATION
+        actions.addExcludeFromMeasurement(CreatePageAction("PB", "PB Origin 1 ($virtualUserStartTime)"))
+        actions.addExcludeFromMeasurement(CreatePageAction("PB", "PB Origin 2 ($virtualUserStartTime)"))
+        actions.addExcludeFromMeasurement(CreatePageAction("PB", "PB Origin 3 ($virtualUserStartTime)"))
+
+        // ACTIONS
+        actions.add(CreateBranchAction("PB", "PB Origin 1 ($virtualUserStartTime)", "Branch 1"))
+        actions.add(CreateBranchAction("PB", "PB Origin 1 ($virtualUserStartTime)", "Branch 2"))
+        actions.add(CreateBranchAction("PB", "PB Origin 2 ($virtualUserStartTime)", "Branch 1"))
+        actions.add(CreateBranchAction("PB", "PB Origin 2 ($virtualUserStartTime)", "Branch 2"))
+        actions.add(CreateBranchAction("PB", "PB Origin 3 ($virtualUserStartTime)", "Branch 1"))
+        actions.add(CreateBranchAction("PB", "PB Origin 3 ($virtualUserStartTime)", "Branch 2"))
+
         return actions
     }
+
 }

@@ -1,6 +1,6 @@
 package de.scandio.e4.worker.interfaces;
 
-import java.util.List;
+import de.scandio.e4.worker.collections.ActionCollection;
 
 /**
  * One instance of Selenium.
@@ -9,5 +9,5 @@ import java.util.List;
  * The actions should be run in a separate thread.
  */
 public interface VirtualUser {
-	List<Action> getActions();
+	ActionCollection getActions();
 }

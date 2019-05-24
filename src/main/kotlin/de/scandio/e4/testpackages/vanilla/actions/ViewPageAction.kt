@@ -8,6 +8,22 @@ import de.scandio.e4.worker.interfaces.WebClient
 import java.net.URLEncoder
 import java.util.*
 
+/**
+ * Confluence ViewPage action.
+ *
+ * Assumptions:
+ * - Space with key $spaceKey
+ * - Page with title $originPageTitle in space $spaceKey
+ *
+ * Procedure (SELENIUM):
+ * - View page with title $originPageTitle in space $spaceKey
+ * - Wait until page is loaded
+ *
+ * Result:
+ * - Page with title "$branchName: $originPageTitle" is created
+ *
+ * @author Felix Grund
+ */
 open class ViewPageAction (
     val spaceKey: String,
     val pageTitle: String
@@ -18,15 +34,10 @@ open class ViewPageAction (
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val confluence = webClient as WebConfluence
-        val dom = DomHelper(confluence)
-        val encodedPageTitle = URLEncoder.encode(pageTitle, "utf-8")
         confluence.login()
-
         this.start = Date().time
-        confluence.navigateTo("display/$spaceKey/$encodedPageTitle")
-        dom.awaitElementPresent("#main-content")
+        confluence.goToPage(spaceKey, pageTitle)
         this.end = Date().time
-        confluence.takeScreenshot("view-page-$spaceKey-$encodedPageTitle")
     }
 
     override fun getTimeTaken(): Long {

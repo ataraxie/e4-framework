@@ -14,7 +14,7 @@ class DomHelper(
         val confluence: WebConfluence
 ) {
 
-    private val DEFAULT_DURATION: Long = 60
+    private val DEFAULT_DURATION: Long = 20
 
     fun clickCreateSpace() {
         val js = confluence.driver as JavascriptExecutor
@@ -63,6 +63,10 @@ class DomHelper(
         wait(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)), duration)
     }
 
+    fun awaitElementClickable(element: WebElement, duration: Long = DEFAULT_DURATION) {
+        wait(ExpectedConditions.elementToBeClickable(element), duration)
+    }
+
     fun awaitElementNotClickable(selector: String, duration: Long = DEFAULT_DURATION) {
         wait(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(By.cssSelector(selector))), duration)
     }
@@ -76,7 +80,9 @@ class DomHelper(
     }
 
     fun insertText(selector: String, text: String) {
+        awaitElementPresent(selector, 1)
         findElement(selector).sendKeys(text)
+        await(10)
     }
 
     fun insertTextTinyMce(text: String) {
@@ -86,13 +92,16 @@ class DomHelper(
 
     fun clearText(selector: String) {
         findElement(selector).clear()
+        await(10)
     }
 
-    fun click(selector: String) {
+    fun click(selector: String, awaitClickableSeconds: Long = 1) {
+        awaitElementClickable(selector, awaitClickableSeconds)
         findElement(selector).click()
     }
 
-    fun click(element: WebElement) {
+    fun click(element: WebElement, awaitClickableSeconds: Long = 1) {
+        awaitElementClickable(element, awaitClickableSeconds)
         element.click()
     }
 
@@ -109,10 +118,11 @@ class DomHelper(
     }
 
     fun <T> wait(condition: ExpectedCondition<T>, duration: Long = DEFAULT_DURATION) {
-        await(100)
+        await(10)
         confluence.driver.wait(
                 Duration.ofSeconds(duration),
                 condition
         )
+        await(10)
     }
 }

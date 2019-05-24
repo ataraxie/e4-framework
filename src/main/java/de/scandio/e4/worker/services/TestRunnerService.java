@@ -4,7 +4,6 @@ import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
 import de.scandio.e4.worker.collections.VirtualUserCollection;
-import de.scandio.e4.worker.collections.VirtualUserWithWeight;
 import de.scandio.e4.worker.interfaces.*;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
@@ -62,8 +61,7 @@ public class TestRunnerService {
 		log.info("This worker needs to start " + config.getVirtualUsers() + " users.");
 
 		for (int i = 0; i < config.getVirtualUsers(); i++) {
-			final VirtualUserWithWeight virtualUserWithWeight = virtualUsers.get(i % virtualUsers.size());
-			final VirtualUser virtualUser = virtualUserWithWeight.getVirtualUser();
+			final VirtualUser virtualUser = virtualUsers.get(i % virtualUsers.size());
 			final Thread virtualUserThread = createUserThread(virtualUser, config);
 			virtualUserThreads.add(virtualUserThread);
 			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
