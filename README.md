@@ -12,22 +12,22 @@ A test package is a bunch of Kotlin source files that define how an app can be p
 
 ### Components of a test package
 
-Each test package has a set of components that have certain purposes. All sources for a test package live in de.scandio.e4.testpackages in src/main/kotlin/ and src/test/kotlin.
+Each test package has a set of components that have certain purposes. All sources for a test package live in `de.scandio.e4.testpackages` in `src/main/kotlin/` and `src/test/kotlin/`.
 
 #### TestPackage declarator
 
 At the top level is a class that extends `TestPackage`. It defines the following:
-* Virtual Users: a set of virtual users that perform actions against the a running instance
-* Weights: in what relationship should the virtual users be simulated in comparison to vanilla virtual users (i.e. virtual users that have nothing to do with the app)
+* Virtual Users: a set of simulated users that perform actions against the a running instance
+* Weights: in what relationship should the virtual users be simulated in comparison to vanilla virtual users (i.e. virtual users that have nothing to do with the app)?
 * Setup Actions: a set of actions that must be executed before the virtual users can be simulated
 * Weight ratio: defines the ratio between defined app-specific virtual users and vanilla virtual users
 
 #### Virtual User
 
 Classes in the sub-package `virtualusers` that define virtual users. They must define the following:
-* Assumptions: what is assumed in the environment before the virtual user can be simulated
-* Preparation: what actions must be performed before the virtual user can be simulated
-* Actions: what actions are performed by the virtual user. These can involve both Selenium tasks (majority) and REST calls (minority).
+* Assumptions: what is assumed in the environment before the virtual user can be simulated?
+* Preparation: what actions must be performed before the virtual user can be simulated?
+* Actions: what actions are performed by the virtual user. These can involve both Selenium tasks (majority) and REST calls (minority)?
 
 #### Action
 
@@ -35,7 +35,7 @@ Classes in the sub-package `actions` that define actions invoked by virtual user
 * Assumptions: what is assumed in the environment before the action can be executed
 * Procedure: what are the actual procedures performed in the action. These can involve both Selenium tasks (majority) and REST calls (minority).
 * Result: what is the result if the action was executed successfully
-* Time taken: each action defines how long the part (!) of the action took that should be measured (i.e. not everything in an action must be part of a measurement; e.g. sometimes an action will need to login the user first and that shouldn't count to the time being measured)
+* Time taken: each action defines how long the part (!) of the action took that should be measured (i.e. not everything in an action must be part of a measurement; e.g. sometimes an action will need to login the user first and that shouldn't count towards the time being measured)
 
 ### How do I test/run/develop a test package?
 
@@ -47,6 +47,30 @@ For development of a test package, create a unit test class in your kotlin test 
 * TEST_PACKAGE: an instance of your TestPackage declarator class
 * PREPARATION_RUN: boolean indicating if this should be a preparation run. If set to true, only the setup actions of your test package will be executed. If set to false, only the virtual users of your test package will be executed (we found some issues running both in sequence with one execution).
 
+In `@Before` call `super.setup()`. Then, define one `@Test` method like this:
+```
+@Test
+fun runTest() {
+    try {
+        if (PREPARATION_RUN) {
+            executeTestPackagePrepare(TEST_PACKAGE)
+        } else {
+            executeTestPackage(TEST_PACKAGE)
+
+            // Run a single action for testing:
+            // executeAction(CreatePageAction("MYSPACEKEY", "MYPAGETITLE"))
+
+            // Run single virtual user for testing:
+            // executeActions(BranchCreator().actions)
+        }
+    } finally {
+        super.shutdown()
+    }
+}
+```
+
+Then run the unit test from within the IDE with a running application at the specified BASE_URL.
+
 #### Examples
 
-There is a (pretty much) completed test package for the app "Page Branching for Confluence" in the package `de.scandio.e4.testpackages.pagebranching`. It has a `PageBranchingTestPackage` class that is the entry point. The constants need to be adjusted to your environment first (yes, these could be outside the source code but that's more annoying during for development). After the properties are set, the class can be run as a simple unit test from within the IDE.
+There is a (pretty much) completed test package for the app *Page Branching for Confluence* in the package `de.scandio.e4.testpackages.pagebranching`. It has a `PageBranchingTestPackage` class that is the entry point. The constants need to be adjusted to your environment first (yes, these could be outside the source code but that's more annoying during for development). After the properties are set, the class can be run as a simple unit test from within the IDE.
