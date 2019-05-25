@@ -15,7 +15,7 @@ import java.util.*
 
 class PageBranchingTestRun : TestPackageTestRun() {
 
-    private val BASE_URL = "http://contabo:8090/"
+    private val BASE_URL = "http://e4-test:8090/"
     private val OUT_DIR = "/tmp/e4/out"
     private val USERNAME = "admin"
     private val PASSWORD = "admin"
@@ -34,6 +34,12 @@ class PageBranchingTestRun : TestPackageTestRun() {
                 executeTestPackagePrepare(TEST_PACKAGE)
             } else {
                 executeTestPackage(TEST_PACKAGE)
+
+                // Run a single action for testing:
+                // executeAction(CreatePageAction("MYSPACEKEY", "MYPAGETITLE"))
+
+                // Run single virtual user for testing:
+                // executeActions(BranchCreator().actions)
             }
         } finally {
             super.shutdown()
