@@ -19,15 +19,9 @@ class ViewBlogpostAction (
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val confluence = webClient as WebConfluence
-        val dom = confluence.getDomHelper()
-        val encodedTitle = URLEncoder.encode(this.blogpostTitle, "utf-8")
         confluence.login()
-        confluence.takeScreenshot("after-login")
-
         this.start = Date().time
-        confluence.navigateTo("display/$spaceKey/$blogpostCreationDate/$encodedTitle")
-        dom.awaitElementPresent("#main-content")
-        confluence.takeScreenshot("view-page-$spaceKey-$encodedTitle")
+        confluence.goToBlogpost(spaceKey, blogpostTitle, blogpostCreationDate)
         this.end = Date().time
     }
 

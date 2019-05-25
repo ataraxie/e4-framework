@@ -6,6 +6,8 @@ import de.scandio.e4.worker.interfaces.VirtualUser
 
 
 /**
+ * === OriginPageReader ===
+ *
  * PageBranching OriginPageReader VirtualUser.
  *
  * Assumptions:
@@ -16,16 +18,16 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  * Preparation:
  * - NONE
  *
- * Actions (all SELENIUM):
+ * Actions:
  * - View page "PB Root Origin" in space "PB"
  *
  * @author Felix Grund
  */
-class OriginPageReader : VirtualUser {
+open class OriginPageReader : VirtualUser {
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
-        actions.add(ViewPageAction("PB", "PageReader Origin"))
+        actions.add(ViewPageAction("PB", "PB Root Origin"))
         return actions
     }
 

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URI
 import java.net.URLEncoder
+import java.util.*
 
 class WebConfluence(
         val driver: WebDriver,
@@ -60,8 +61,8 @@ class WebConfluence(
     fun takeScreenshot(screenshotName: String): String {
         val ts = driver as TakesScreenshot
         val source: File = ts.getScreenshotAs(OutputType.FILE)
-        val dest = "$screenshotDir/${WorkerUtils.getRuntimeName()}-$screenshotName.png"
-        log.info("[SCREENSHOT] {{}}", dest)
+        val dest = "$screenshotDir/$screenshotName-${Date().time}.png"
+        log.debug("[SCREENSHOT] {{}}", dest)
         System.out.println(dest)
         val destination = File(dest)
         FileUtils.copyFile(source, destination)
@@ -104,8 +105,6 @@ class WebConfluence(
         dom.click("#macro-$macroId")
         dom.click("#macro-details-page button.ok", 5)
         dom.awaitElementClickable("#rte-button-publish")
-//        dom.awaitElementPresent("#macro-$macroId")
-//        dom.click("#macro-$macroId")
     }
 
     fun savePage() {
@@ -123,23 +122,17 @@ class WebConfluence(
         dom.insertTextTinyMce("<h1>Lorem Ipsum</h1><p>$loremIpsum</p>")
         dom.click("#rte-button-publish")
         dom.awaitElementPresent("#main-content")
+    }
 
-        //        webConfluence.takeScreenshot("create-page-4")
-//        dom.awaitElementPresent("#macro-browser-dialog[aria-hidden]")
-//        webConfluence.takeScreenshot("create-page-5")
-//        dom.insertText("#macro-browser-search", this.contentMacro)
-//        dom.awaitElementPresent("#macro-info")
-//        webConfluence.takeScreenshot("create-page-6")
-//        dom.click("#macro-info")
-//        dom.awaitElementPresent("#macro-param-title")
-//        dom.insertText("#macro-param-title", this.pageTitle)
-//        webConfluence.takeScreenshot("create-page-7")
-//        dom.click("#macro-details-page button.ok")
-//        dom.await(2000) // TODO: condition!
-//        webConfluence.takeScreenshot("create-page-8")
-//        dom.click("#rte-button-publish")
-//        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
-//        webConfluence.takeScreenshot("create-page-9")
+    fun createEmptySpace(spaceKey: String, spaceName: String) {
+        navigateTo("spaces/createspace-start.action")
+        dom.awaitElementPresent("#create-space-form")
+        dom.insertText("#create-space-form input[name='key']", spaceKey)
+        dom.insertText("#create-space-form input[name='name']", spaceName)
+        dom.awaitAttributeNotPresent("#create-space-form .aui-button[name='create']", "disabled")
+        dom.await(1000) // TODO: Not sure why this anymore
+        dom.click("#create-space-form .aui-button[name='create']")
+        dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
     }
 
 }

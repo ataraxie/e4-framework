@@ -25,4 +25,13 @@ public class ActionCollection extends ArrayList<Action> {
 		return this.actionsExcludedFromMeasurement.contains(action);
 	}
 
+	public void addAll(ActionCollection actionCollection) {
+		for (Action action : actionCollection) {
+			super.add(action);
+			if (actionCollection.isExcludedFromMeasurement(action)) {
+				this.actionsExcludedFromMeasurement.add(action);
+			}
+		}
+	}
+
 }

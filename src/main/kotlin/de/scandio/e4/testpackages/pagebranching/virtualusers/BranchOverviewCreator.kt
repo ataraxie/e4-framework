@@ -9,18 +9,19 @@ import java.util.*
 
 
 /**
- * PageBranching BranchMerger VirtualUser. Extends BranchCreator and creates
- * all branches that it will later merge first.
+ * === BranchOverviewCreator ===
+ *
+ * PageBranching BranchOverviewCreator VirtualUser.
  *
  * Assumptions:
  * - Space with spacekey "PB"
  *
  * Preparation:
- * - Create page in space "PB" with title "BranchOverviewCreator Origin (START_TIME)"
+ * - Create page in space "PB" with title "PB BranchOverviewCreator Origin (START_TIME)"
  * - Create 5 branches of page with the original page title and " - Branch X" appended, where X is the number
  *
  * Actions (all SELENIUM):
- * - Edit the page "BranchOverviewCreator Origin (START_TIME)" and add the pagebranching-overview macro
+ * - Edit the page "PB BranchOverviewCreator Origin (START_TIME)" and add the pagebranching-overview macro
  *
  * @author Felix Grund
  */
@@ -30,7 +31,9 @@ class BranchOverviewCreator : VirtualUser {
         val actions = ActionCollection()
         val virtualUserStartTime = Date().time
         val spaceKey = "PB"
-        val pageTitle = "BranchOverviewCreator Origin ($virtualUserStartTime)"
+        val pageTitle = "PB BranchOverviewCreator Origin ($virtualUserStartTime)"
+
+        // PREPARATION
 
         actions.addExcludeFromMeasurement(CreatePageAction(spaceKey, pageTitle))
 

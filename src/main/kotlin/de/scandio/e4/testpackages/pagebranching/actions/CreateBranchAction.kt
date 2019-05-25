@@ -8,6 +8,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
 /**
+ * === CreateBranchAction ===
+ *
  * PageBranching CreateBranch action.
  *
  * Assumptions:
@@ -40,7 +42,7 @@ open class CreateBranchAction (
 
         webConfluence.login()
         webConfluence.goToPage(spaceKey, originPageTitle)
-        webConfluence.takeScreenshot("viewpage")
+        webConfluence.takeScreenshot("TEST-1")
         this.start = Date().time
         dom.awaitElementClickable("#action-menu-link")
         dom.click("#action-menu-link")
@@ -50,6 +52,8 @@ open class CreateBranchAction (
         dom.clearText("input#branch-name")
         dom.insertText("input#branch-name", branchName)
         dom.click("#pagebranching-branch-page-button")
+        webConfluence.takeScreenshot("TEST-2")
+        dom.await(2000)
         dom.awaitElementPresent(".page-branching-branch-meta")
         this.end = Date().time
     }

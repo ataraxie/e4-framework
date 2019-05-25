@@ -8,6 +8,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
 /**
+ * === MergeBranchAction ===
+ *
  * PageBranching MergeBranch action.
  *
  * Assumptions:

@@ -5,7 +5,7 @@ import de.scandio.e4.worker.collections.VirtualUserCollection;
 
 public interface TestPackage {
 
-    ActionCollection getSetupScenarios();
     VirtualUserCollection getVirtualUsers();
+    ActionCollection getSetupActions();
 
 }

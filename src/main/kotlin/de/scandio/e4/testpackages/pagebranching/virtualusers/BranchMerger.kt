@@ -5,6 +5,8 @@ import de.scandio.e4.worker.collections.ActionCollection
 
 
 /**
+ * === BranchMerger ===
+ *
  * PageBranching BranchMerger VirtualUser. Extends BranchCreator and creates
  * all branches that it will later merge first.
  *

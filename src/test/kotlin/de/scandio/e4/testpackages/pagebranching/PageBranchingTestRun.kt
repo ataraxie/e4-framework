@@ -20,6 +20,7 @@ class PageBranchingTestRun : TestPackageTestRun() {
     private val USERNAME = "admin"
     private val PASSWORD = "admin"
     private val TEST_PACKAGE = PageBranchingTestPackage()
+    private val PREPARATION_RUN = true
 
     @Before
     fun before() {
@@ -29,17 +30,13 @@ class PageBranchingTestRun : TestPackageTestRun() {
     @Test
     fun runTest() {
         try {
-//            actions.add(CreatePageAction("PB", "PB Origin 1", timestamp))
-//            actions.addAll(OriginPageReader().actions)
-//            actions.addAll(BranchedPageReader().actions)
-//            actions.add(CreateBranchAction("PB", "BranchCreator Origin Manual", "Branch 1"))
-//            actions.add(MergeBranchAction("PB", "BranchCreator Origin Manual", "Branch 1"))
-//            actions.add(ViewPageAction("PB", "BranchedPageReader Origin"))
-//            actions.add(CreateOverviewPageAction("PB", "PageReader Origin"))
-            val measurement = executeActions(BranchOverviewCreator().actions)
-            print("Total time taken: ${measurement.totalTimeTaken} (ran actions: ${measurement.numActionsRun}; excluded actions: ${measurement.numExcludedActions})")
+            if (PREPARATION_RUN) {
+                executeTestPackagePrepare(TEST_PACKAGE)
+            } else {
+                executeTestPackage(TEST_PACKAGE)
+            }
         } finally {
-            webConfluence!!.driver.quit()
+            super.shutdown()
         }
     }
 

@@ -17,8 +17,11 @@ import java.util.*
 
 abstract class TestPackageTestRun {
 
+    val loggerContext = getILoggerFactory() as LoggerContext
+
     protected var webConfluence: WebConfluence? = null
     protected var restConfluence: RestConfluence? = null
+
 
     abstract fun getBaseUrl(): String
     abstract fun getOutDir(): String
@@ -26,43 +29,55 @@ abstract class TestPackageTestRun {
     abstract fun getPassword(): String
     abstract fun getTestPackage(): TestPackage
 
-    fun setup() {
-        val loggerContext = getILoggerFactory() as LoggerContext
-        loggerContext.getLogger("org.apache").setLevel(Level.ERROR)
-        loggerContext.getLogger("org.openqa.selenium.phantomjs.PhantomJSDriverService").setLevel(Level.ERROR)
+    init {
+        setLogLevel("org.apache", Level.ERROR)
+        setLogLevel("org.openqa.selenium.phantomjs.PhantomJSDriverService", Level.ERROR)
+    }
+
+    protected fun setLogLevel(packagePath: String, level: Level) {
+        loggerContext.getLogger("org.apache").level = level
+    }
+
+    protected fun setup() {
 
         this.webConfluence = WorkerUtils.newChromeWebClient(
                 getBaseUrl(), getOutDir(), getUsername(), getPassword()) as WebConfluence
         this.restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
     }
 
-    fun execute() {
-        try {
-            val actions = ActionCollection()
-            actions.add(CreateBranchAction("PB", "BranchCreator Origin Manual", "Branch 1"))
-            val measurement = executeActions(actions)
-            print("Time taken: ${measurement.totalTimeTaken}\n")
-        } finally {
-            webConfluence!!.driver.quit()
-        }
+    protected fun shutdown() {
+        webConfluence!!.driver.quit()
     }
 
-    fun executeTestPackage(testPackage: TestPackage) {
+    protected fun executeTestPackage(testPackage: TestPackage) {
+        println("==============================================================")
+        println("START executing ${testPackage.virtualUsers.size} virtual users")
         for (virtualUser in testPackage.virtualUsers) {
+            println("Executing virtual user ${virtualUser.javaClass.simpleName}")
             val measurement = executeActions(virtualUser.actions)
-            print("Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (${measurement.numExcludedActions} actions excluded from measurement)\n")
+            println("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
         }
+        println("DONE executing ${testPackage.virtualUsers.size} virtual users")
+        println("==============================================================")
     }
 
-    fun executeAction(action: Action) {
+    protected fun executeTestPackagePrepare(testPackage: TestPackage) {
+        println("==============================================================")
+        println("START executing ${testPackage.setupActions.size} setup actions")
+        executeActions(testPackage.setupActions)
+        println("DONE executing setup actions")
+        println("==============================================================")
+    }
+
+    protected fun executeAction(action: Action) {
         action.execute(webConfluence!!, restConfluence!!)
-        val runtimeName = "afteraction-${action.javaClass.simpleName}-${Date().time}"
+        val runtimeName = "afteraction-${action.javaClass.simpleName}"
         webConfluence!!.takeScreenshot(runtimeName)
         webConfluence!!.dumpHtml(runtimeName)
-        print("Time taken: ${action.timeTaken}\n")
+        println("Time taken: ${action.timeTaken}")
     }
 
-    fun executeActions(actions: ActionCollection): Measurement {
+    protected fun executeActions(actions: ActionCollection): Measurement {
         var totalTimeTaken: Long = 0
         var numExcludedActions = 0
         var numActionsRun = 0
@@ -72,12 +87,12 @@ abstract class TestPackageTestRun {
                 if (!actions.isExcludedFromMeasurement(action)) {
                     totalTimeTaken += action.timeTaken
                     numActionsRun += 1
-                    print("Time taken for action ${action.javaClass.simpleName}: ${action.timeTaken}\n")
+                    println("Time taken for action ${action.javaClass.simpleName}: ${action.timeTaken}")
                 } else {
                     numExcludedActions += 1
                 }
             } finally {
-                val runtimeName = "afteraction-${action.javaClass.simpleName}-${Date().time}"
+                val runtimeName = "afteraction-${action.javaClass.simpleName}"
                 webConfluence!!.takeScreenshot(runtimeName)
                 webConfluence!!.dumpHtml(runtimeName)
             }

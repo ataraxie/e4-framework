@@ -7,6 +7,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
 /**
+ * === CreateOverviewPageAction ===
+ *
  * PageBranching CreateBranch action.
  *
  * Assumptions:
