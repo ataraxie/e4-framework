@@ -33,6 +33,9 @@ import de.scandio.e4.worker.interfaces.TestPackage
  * - BranchedPageReader (weight 0.25): reads page branches (branches from an origin page)
  * - OriginPageReader (weight 0.5): reads origin pages (from which branches were created)
  *
+ * Weight ration CONFLUENCE / APP:
+ * 0.75 / 0.25
+ *
  * @author Felix Grund
  */
 class PageBranchingTestPackage: TestPackage {
