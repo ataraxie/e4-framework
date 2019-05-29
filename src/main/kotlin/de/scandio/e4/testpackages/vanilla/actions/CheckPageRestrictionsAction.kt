@@ -14,7 +14,7 @@ class CheckPageRestrictionsAction(
     override fun execute(webClient: WebClient, restClient: RestClient) {
         super.execute(webClient, restClient)
         val confluence = webClient as WebConfluence
-        val dom = DomHelper(confluence)
+        val dom = DomHelper(confluence.driver)
         this.start = Date().time
         dom.click("#content-metadata-page-restrictions")
         dom.awaitElementPresent("#update-page-restrictions-dialog")

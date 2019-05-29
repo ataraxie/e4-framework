@@ -22,7 +22,7 @@ class WebConfluence(
 ): WebClient {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    private val dom: DomHelper = DomHelper(this)
+    private val dom: DomHelper = DomHelper(driver)
 
     override fun getWebDriver(): WebDriver {
         return this.driver

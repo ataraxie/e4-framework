@@ -38,7 +38,7 @@ open class CreateBranchAction (
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
-        val dom = DomHelper(webConfluence)
+        val dom = DomHelper(webConfluence.driver)
 
         webConfluence.login()
         webConfluence.goToPage(spaceKey, originPageTitle)

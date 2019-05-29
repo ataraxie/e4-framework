@@ -20,7 +20,7 @@ class PageBranchingTestRun : TestPackageTestRun() {
     private val USERNAME = "admin"
     private val PASSWORD = "admin"
     private val TEST_PACKAGE = PageBranchingTestPackage()
-    private val PREPARATION_RUN = true
+    private val PREPARATION_RUN = false
 
     @Before
     fun before() {

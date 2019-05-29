@@ -1,5 +1,6 @@
 package de.scandio.e4.worker.confluence.rest;
 
+import com.google.gson.Gson;
 import de.scandio.e4.worker.interfaces.RestClient;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -11,11 +12,15 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RestConfluence implements RestClient {
 
 	private static final Logger log = LoggerFactory.getLogger(RestConfluence.class);
+
+	private static final Gson GSON = new Gson();
 
 	private String username;
 	private String password;
@@ -33,6 +38,19 @@ public class RestConfluence implements RestClient {
 	public String findPage(String spaceKey, String title) {
 		String urlAfterBaseUrl = String.format("rest/api/content?title=%s&spaceKey=%s", title, spaceKey);
 		return sendGetRequestReturnBody(urlAfterBaseUrl);
+	}
+
+	public List<Long> findPages(int limit) {
+		List<Long> pageIds = new ArrayList<>();
+		String url = String.format("/rest/api/content?type=page&start=0&limit=%s", limit);
+		String body = sendGetRequestReturnBody(url);
+		Map<String, Object> response = GSON.fromJson(body, Map.class);
+		List<Map> pageObjects = (ArrayList) response.get("results");
+		for (Map pageObj : pageObjects) {
+			long pageId = Long.parseLong((String) pageObj.get("id"));
+			pageIds.add(pageId);
+		}
+		return pageIds;
 	}
 
 	public String createPage(String pageTitle, String spaceKey, String content, String parentPageId) {
