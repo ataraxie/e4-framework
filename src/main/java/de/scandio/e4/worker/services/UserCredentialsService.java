@@ -1,5 +1,8 @@
 package de.scandio.e4.worker.services;
 
+import de.scandio.e4.client.WorkerRestUtil;
+import de.scandio.e4.worker.util.UserCredentials;
+import de.scandio.e4.worker.util.WorkerUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ public class UserCredentialsService {
 	 */
 	public static final String STANDARD_PASSWORD = "ENJOY!";
 
-	private List<String> storedUsers = new ArrayList<>();
+	private List<UserCredentials> storedUsers = new ArrayList<>();
 
 	public final void reset() {
 		storedUsers = new ArrayList<>();
@@ -25,15 +28,23 @@ public class UserCredentialsService {
 	 * When the PreparationService has successfully created a user it will store it in here.
 	 * @param user The username.
 	 */
-	public final void store(String user) {
-		storedUsers.add(user);
-	}
+//	public final void store(String user) {
+//		storedUsers.add(user);
+//	}
 
 	/**
 	 * Returns all stored users.
 	 * @return All users.
 	 */
-	public final List<String> getAllUsers() {
+	public final List<UserCredentials> getAllUsers() {
 		return storedUsers;
+	}
+
+	public void storeUsers(List<UserCredentials> users) {
+		this.storedUsers = users;
+	}
+
+	public UserCredentials getRandomUser() {
+		return WorkerUtils.getRandomItem(getAllUsers());
 	}
 }

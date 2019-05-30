@@ -5,6 +5,8 @@ import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
 import de.scandio.e4.worker.collections.VirtualUserCollection;
 import de.scandio.e4.worker.interfaces.*;
+import de.scandio.e4.worker.util.UserCredentials;
+import de.scandio.e4.worker.util.WorkerUtils;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +22,12 @@ public class TestRunnerService {
 	private static final Logger log = LoggerFactory.getLogger(TestRunnerService.class);
 	private final ApplicationStatusService applicationStatusService;
 	private final StorageService storageService;
+	private final UserCredentialsService userCredentialsService;
 
-	private final String USERNAME = "admin"; // TODO!!
-	private final String PASSWORD = "admin"; // TODO!!
-
-	public TestRunnerService(ApplicationStatusService applicationStatusService, StorageService storageService) {
+	public TestRunnerService(ApplicationStatusService applicationStatusService, StorageService storageService, UserCredentialsService userCredentialsService) {
 		this.applicationStatusService = applicationStatusService;
 		this.storageService = storageService;
+		this.userCredentialsService = userCredentialsService;
 	}
 
 	public void stopTests() throws Exception {
@@ -51,17 +52,32 @@ public class TestRunnerService {
 
 		final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
 		final TestPackage testPackageInstance = testPackage.newInstance();
-		final VirtualUserCollection virtualUsers = testPackageInstance.getVirtualUsers();
+		final VirtualUserCollection virtualUserCollection = testPackageInstance.getVirtualUsers();
 
-		log.debug("Found {{}} virtual users for test package", virtualUsers.size());
+		final List<VirtualUser> virtualUsers = new ArrayList<>();
+		final int numConcurrentUsers = config.getNumConcurrentUsers();
+		final int numWorkers = config.getNumWorkers();
+		for (Class<? extends VirtualUser> virtualUserClass : virtualUserCollection) {
+			double weight = virtualUserCollection.getWeight(virtualUserClass);
+			double numInstances = numConcurrentUsers * weight;
+			for (int i = 0; i < numInstances; i++) {
+				virtualUsers.add(virtualUserClass.newInstance());
+			}
+		}
 
+		log.debug("Created {{}} virtual users for test package", virtualUsers.size());
 
 		final List<Thread> virtualUserThreads = new ArrayList<>();
+		final int numVirtualUsersThisWorker = numConcurrentUsers / numWorkers;
 
-		log.info("This worker needs to start " + config.getVirtualUsers() + " users.");
+		final List<UserCredentials> allUserCredentials = userCredentialsService.getAllUsers();
+		final UserCredentials userCredentials = WorkerUtils.getRandomItem(allUserCredentials);
 
-		for (int i = 0; i < config.getVirtualUsers(); i++) {
-			final VirtualUser virtualUser = virtualUsers.get(i % virtualUsers.size());
+		log.info("This worker needs to start " + numVirtualUsersThisWorker + " users.");
+
+		for (int i = 0; i < numVirtualUsersThisWorker; i++) {
+//			final VirtualUser virtualUser = virtualUsers.get(i % virtualUsers.size()); HMM
+			final VirtualUser virtualUser = virtualUsers.get(i);
 			final Thread virtualUserThread = createUserThread(virtualUser, config);
 			virtualUserThreads.add(virtualUserThread);
 			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
@@ -87,35 +103,45 @@ public class TestRunnerService {
 		applicationStatusService.setTestsStatus(TestsStatus.FINISHED);
 	}
 
-	private Thread createUserThread(VirtualUser virtualUser, WorkerConfig config) {
+	private Thread createUserThread(VirtualUser virtualUser, WorkerConfig config) throws Exception {
 		final String targetUrl = config.getTarget();
 
 		final Thread virtualUserThread = new Thread(() -> {
-			log.debug("Executing virtual user {{}}", virtualUser.getClass().getSimpleName());
+			try {
+				final UserCredentials randomUser = userCredentialsService.getRandomUser();
+				final String username = randomUser.getUsername();
+				final String password = randomUser.getPassword();
+				final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getScreenshotsDir(), username, password);
+				final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 
-			// TODO: this might need to be an infinite loop later if repeatTests == true
-			for (Action action : virtualUser.getActions()) {
-				WebClient webClient = null;
-				try {
-					// TODO: right now only using hardcoded admin - later use UserCredentialsService
-					webClient = WorkerUtils.newPhantomJsWebClient(targetUrl, applicationStatusService.getScreenshotsDir(), USERNAME, PASSWORD);
-					final RestClient restClient = WorkerUtils.newRestClient(targetUrl, USERNAME, PASSWORD);
+				log.info("Executing virtual user {{}} with actual user {{}}", virtualUser.getClass().getSimpleName(), username);
 
-					log.debug("Executing action {{}}", action.getClass().getSimpleName());
+				// TODO: this might need to be an infinite loop later if repeatTests == true
+				for (Action action : virtualUser.getActions(webClient, restClient)) {
+					try {
+						// TODO: right now only using hardcoded admin - later use UserCredentialsService
+						log.debug("Executing action {{}}", action.getClass().getSimpleName());
 
-					action.execute(webClient, restClient);
-					final long timeTaken = action.getTimeTaken();
-					storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
-				} catch (Exception e) {
-					log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
-					// TODO: recordMeasurement action as failed somewhere
-					e.printStackTrace();
-				} finally {
-					if (webClient != null) {
-						webClient.quit();
+						action.execute(webClient, restClient);
+						final long timeTaken = action.getTimeTaken();
+						storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
+					} catch (Exception e) {
+						log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
+						if (webClient != null) {
+							System.out.println(webClient.takeScreenshot("failed-scenario"));
+						}
+						// TODO: recordMeasurement action as failed somewhere
+						e.printStackTrace();
+					} finally {
+						if (webClient != null) {
+							webClient.quit();
+						}
 					}
 				}
+			} catch (Exception e) {
+				log.error("Could not create WebClient and/or RestClient for VirtualUser thread", e);
 			}
+
 		});
 		virtualUserThread.setDaemon(true);
 		return virtualUserThread;

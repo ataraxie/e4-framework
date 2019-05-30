@@ -3,16 +3,12 @@ package de.scandio.e4.testpackages
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import de.scandio.e4.confluence.web.WebConfluence
-import de.scandio.e4.testpackages.pagebranching.actions.CreateBranchAction
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.util.WorkerUtils
-import org.junit.Test
-import org.slf4j.LoggerFactory
 import org.slf4j.LoggerFactory.getILoggerFactory
-import java.util.*
 
 
 abstract class TestPackageTestRun {
@@ -52,9 +48,10 @@ abstract class TestPackageTestRun {
     protected fun executeTestPackage(testPackage: TestPackage) {
         println("==============================================================")
         println("START executing ${testPackage.virtualUsers.size} virtual users")
-        for (virtualUser in testPackage.virtualUsers) {
+        for (virtualUserClass in testPackage.virtualUsers) {
+            val virtualUser = virtualUserClass.newInstance()
             println("Executing virtual user ${virtualUser.javaClass.simpleName}")
-            val measurement = executeActions(virtualUser.actions)
+            val measurement = executeActions(virtualUser.getActions(this.webConfluence, this.restConfluence))
             println("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
         }
         println("DONE executing ${testPackage.virtualUsers.size} virtual users")

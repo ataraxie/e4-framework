@@ -6,22 +6,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VirtualUserCollection extends ArrayList<VirtualUser> {
+public class VirtualUserCollection extends ArrayList<Class<? extends VirtualUser>> {
 
 	private double totalWeight = 0;
 
-	private Map<VirtualUser, Double> weights = new HashMap<>();
+	private Map<Class<? extends VirtualUser>, Double> weights = new HashMap<>();
 
-	public void add(VirtualUser virtualUser, double weight) throws Exception {
-		super.add(virtualUser);
+	public void add(Class<? extends VirtualUser> virtualUserClass, double weight) throws Exception {
+		super.add(virtualUserClass);
 		this.totalWeight += weight;
 		if (this.totalWeight > 1) {
 			throw new Exception("Total weight is now above 1 in this collection!");
 		}
-		this.weights.put(virtualUser, weight);
+		this.weights.put(virtualUserClass, weight);
 	}
 
-	public Double getWeight(VirtualUser virtualUser) {
-		return this.weights.get(virtualUser);
+	public Double getWeight(Class<? extends VirtualUser> virtualUserClass) {
+		return this.weights.get(virtualUserClass);
 	}
 }

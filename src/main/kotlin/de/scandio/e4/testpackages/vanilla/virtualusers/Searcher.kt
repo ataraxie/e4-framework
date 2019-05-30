@@ -4,7 +4,9 @@ import de.scandio.e4.testpackages.vanilla.actions.QuicksearchAction
 import de.scandio.e4.testpackages.vanilla.actions.SearchAction
 import de.scandio.e4.testpackages.vanilla.actions.SearchAndClickFiltersAction
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
+import de.scandio.e4.worker.interfaces.WebClient
 
 
 /**
@@ -28,7 +30,7 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  */
 class Searcher : VirtualUser {
 
-    override fun getActions(): ActionCollection {
+    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
         actions.add(QuicksearchAction("E4"))
         actions.add(QuicksearchAction("E4 Reader"))

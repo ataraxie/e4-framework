@@ -2,6 +2,7 @@ package de.scandio.e4.worker.confluence.rest;
 
 import com.google.gson.Gson;
 import de.scandio.e4.worker.interfaces.RestClient;
+import de.scandio.e4.worker.util.WorkerUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +40,15 @@ public class RestConfluence implements RestClient {
 		return sendGetRequestReturnBody(urlAfterBaseUrl);
 	}
 
-	public List<Long> findPages(int limit) {
+	public List<Long> findContentIds(int limit, String type) {
 		List<Long> pageIds = new ArrayList<>();
-		String url = String.format("/rest/api/content?type=page&start=0&limit=%s", limit);
+		String url;
+		if (type != null) {
+			url = String.format("rest/api/content?type=%s&start=0&limit=%s", type, limit);
+		} else {
+			url = String.format("rest/api/content?start=0&limit=%s", limit);
+		}
+
 		String body = sendGetRequestReturnBody(url);
 		Map<String, Object> response = GSON.fromJson(body, Map.class);
 		List<Map> pageObjects = (ArrayList) response.get("results");
@@ -51,6 +57,30 @@ public class RestConfluence implements RestClient {
 			pageIds.add(pageId);
 		}
 		return pageIds;
+	}
+
+	public List<Long> findPages(int limit) {
+		return findContentIds(limit, "page");
+	}
+
+	public List<Long> findBlogposts(int limit) {
+		return findContentIds(limit, "blogpost");
+	}
+
+	public Long getRandomContentId() {
+		return WorkerUtils.getRandomItem(findContentIds(1000, null));
+	}
+
+	public List<String> getConfluenceUsers() {
+		List<String> usernames = new ArrayList<>();
+		String body = sendGetRequestReturnBody("rest/api/group/confluence-users/member");
+		Map<String, Object> response = GSON.fromJson(body, Map.class);
+		List<Map> userObjects = (ArrayList) response.get("results");
+		for (Map userObject : userObjects) {
+			String username = (String) userObject.get("username");
+			usernames.add(username);
+		}
+		return usernames;
 	}
 
 	public String createPage(String pageTitle, String spaceKey, String content, String parentPageId) {
@@ -99,7 +129,7 @@ public class RestConfluence implements RestClient {
 	}
 
 	private ResponseEntity<String> sendGetRequestReturnResponse(String urlAfterBaseUrl) {
-		final String url = this.baseUrl += urlAfterBaseUrl;
+		final String url = this.baseUrl + urlAfterBaseUrl;
 		final RestTemplate restTemplate = new RestTemplate();
 
 		log.debug("Sending GET request {{}}", url);

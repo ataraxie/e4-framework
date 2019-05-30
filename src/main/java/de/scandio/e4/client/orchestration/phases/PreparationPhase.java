@@ -18,7 +18,7 @@ public class PreparationPhase implements OrchestrationPhase {
 	@Override
 	public void executePhase() throws Exception {
 		final List<String> workers = clientConfig.getWorkers();
-		final int usersPerWorker = clientConfig.getConcurrentUsers() / workers.size();
+		final int usersPerWorker = clientConfig.getNumConcurrentUsers() / workers.size();
 
 		System.out.println("\n[PHASE - PREPARE]\n");
 

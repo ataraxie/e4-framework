@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ClientConfig {
 	private TargetConfig target;
-	private int concurrentUsers;
+	private int numConcurrentUsers;
 	private long durationInSeconds;
 	private String testPackage;
 
@@ -22,15 +22,15 @@ public class ClientConfig {
 		this.target = target;
 	}
 
-	public int getConcurrentUsers() {
-		if (concurrentUsers <= 0) {
-			concurrentUsers = 1;
+	public int getNumConcurrentUsers() {
+		if (numConcurrentUsers <= 0) {
+			numConcurrentUsers = 1;
 		}
-		return concurrentUsers;
+		return numConcurrentUsers;
 	}
 
-	public void setConcurrentUsers(int concurrentUsers) {
-		this.concurrentUsers = concurrentUsers;
+	public void setNumConcurrentUsers(int numConcurrentUsers) {
+		this.numConcurrentUsers = numConcurrentUsers;
 	}
 
 	public long getDurationInSeconds() {
@@ -80,7 +80,7 @@ public class ClientConfig {
 	public String toString() {
 		return "ClientConfig {" +
 				"\n\ttarget=" + target +
-				",\n\tconcurrentUsers=" + concurrentUsers +
+				",\n\tnumConcurrentUsers=" + numConcurrentUsers +
 				",\n\tdurationInSeconds=" + durationInSeconds +
 				",\n\ttestPackage='" + testPackage + '\'' +
 				",\n\tappsToInstall=" + appsToInstall +

@@ -4,7 +4,9 @@ import de.scandio.e4.testpackages.pagebranching.actions.CreateBranchAction
 import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.testpackages.vanilla.actions.ViewPageAction
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
+import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
 
@@ -31,7 +33,7 @@ open class BranchCreator : VirtualUser {
 
     protected var virtualUserStartTime: Long = 0
 
-    override fun getActions(): ActionCollection {
+    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
         virtualUserStartTime = Date().time
 

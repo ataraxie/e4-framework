@@ -2,6 +2,8 @@ package de.scandio.e4.testpackages.pagebranching.virtualusers
 
 import de.scandio.e4.testpackages.pagebranching.actions.MergeBranchAction
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
+import de.scandio.e4.worker.interfaces.WebClient
 
 
 /**
@@ -23,11 +25,11 @@ import de.scandio.e4.worker.collections.ActionCollection
  */
 class BranchMerger : BranchCreator() {
 
-    override fun getActions(): ActionCollection {
+    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
 
         // PREPARATION
-        actions.addAllExcludeFromMeasurement(super.getActions())
+        actions.addAllExcludeFromMeasurement(super.getActions(webClient, restClient))
 
         // ACTIONS
         actions.add(MergeBranchAction("PB", "Branch 1", "PB Origin 1 ($virtualUserStartTime)"))

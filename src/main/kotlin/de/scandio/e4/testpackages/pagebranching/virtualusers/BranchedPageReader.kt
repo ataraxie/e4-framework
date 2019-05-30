@@ -2,7 +2,9 @@ package de.scandio.e4.testpackages.pagebranching.virtualusers
 
 import de.scandio.e4.testpackages.vanilla.actions.ViewPageAction
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
+import de.scandio.e4.worker.interfaces.WebClient
 
 
 /**
@@ -25,7 +27,7 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  */
 class BranchedPageReader : VirtualUser {
 
-    override fun getActions(): ActionCollection {
+    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewPageAction("PB", "Branch 1: PB Root Origin"))
         actions.add(ViewPageAction("PB", "Branch 2: PB Root Origin"))

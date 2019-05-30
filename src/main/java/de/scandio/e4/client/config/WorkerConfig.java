@@ -6,7 +6,9 @@ public class WorkerConfig {
 	private String password;
 	private String testPackage;
 	private boolean repeatTeasts;
-	private long virtualUsers;
+	private int numConcurrentUsers;
+	private int numWorkers;
+
 
 	public String getTarget() {
 		return target;
@@ -48,12 +50,20 @@ public class WorkerConfig {
 		this.repeatTeasts = repeatTeasts;
 	}
 
-	public long getVirtualUsers() {
-		return virtualUsers;
+	public void setNumConcurrentUsers(int numConcurrentUsers) {
+		this.numConcurrentUsers = numConcurrentUsers;
 	}
 
-	public void setVirtualUsers(long virtualUsers) {
-		this.virtualUsers = virtualUsers;
+	public void setNumWorkers(int numWorkers) {
+		this.numWorkers = numWorkers;
+	}
+
+	public int getNumConcurrentUsers() {
+		return numConcurrentUsers;
+	}
+
+	public int getNumWorkers() {
+		return numWorkers;
 	}
 
 	public static WorkerConfig from(ClientConfig clientConfig) {
@@ -64,7 +74,8 @@ public class WorkerConfig {
 		workerConfig.setPassword(clientConfig.getTarget().getAdminPassword());
 
 		workerConfig.setRepeatTeasts(clientConfig.getDurationInSeconds() > 0);
-		workerConfig.setVirtualUsers(clientConfig.getConcurrentUsers() / clientConfig.getWorkers().size());
+		workerConfig.setNumConcurrentUsers(clientConfig.getNumConcurrentUsers());
+		workerConfig.setNumWorkers(clientConfig.getWorkers().size());
 		workerConfig.setTestPackage(clientConfig.getTestPackage());
 
 		return workerConfig;
@@ -78,7 +89,7 @@ public class WorkerConfig {
 				", password='" + password + '\'' +
 				", testPackage='" + testPackage + '\'' +
 				", repeatTeasts=" + repeatTeasts +
-				", virtualUsers=" + virtualUsers +
+				", numConcurrentUsers=" + numConcurrentUsers +
 				'}';
 	}
 }

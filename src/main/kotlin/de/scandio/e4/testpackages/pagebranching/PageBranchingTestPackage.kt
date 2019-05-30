@@ -42,12 +42,12 @@ class PageBranchingTestPackage: TestPackage {
 
     override fun getVirtualUsers(): VirtualUserCollection {
         val virtualUsers = VirtualUserCollection()
-        virtualUsers.add(BranchCreator(), 0.05)
-        virtualUsers.add(BranchMerger(), 0.05)
-        virtualUsers.add(BranchOverviewCreator(), 0.05)
-        virtualUsers.add(BranchOverviewReader(), 0.1)
-        virtualUsers.add(BranchedPageReader(), 0.25)
-        virtualUsers.add(OriginPageReader(), 0.5)
+        virtualUsers.add(BranchCreator::class.java, 0.05)
+        virtualUsers.add(BranchMerger::class.java, 0.05)
+        virtualUsers.add(BranchOverviewCreator::class.java, 0.05)
+        virtualUsers.add(BranchOverviewReader::class.java, 0.1)
+        virtualUsers.add(BranchedPageReader::class.java, 0.25)
+        virtualUsers.add(OriginPageReader::class.java, 0.5)
         return virtualUsers
     }
 

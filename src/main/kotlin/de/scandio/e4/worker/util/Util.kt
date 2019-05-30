@@ -1,4 +1,4 @@
-package de.scandio.e4.util
+package de.scandio.e4.worker.util
 
 import de.scandio.e4.worker.util.WorkerUtils
 import org.apache.commons.io.FileUtils

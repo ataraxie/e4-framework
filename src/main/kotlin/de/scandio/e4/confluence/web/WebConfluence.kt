@@ -6,6 +6,7 @@ import de.scandio.e4.worker.util.WorkerUtils
 import org.apache.commons.io.FileUtils
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.TakesScreenshot
+import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -22,7 +23,7 @@ class WebConfluence(
 ): WebClient {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    private val dom: DomHelper = DomHelper(driver)
+    var dom: DomHelper = DomHelper(driver)
 
     override fun getWebDriver(): WebDriver {
         return this.driver
@@ -44,7 +45,17 @@ class WebConfluence(
             dom.insertText("#os_username", this.username)
             dom.insertText("#os_password", this.password)
             dom.click("#loginButton")
-            dom.awaitElementPresent(".pagebody", 10)
+            try {
+                dom.awaitElementPresent(".pagebody", 10)
+            } catch (e: TimeoutException) {
+                dom.click("#grow-intro-video-skip-button", 5)
+                dom.click("#grow-ic-content button[data-action='skip']")
+                dom.click(".intro-find-spaces-relevant-spaces label:first-child .intro-find-spaces-space")
+                dom.await(1000)
+                dom.click(".intro-find-spaces-button-continue")
+                dom.awaitElementPresent(".pagebody", 10)
+            }
+
         }
     }
 
@@ -58,7 +69,7 @@ class WebConfluence(
 
     }
 
-    fun takeScreenshot(screenshotName: String): String {
+    override fun takeScreenshot(screenshotName: String): String {
         val ts = driver as TakesScreenshot
         val source: File = ts.getScreenshotAs(OutputType.FILE)
         val dest = "$screenshotDir/$screenshotName-${Date().time}.png"
@@ -79,6 +90,11 @@ class WebConfluence(
     fun goToSpaceHomepage(spaceKey: String) {
         navigateTo("display/$spaceKey")
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
+    }
+
+    fun goToPage(pageId: Long) {
+        navigateTo("pages/viewpage.action?pageId=$pageId")
+        dom.awaitElementPresent("#main-content")
     }
 
     fun goToPage(spaceKey: String, pageTitle: String) {

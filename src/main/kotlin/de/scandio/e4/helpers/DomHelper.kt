@@ -1,6 +1,7 @@
 package de.scandio.atlassian.it.pocketquery.helpers
 
 import de.scandio.e4.enjoy.wait
+import de.scandio.e4.worker.util.Util
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebDriver
@@ -9,11 +10,16 @@ import org.openqa.selenium.support.ui.ExpectedCondition
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 class DomHelper(
         val driver: WebDriver,
-        val defaultDuration: Long = 20,
-        val defaultWaitTillPresent: Long = 1
+        var defaultDuration: Long = 20,
+        var defaultWaitTillPresent: Long = 1,
+        var screenshotBeforeClick: Boolean = false,
+        var screenshotBeforeInsert: Boolean = false,
+        var outDir: String = "/tmp",
+        val util: Util = Util()
 ) {
 
     fun clickCreateSpace() {
@@ -51,7 +57,11 @@ class DomHelper(
         wait(ExpectedConditions.invisibilityOf(findElement(selector)), duration)
     }
 
-    fun awaitElementPresent(selector: String, duration: Long = 60) {
+    fun awaitElementVisible(selector: String, duration: Long = this.defaultDuration) {
+        wait(ExpectedConditions.visibilityOf(findElement(selector)), duration)
+    }
+
+    fun awaitElementPresent(selector: String, duration: Long = this.defaultDuration) {
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
@@ -80,6 +90,9 @@ class DomHelper(
     }
 
     fun insertText(selector: String, text: String, awaitClickableSeconds: Long = this.defaultWaitTillPresent) {
+        if (this.screenshotBeforeInsert) {
+            this.util.takeScreenshot(driver, "$outDir/insert-$selector.png")
+        }
         awaitElementPresent(selector, awaitClickableSeconds)
         findElement(selector).sendKeys(text)
         await(10)
@@ -96,6 +109,9 @@ class DomHelper(
     }
 
     fun click(selector: String, awaitClickableSeconds: Long = this.defaultWaitTillPresent) {
+        if (this.screenshotBeforeClick) {
+            this.util.takeScreenshot(driver, "$outDir/click-$selector.png")
+        }
         awaitElementClickable(selector, awaitClickableSeconds)
         findElement(selector).click()
     }
@@ -114,7 +130,7 @@ class DomHelper(
     }
 
     fun await(ms: Long) {
-        Thread.sleep(ms)
+        driver.manage().timeouts().implicitlyWait(ms, TimeUnit.MILLISECONDS);
     }
 
     fun <T> wait(condition: ExpectedCondition<T>, duration: Long = this.defaultDuration) {

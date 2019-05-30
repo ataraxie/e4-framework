@@ -1,22 +1,10 @@
-package de.scandio.e4.setup
+package de.scandio.e4.rest
 
-import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
-import de.scandio.e4.enjoy.wait
-import de.scandio.e4.util.Util
 import de.scandio.e4.worker.confluence.rest.RestConfluence
-import io.github.bonigarcia.wdm.WebDriverManager
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.By
-import org.openqa.selenium.Dimension
-import org.openqa.selenium.interactions.Actions
-import org.openqa.selenium.WebElement
-import java.awt.SystemColor.window
-import java.util.concurrent.TimeUnit
+import kotlin.test.assertEquals
 
 
 /*
@@ -30,7 +18,7 @@ driver.findElement\(By.id\("(.*)"\)\)\.click\(\)
 dom.click("#$1")
  */
 
-class FindPages {
+class TestGetConfluenceUsers {
 
     private val BASE_URL = "http://e4-test:8090/"
     private val OUT_DIR = "/tmp/e4/out"
@@ -52,7 +40,9 @@ class FindPages {
 
     @Test
     fun test() {
-        print(restConfluence.findPages(10))
+        val confluenceUsers = restConfluence.confluenceUsers
+        println(confluenceUsers)
+        assertEquals(confluenceUsers.get(0), "admin")
     }
 
 }

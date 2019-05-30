@@ -1,7 +1,9 @@
 package de.scandio.e4.testpackages.vanilla.virtualusers
 
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
+import de.scandio.e4.worker.interfaces.WebClient
 
 
 /**
@@ -17,7 +19,7 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  */
 class Commentor : VirtualUser {
 
-    override fun getActions(): ActionCollection {
+    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
         TODO("Add Scenarios")
         return actions

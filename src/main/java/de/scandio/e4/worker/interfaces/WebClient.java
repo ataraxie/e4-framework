@@ -6,6 +6,8 @@ public interface WebClient {
 
 	WebDriver getWebDriver();
 
+	String takeScreenshot(String screenshotName);
+
 	void quit();
 
 }
