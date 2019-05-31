@@ -31,7 +31,7 @@ open class MergeBranchAction (
         val spaceKey: String,
         var branchName: String,
         val originPageTitle: String
-    ) : Action {
+    ) : Action() {
 
     protected var start: Long = 0
     protected var end: Long = 0

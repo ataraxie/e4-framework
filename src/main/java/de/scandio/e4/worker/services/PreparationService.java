@@ -71,6 +71,8 @@ public class PreparationService {
             log.error("Preparation Action failed.");
             ex.printStackTrace();
             applicationStatusService.setPreparationStatus(PreparationStatus.ERROR);
+        } finally {
+            webClient.quit();
         }
     }
 

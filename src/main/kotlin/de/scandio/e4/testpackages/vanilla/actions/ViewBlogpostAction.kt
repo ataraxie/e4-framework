@@ -12,7 +12,7 @@ class ViewBlogpostAction (
     val spaceKey: String,
     val blogpostTitle: String,
     val blogpostCreationDate: String
-    ) : Action {
+    ) : Action() {
 
     private var start: Long = 0
     private var end: Long = 0

@@ -10,7 +10,7 @@ import java.util.*
 class CreateSpaceAction(
         val spaceKey: String,
         val spaceName: String
-) : Action {
+) : Action() {
 
     private var start: Long = 0
     private var end: Long = 0

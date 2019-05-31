@@ -8,7 +8,7 @@ import java.util.*
 
 open class SearchAction (
     val searchString: String
-    ) : Action {
+    ) : Action() {
 
     protected var start: Long = 0
     protected var end: Long = 0

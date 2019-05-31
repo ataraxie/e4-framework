@@ -8,7 +8,7 @@ import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
 
-open class ViewRandomContent : Action {
+open class ViewRandomContent : Action() {
 
     protected var start: Long = 0
     protected var end: Long = 0

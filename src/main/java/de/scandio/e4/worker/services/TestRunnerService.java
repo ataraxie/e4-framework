@@ -78,28 +78,19 @@ public class TestRunnerService {
 
 		log.info("This worker with index {{}} needs to start {{}} users.", workerIndex, numVirtualUsersThisWorker);
 
-		for (int i = 0; i < numVirtualUsersThisWorker; i++) {
-			if (workerIndex + i > virtualUsers.size()) {
-				log.info("No more virtual users to run for worker with index {{}}", workerIndex);
-				break;
+		int vuserIndex = 0;
+		for (VirtualUser vuser : virtualUsers) {
+			if ((vuserIndex + 1) % (workerIndex + 1) == 0) {
+				final Thread virtualUserThread = createUserThread(vuser, config);
+				virtualUserThreads.add(virtualUserThread);
+				log.info("Created user thread: {{}}", vuser.getClass().getSimpleName());
 			}
-			final VirtualUser virtualUser = virtualUsers.get(workerIndex + i);
-			final Thread virtualUserThread = createUserThread(virtualUser, config);
-			virtualUserThreads.add(virtualUserThread);
-			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
+			vuserIndex++;
 		}
 
-		virtualUserThreads.forEach(thread -> {
-			try {
-				Thread.sleep(new Random().nextInt(50));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			thread.start();
-		});
+		virtualUserThreads.forEach(Thread::start);
 		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
-		// TODO: check whether tests need to be repeated instead of just blindly waiting for the threads
 		System.out.println("Waiting for tests to finish...");
 		for (Thread virtualUserThread : virtualUserThreads) {
 			virtualUserThread.join();
@@ -128,7 +119,7 @@ public class TestRunnerService {
 					while (true) {
 						long timePassedSinceStart = new Date().getTime() - threadStartTime;
 						if (timePassedSinceStart < durationInSeconds * 1000) {
-							log.info("{{}}ms have passed since start which is belog {{}}sec. Running again.", timePassedSinceStart, durationInSeconds);
+							log.info("{{}}ms have passed since start which is below {{}}sec. Running again.", timePassedSinceStart, durationInSeconds);
 							runActions(virtualUser, webClient, restClient, threadStartTime, durationInSeconds);
 						} else {
 							log.info("{{}}ms have passed since start which is above {{}}sec. Stopping.", timePassedSinceStart, durationInSeconds);
@@ -139,6 +130,7 @@ public class TestRunnerService {
 				} else {
 					runActions(virtualUser, webClient, restClient, threadStartTime, durationInSeconds);
 				}
+
 			} catch (Exception e) {
 				log.error("Could not create WebClient and/or RestClient for VirtualUser thread", e);
 			}
@@ -159,8 +151,7 @@ public class TestRunnerService {
 					break;
 				}
 				log.debug("Executing action {{}}", action.getClass().getSimpleName());
-
-				action.execute(webClient, restClient);
+				action.executeWithRandomDelay(webClient, restClient);
 				final long timeTaken = action.getTimeTaken();
 				storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
 			} catch (Exception e) {
