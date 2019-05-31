@@ -8,6 +8,10 @@ public interface WebClient {
 
 	String takeScreenshot(String screenshotName);
 
+	String dumpHtml(String dumpName);
+
 	void quit();
+
+	void login();
 
 }

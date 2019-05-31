@@ -37,11 +37,13 @@ class WebConfluence(
         return this.dom
     }
 
-    fun login() {
-        // PhantomJS: about:blank, Chrome: data:,
-        if (driver.currentUrl.equals("about:blank") || driver.currentUrl.equals("data:,")) { // only login once!
-            navigateTo("login.action")
-            dom.awaitElementPresent("form[name='loginform']", 10)
+    override fun login() {
+        // Do the following if you want to do it only initially when the browser is opened
+        // if (driver.currentUrl.equals("about:blank") || driver.currentUrl.equals("data:,")) { // only login once!
+        navigateTo("login.action")
+        dom.awaitElementPresent("form[name='loginform'], .login-section p.last, #main-content", 10)
+        try {
+            dom.findElement("form[name='loginform']")
             dom.insertText("#os_username", this.username)
             dom.insertText("#os_password", this.password)
             dom.click("#loginButton")
@@ -55,7 +57,8 @@ class WebConfluence(
                 dom.click(".intro-find-spaces-button-continue")
                 dom.awaitElementPresent(".pagebody", 10)
             }
-
+        } catch (e: Exception) {
+            log.debug("Went to login screen but was already logged in")
         }
     }
 
@@ -73,17 +76,16 @@ class WebConfluence(
         val ts = driver as TakesScreenshot
         val source: File = ts.getScreenshotAs(OutputType.FILE)
         val dest = "$screenshotDir/$screenshotName-${Date().time}.png"
-        log.debug("[SCREENSHOT] {{}}", dest)
-        System.out.println(dest)
+        log.info("[SCREENSHOT] {{}}", dest)
         val destination = File(dest)
         FileUtils.copyFile(source, destination)
         return dest
     }
 
-    fun dumpHtml(dumpName: String): String {
+    override fun dumpHtml(dumpName: String): String {
         val dest = "$screenshotDir/${WorkerUtils.getRuntimeName()}-$dumpName.html"
         FileUtils.writeStringToFile(File(dest), driver.pageSource, "UTF-8", false);
-        System.out.println(dest)
+        log.info("[DUMP] {{}}", dest)
         return dest
     }
 

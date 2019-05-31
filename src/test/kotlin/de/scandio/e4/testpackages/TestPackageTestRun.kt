@@ -8,12 +8,15 @@ import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.util.WorkerUtils
+import org.slf4j.LoggerFactory
 import org.slf4j.LoggerFactory.getILoggerFactory
 
 
 abstract class TestPackageTestRun {
 
     val loggerContext = getILoggerFactory() as LoggerContext
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     protected var webConfluence: WebConfluence? = null
     protected var restConfluence: RestConfluence? = null
@@ -31,7 +34,7 @@ abstract class TestPackageTestRun {
     }
 
     protected fun setLogLevel(packagePath: String, level: Level) {
-        loggerContext.getLogger("org.apache").level = level
+        loggerContext.getLogger(packagePath).level = level
     }
 
     protected fun setup() {
@@ -46,24 +49,24 @@ abstract class TestPackageTestRun {
     }
 
     protected fun executeTestPackage(testPackage: TestPackage) {
-        println("==============================================================")
-        println("START executing ${testPackage.virtualUsers.size} virtual users")
+        log.info("==============================================================")
+        log.info("START executing ${testPackage.virtualUsers.size} virtual users")
         for (virtualUserClass in testPackage.virtualUsers) {
             val virtualUser = virtualUserClass.newInstance()
-            println("Executing virtual user ${virtualUser.javaClass.simpleName}")
+            log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
             val measurement = executeActions(virtualUser.getActions(this.webConfluence, this.restConfluence))
-            println("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
+            log.info("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
         }
-        println("DONE executing ${testPackage.virtualUsers.size} virtual users")
-        println("==============================================================")
+        log.info("DONE executing ${testPackage.virtualUsers.size} virtual users")
+        log.info("==============================================================")
     }
 
     protected fun executeTestPackagePrepare(testPackage: TestPackage) {
-        println("==============================================================")
-        println("START executing ${testPackage.setupActions.size} setup actions")
+        log.info("==============================================================")
+        log.info("START executing ${testPackage.setupActions.size} setup actions")
         executeActions(testPackage.setupActions)
-        println("DONE executing setup actions")
-        println("==============================================================")
+        log.info("DONE executing setup actions")
+        log.info("==============================================================")
     }
 
     protected fun executeAction(action: Action) {
@@ -71,7 +74,7 @@ abstract class TestPackageTestRun {
         val runtimeName = "afteraction-${action.javaClass.simpleName}"
         webConfluence!!.takeScreenshot(runtimeName)
         webConfluence!!.dumpHtml(runtimeName)
-        println("Time taken: ${action.timeTaken}")
+        log.info("Time taken: ${action.timeTaken}")
     }
 
     protected fun executeActions(actions: ActionCollection): Measurement {
@@ -84,7 +87,7 @@ abstract class TestPackageTestRun {
                 if (!actions.isExcludedFromMeasurement(action)) {
                     totalTimeTaken += action.timeTaken
                     numActionsRun += 1
-                    println("Time taken for action ${action.javaClass.simpleName}: ${action.timeTaken}")
+                    log.info("Time taken for action ${action.javaClass.simpleName}: ${action.timeTaken}")
                 } else {
                     numExcludedActions += 1
                 }

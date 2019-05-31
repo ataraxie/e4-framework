@@ -62,10 +62,10 @@ public class PreparationService {
 
             for (Action action : setupScenarios) {
                 action.execute(webClient, restConfluence);
-                System.out.println("Finished prep action "+ action.getClass().getSimpleName());
+                log.info("Finished prep action "+ action.getClass().getSimpleName());
             }
 
-            System.out.println("[E4W] Preparations are finished!");
+            log.info("[E4W] Preparations are finished!");
             applicationStatusService.setPreparationStatus(PreparationStatus.FINISHED);
         } catch (Exception ex) {
             log.error("Preparation Action failed.");

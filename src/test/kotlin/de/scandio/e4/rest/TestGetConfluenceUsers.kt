@@ -4,6 +4,7 @@ import de.scandio.e4.worker.confluence.rest.RestConfluence
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
 
@@ -19,6 +20,8 @@ dom.click("#$1")
  */
 
 class TestGetConfluenceUsers {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val BASE_URL = "http://e4-test:8090/"
     private val OUT_DIR = "/tmp/e4/out"
@@ -41,7 +44,7 @@ class TestGetConfluenceUsers {
     @Test
     fun test() {
         val confluenceUsers = restConfluence.confluenceUsers
-        println(confluenceUsers)
+        log.info(confluenceUsers.toString())
         assertEquals(confluenceUsers.get(0), "admin")
     }
 

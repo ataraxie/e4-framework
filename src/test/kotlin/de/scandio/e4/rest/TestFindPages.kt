@@ -4,6 +4,7 @@ import de.scandio.e4.worker.confluence.rest.RestConfluence
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import kotlin.test.assertTrue
 
 
@@ -19,6 +20,8 @@ dom.click("#$1")
  */
 
 class TestFindPages {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val BASE_URL = "http://e4-test:8090/"
     private val OUT_DIR = "/tmp/e4/out"
@@ -41,7 +44,7 @@ class TestFindPages {
     @Test
     fun test() {
         val pageIds = restConfluence.findPages(10)
-        println(pageIds)
+        log.info("{{}}", pageIds)
         assertTrue(pageIds.size > 0)
     }
 

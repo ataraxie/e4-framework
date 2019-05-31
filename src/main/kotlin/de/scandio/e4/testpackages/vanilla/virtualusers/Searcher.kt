@@ -3,6 +3,7 @@ package de.scandio.e4.testpackages.vanilla.virtualusers
 import de.scandio.e4.testpackages.vanilla.actions.QuicksearchAction
 import de.scandio.e4.testpackages.vanilla.actions.SearchAction
 import de.scandio.e4.testpackages.vanilla.actions.SearchAndClickFiltersAction
+import de.scandio.e4.testpackages.vanilla.actions.ViewRandomContent
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
@@ -32,15 +33,16 @@ class Searcher : VirtualUser {
 
     override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
-        actions.add(QuicksearchAction("E4"))
-        actions.add(QuicksearchAction("E4 Reader"))
-        actions.add(QuicksearchAction("E4 Reader Page 1"))
-
-        actions.add(SearchAction("E4"))
-        actions.add(SearchAction("E4 Reader"))
-        actions.add(SearchAction("E4 Reader Page 1"))
-
-        actions.add(SearchAndClickFiltersAction("E4"))
+        actions.add(ViewRandomContent())
+//        actions.add(QuicksearchAction("E4"))
+//        actions.add(QuicksearchAction("E4 Reader"))
+//        actions.add(QuicksearchAction("E4 Reader Page 1"))
+//
+//        actions.add(SearchAction("E4"))
+//        actions.add(SearchAction("E4 Reader"))
+//        actions.add(SearchAction("E4 Reader Page 1"))
+//
+//        actions.add(SearchAndClickFiltersAction("E4"))
         return actions
     }
 }

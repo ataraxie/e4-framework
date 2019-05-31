@@ -11,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.By
 import org.openqa.selenium.Dimension
+import org.slf4j.LoggerFactory
 
 
 /*
@@ -25,6 +26,8 @@ dom.click("#$1")
  */
 
 open class ConfluenceDataCenterSetupStage1 {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     protected val BASE_URL = "http://confluence-cluster-6153-lb:26153/"
     protected val OUT_DIR = "/tmp/e4/out"
@@ -101,7 +104,7 @@ open class ConfluenceDataCenterSetupStage1 {
         dom.click("#setup-next-button")
 
         /* This takes a few minutes! Make sure the next step has a wait value! */
-        println("Database setup in progress. This takes a while. Grab some coffee and run stage 2 afterwards\n")
+        log.info("Database setup in progress. This takes a while. Grab some coffee and run stage 2 afterwards\n")
         shot()
     }
 

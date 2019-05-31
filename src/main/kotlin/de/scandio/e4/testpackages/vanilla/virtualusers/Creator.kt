@@ -1,5 +1,6 @@
 package de.scandio.e4.testpackages.vanilla.virtualusers
 
+import de.scandio.e4.testpackages.vanilla.actions.ViewRandomContent
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
@@ -21,7 +22,7 @@ class Creator : VirtualUser {
 
     override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
-        TODO("Add Scenarios")
+        actions.add(ViewRandomContent())
 //        val spaceKey = "E4${getRandomNumber(1, 999)}"
 //        val spaceName = "01 E4 Space ${getRandomNumber(1, 999)}"
 //        var originPageTitle = "E4 Page ${getRandomNumber(1, 999)}"

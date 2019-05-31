@@ -1,5 +1,6 @@
 package de.scandio.e4.testpackages.vanilla.virtualusers
 
+import de.scandio.e4.testpackages.vanilla.actions.ViewRandomContent
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
@@ -21,7 +22,7 @@ class Editor : VirtualUser {
 
     override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
         val actions = ActionCollection()
-        TODO("Add Scenarios")
+        actions.add(ViewRandomContent())
         return actions
     }
 }

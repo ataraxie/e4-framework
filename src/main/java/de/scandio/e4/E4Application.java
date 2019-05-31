@@ -2,6 +2,8 @@ package de.scandio.e4;
 
 import de.scandio.e4.client.E4Client;
 import org.apache.commons.cli.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import java.util.HashMap;
@@ -9,16 +11,18 @@ import java.util.HashMap;
 @SpringBootApplication
 public class E4Application {
 
+	private static final Logger log = LoggerFactory.getLogger(E4Application.class);
+
 	public static void main(String[] args) {
 		final CommandLine parsedArgs = parseArgs(args);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			System.out.println("Shutdown signal received.. shutting down threads.");
+			log.info("Shutdown signal received.. shutting down threads.");
 			Thread.getAllStackTraces().keySet().forEach(thread -> {
 				try {
 					thread.interrupt();
 				} catch (Exception ex) {
-					System.out.println("Error interrupting thread " + thread);
+					log.info("Error interrupting thread " + thread);
 					ex.printStackTrace();
 				}
 			});
@@ -31,14 +35,14 @@ public class E4Application {
 				startClient(parsedArgs);
 			}
 		} catch (Exception ex) {
-			System.out.println("Encountered unenjoyable exception:");
+			log.info("Encountered unenjoyable exception:");
 			ex.printStackTrace();
 			System.exit(1);
 		}
 	}
 
 	public static void startClient(CommandLine parsedArgs) throws Exception {
-		System.out.println("Starting E4 Client... Enjoy!");
+		log.info("Starting E4 Client... Enjoy!");
 		final E4Client e4Client = new E4Client(parsedArgs);
 		e4Client.start();
 	}
@@ -51,14 +55,14 @@ public class E4Application {
 			port = "4444";
 		}
 
-		System.out.println("Starting E4 in worker-only mode... Enjoy!");
+		log.info("Starting E4 in worker-only mode... Enjoy!");
 
 		final HashMap<String, Object> props = new HashMap<>();
 		props.put("server.port", port);
 
 		if (parsedArgs.hasOption("screenshots-dir")) {
 			props.put("screenshots.dir", parsedArgs.getOptionValue("screenshots-dir"));
-			System.out.println("Set custom screenshots dir: " + props.get("screenshots.dir"));
+			log.info("Set custom screenshots dir: " + props.get("screenshots.dir"));
 		}
 
 		new SpringApplicationBuilder()
@@ -66,7 +70,7 @@ public class E4Application {
 				.properties(props)
 				.run();
 
-		System.out.println("E4 Worker is running on: http://localhost:"+port+"/ and waiting for commands.");
+		log.info("E4 Worker is running on: http://localhost:"+port+"/ and waiting for commands.");
 	}
 
 	/**
@@ -97,7 +101,7 @@ public class E4Application {
 		try {
 			return parser.parse(options, args);
 		} catch (ParseException e) {
-			System.out.println(e.getMessage());
+			log.info(e.getMessage());
 			new HelpFormatter().printHelp("java -jar your-e4.jar", options);
 			System.exit(1);
 		}

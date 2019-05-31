@@ -5,6 +5,8 @@ import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.client.config.ConfigUtil;
 import de.scandio.e4.client.orchestration.OrchestrationUtil;
 import org.apache.commons.cli.CommandLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -13,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class E4Client {
+
+	private Logger log = LoggerFactory.getLogger(E4Client.class);
+
 	private final CommandLine parsedArgs;
 
 	public E4Client(CommandLine parsedArgs) {
@@ -23,19 +28,17 @@ public class E4Client {
 		final String configPath = parsedArgs.getOptionValue("config");
 		final ClientConfig clientConfig = ConfigUtil.readConfigFromFile(configPath);
 
-		System.out.println();
-		System.out.println(clientConfig);
-		System.out.println();
+		log.info(clientConfig.toString());
 
 		// TODO: validate config instead of just throwing exceptions in getters
 
 		final List<String> workers = clientConfig.getWorkers();
 
 		if (workers == null || workers.size() == 0) {
-			System.out.println("No workers provided, starting a local worker...");
+			log.info("No workers provided, starting a local worker...");
 			orchestrateLocal(clientConfig);
 		} else {
-			System.out.println("Found remote workers! Let's see if we can connect to them.");
+			log.info("Found remote workers! Let's see if we can connect to them.");
 			orchestrateRemote(clientConfig);
 		}
 	}
@@ -50,7 +53,7 @@ public class E4Client {
 
 			if (parsedArgs.hasOption("screenshots-dir")) {
 				put("screenshots.dir", parsedArgs.getOptionValue("screenshots-dir"));
-				System.out.println("Set custom screenshots dir: " + get("screenshots.dir"));
+				log.info("Set custom screenshots dir: " + get("screenshots.dir"));
 			}
 		}};
 
@@ -62,19 +65,19 @@ public class E4Client {
 		final String localWorkerPort = run.getEnvironment().getProperty("local.server.port");
 		final String localWorkerURL = "http://localhost:" + localWorkerPort + "/";
 
-		System.out.println("Started local worker at: " + localWorkerURL);
-		System.out.println("Checking if local worker is healthy via: "+localWorkerURL+"e4/status");
+		log.info("Started local worker at: " + localWorkerURL);
+		log.info("Checking if local worker is healthy via: "+localWorkerURL+"e4/status");
 
 		final int statusCode = WorkerRestUtil.getStatus(localWorkerURL).getStatusCodeValue();
 
 		if (statusCode == 200) {
-			System.out.println("Local worker is healthy and enjoying itself!");
+			log.info("Local worker is healthy and enjoying itself!");
 			clientConfig.setWorkers(Collections.singletonList(localWorkerURL));
 			OrchestrationUtil.executePhases(clientConfig);
 			System.exit(0);
 		} else {
-			System.out.println("Local worker is unhealthy. Status code was: " + statusCode);
-			System.out.println("Aborting...");
+			log.info("Local worker is unhealthy. Status code was: " + statusCode);
+			log.info("Aborting...");
 			System.exit(1);
 		}
 	}
@@ -84,13 +87,13 @@ public class E4Client {
 			try {
 				final int statusCode = WorkerRestUtil.getStatus(workerURL).getStatusCodeValue();
 				if (statusCode == 200) {
-					System.out.println(workerURL + "e4/status returned 200 - OK!");
+					log.info(workerURL + "e4/status returned 200 - OK!");
 				} else {
 					throw new Exception("Status code wasn't 200 but " + statusCode);
 				}
 			} catch (Exception ex) {
-				System.out.println("Worker unavailable: "+workerURL);
-				System.out.println(ex.getMessage());
+				log.info("Worker unavailable: "+workerURL);
+				log.info(ex.getMessage());
 				System.exit(1);
 			}
 		}

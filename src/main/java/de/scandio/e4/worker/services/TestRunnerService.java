@@ -67,7 +67,7 @@ public class TestRunnerService {
 			}
 		}
 
-		log.debug("Created {{}} virtual users for test package", virtualUsers.size());
+		logVirtualUsers(virtualUsers);
 
 		final List<Thread> virtualUserThreads = new ArrayList<>();
 		final int numVirtualUsersThisWorker = numConcurrentUsers / numWorkers;
@@ -91,13 +91,22 @@ public class TestRunnerService {
 		virtualUserThreads.forEach(Thread::start);
 		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
-		System.out.println("Waiting for tests to finish...");
+		log.info("Waiting for tests to finish...");
 		for (Thread virtualUserThread : virtualUserThreads) {
 			virtualUserThread.join();
 		}
-		System.out.println("All tests are finished!");
+		log.info("All tests are finished!");
 
 		applicationStatusService.setTestsStatus(TestsStatus.FINISHED);
+	}
+
+	private void logVirtualUsers(List<VirtualUser> virtualUsers) {
+		log.info("Created the following {{}} virtual users for test package...", virtualUsers.size());
+		int vuserIndex = 0;
+		for (VirtualUser virtualUser : virtualUsers) {
+			log.info("{}: {}", vuserIndex, virtualUser.getClass().getSimpleName());
+			vuserIndex++;
+		}
 	}
 
 	private Thread createUserThread(VirtualUser virtualUser, WorkerConfig config) throws Exception {
@@ -152,11 +161,13 @@ public class TestRunnerService {
 				}
 				log.debug("Executing action {{}}", action.getClass().getSimpleName());
 				action.executeWithRandomDelay(webClient, restClient);
+				webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
+				webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
 				final long timeTaken = action.getTimeTaken();
 				storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
 			} catch (Exception e) {
 				log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
-				System.out.println(webClient.takeScreenshot("failed-scenario"));
+				log.info(webClient.takeScreenshot("failed-scenario"));
 				// TODO: recordMeasurement action as failed somewhere
 				e.printStackTrace();
 			}
