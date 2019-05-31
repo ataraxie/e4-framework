@@ -23,20 +23,26 @@ public class PreparationService {
 
     private final ApplicationStatusService applicationStatusService;
     private final UserCredentialsService userCredentialsService;
+    private final StorageService storageService;
 
-    public PreparationService(ApplicationStatusService applicationStatusService, UserCredentialsService userCredentialsService) {
+    public PreparationService(ApplicationStatusService applicationStatusService,
+                              UserCredentialsService userCredentialsService,
+                              StorageService storageService) {
         this.applicationStatusService = applicationStatusService;
         this.userCredentialsService = userCredentialsService;
+        this.storageService = storageService;
     }
 
-    public void prepare(WorkerConfig config) throws Exception {
+    public void prepare(int workerIndex, WorkerConfig config) throws Exception {
         if (applicationStatusService.getTestsStatus().equals(TestsStatus.RUNNING)) {
             throw new Exception("Can not prepare while tests are running!");
         }
 
-        System.out.println("[E4W] Preparing...");
+        log.info("[E4W] Preparing worker with index {{}} ...", workerIndex);
         applicationStatusService.setPreparationStatus(PreparationStatus.ONGOING);
         applicationStatusService.setConfig(config);
+
+        storageService.setWorkerIndex(workerIndex);
 
         log.info("Running prepare actions of package {{}} against URL {{}}", config.getTestPackage(), config.getTarget());
 

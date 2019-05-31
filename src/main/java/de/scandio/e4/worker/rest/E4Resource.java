@@ -62,13 +62,16 @@ public class E4Resource {
 	@POST
 	@Path("/prepare")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response prepare(WorkerConfig workerConfig) {
+	public Response prepare(PreparePostParams params) {
+		WorkerConfig workerConfig = params.getWorkerConfig();
+		int workerIndex = params.getWorkerIndex();
+
 		log.debug("[ENDPOINT] /prepare - config:" + workerConfig);
 		Response response;
 		try {
 			new Thread(() -> {
 				try {
-					preparationService.prepare(workerConfig);
+					preparationService.prepare(workerIndex, workerConfig);
 				} catch (Exception e) {
 					e.printStackTrace();
 					applicationStatusService.setPreparationStatus(PreparationStatus.ERROR);

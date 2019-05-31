@@ -13,6 +13,8 @@ public class StorageService {
 
 	private static final Logger log = LoggerFactory.getLogger(StorageService.class);
 
+	private int workerIndex;
+
 	public void recordMeasurement(
 			VirtualUser virtualUser,
 			Action action,
@@ -21,5 +23,13 @@ public class StorageService {
 
 		log.warn("[RECORD] {{}} | {{}} | {{}} | {{}}", timeTaken, WorkerUtils.getRuntimeName(),
 				virtualUser.getClass().getSimpleName(), action.getClass().getSimpleName());
+	}
+
+	public int getWorkerIndex() {
+		return workerIndex;
+	}
+
+	public void setWorkerIndex(int workerIndex) {
+		this.workerIndex = workerIndex;
 	}
 }

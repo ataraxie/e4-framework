@@ -26,11 +26,12 @@ public class PreparationPhase implements OrchestrationPhase {
 		System.out.println("Distributing config to workers:");
 		System.out.println(workerConfig);
 
-		for (String workerURL : workers) {
-			System.out.println("Telling "+workerURL+" to prepare.");
-			final ResponseEntity<String> response = WorkerRestUtil.postPrepare(workerURL, workerConfig);
+		for (int i = 0; i < workers.size(); i++) {
+			String workerUrl = workers.get(i);
+			System.out.println("Telling "+workerUrl+" to prepare.");
+			final ResponseEntity<String> response = WorkerRestUtil.postPrepare(workerUrl, i, workerConfig);
 			if (response.getStatusCodeValue() != 200) {
-				throw new Exception("Worker " + workerURL + " responded with " + response.getStatusCodeValue() + " for /e4/prepare.");
+				throw new Exception("Worker " + workerUrl + " responded with " + response.getStatusCodeValue() + " for /e4/prepare.");
 			}
 		}
 

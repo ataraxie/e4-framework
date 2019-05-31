@@ -74,12 +74,16 @@ public class TestRunnerService {
 
 		final List<UserCredentials> allUserCredentials = userCredentialsService.getAllUsers();
 		final UserCredentials userCredentials = WorkerUtils.getRandomItem(allUserCredentials);
+		final int workerIndex = storageService.getWorkerIndex();
 
-		log.info("This worker needs to start " + numVirtualUsersThisWorker + " users.");
+		log.info("This worker with index {{}} needs to start {{}} users.", workerIndex, numVirtualUsersThisWorker);
 
 		for (int i = 0; i < numVirtualUsersThisWorker; i++) {
-//			final VirtualUser virtualUser = virtualUsers.get(i % virtualUsers.size()); HMM
-			final VirtualUser virtualUser = virtualUsers.get(i);
+			if (workerIndex + i > virtualUsers.size()) {
+				log.info("No more virtual users to run for worker with index {{}}", workerIndex);
+				break;
+			}
+			final VirtualUser virtualUser = virtualUsers.get(workerIndex + i);
 			final Thread virtualUserThread = createUserThread(virtualUser, config);
 			virtualUserThreads.add(virtualUserThread);
 			log.info("Created user thread: "+virtualUser.getClass().getSimpleName());
