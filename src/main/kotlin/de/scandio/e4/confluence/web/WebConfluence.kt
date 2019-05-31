@@ -51,7 +51,7 @@ class WebConfluence(
                 dom.click("#grow-intro-video-skip-button", 5)
                 dom.click("#grow-ic-content button[data-action='skip']")
                 dom.click(".intro-find-spaces-relevant-spaces label:first-child .intro-find-spaces-space")
-                dom.await(1000)
+                dom.awaitMilliseconds(1000)
                 dom.click(".intro-find-spaces-button-continue")
                 dom.awaitElementPresent(".pagebody", 10)
             }
@@ -146,7 +146,7 @@ class WebConfluence(
         dom.insertText("#create-space-form input[name='key']", spaceKey)
         dom.insertText("#create-space-form input[name='name']", spaceName)
         dom.awaitAttributeNotPresent("#create-space-form .aui-button[name='create']", "disabled")
-        dom.await(1000) // TODO: Not sure why this anymore
+        dom.awaitMilliseconds(1000) // TODO: Not sure why this anymore
         dom.click("#create-space-form .aui-button[name='create']")
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
     }

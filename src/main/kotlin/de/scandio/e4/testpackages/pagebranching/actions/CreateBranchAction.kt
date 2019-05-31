@@ -53,7 +53,7 @@ open class CreateBranchAction (
         dom.insertText("input#branch-name", branchName)
         dom.click("#pagebranching-branch-page-button")
         webConfluence.takeScreenshot("TEST-2")
-        dom.await(2000)
+        dom.awaitMilliseconds(2000)
         dom.awaitElementPresent(".page-branching-branch-meta")
         this.end = Date().time
     }

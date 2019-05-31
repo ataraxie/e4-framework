@@ -3,6 +3,7 @@ package de.scandio.e4.worker.services;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
+import de.scandio.e4.worker.collections.ActionCollection;
 import de.scandio.e4.worker.collections.VirtualUserCollection;
 import de.scandio.e4.worker.interfaces.*;
 import de.scandio.e4.worker.util.UserCredentials;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -105,6 +107,8 @@ public class TestRunnerService {
 
 	private Thread createUserThread(VirtualUser virtualUser, WorkerConfig config) throws Exception {
 		final String targetUrl = config.getTarget();
+		final long threadStartTime = new Date().getTime();
+		final long durationInSeconds = config.getDurationInSeconds();
 
 		final Thread virtualUserThread = new Thread(() -> {
 			try {
@@ -116,27 +120,20 @@ public class TestRunnerService {
 
 				log.info("Executing virtual user {{}} with actual user {{}}", virtualUser.getClass().getSimpleName(), username);
 
-				// TODO: this might need to be an infinite loop later if repeatTests == true
-				for (Action action : virtualUser.getActions(webClient, restClient)) {
-					try {
-						// TODO: right now only using hardcoded admin - later use UserCredentialsService
-						log.debug("Executing action {{}}", action.getClass().getSimpleName());
-
-						action.execute(webClient, restClient);
-						final long timeTaken = action.getTimeTaken();
-						storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
-					} catch (Exception e) {
-						log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
-						if (webClient != null) {
-							System.out.println(webClient.takeScreenshot("failed-scenario"));
-						}
-						// TODO: recordMeasurement action as failed somewhere
-						e.printStackTrace();
-					} finally {
-						if (webClient != null) {
+				if (durationInSeconds > 0) {
+					while (true) {
+						long timePassedSinceStart = new Date().getTime() - threadStartTime;
+						if (timePassedSinceStart < durationInSeconds * 1000) {
+							log.info("{{}}ms have passed since start which is belog {{}}sec. Running again.", timePassedSinceStart, durationInSeconds);
+							runActions(virtualUser, webClient, restClient, threadStartTime, durationInSeconds);
+						} else {
+							log.info("{{}}ms have passed since start which is above {{}}sec. Stopping.", timePassedSinceStart, durationInSeconds);
 							webClient.quit();
+							break;
 						}
 					}
+				} else {
+					runActions(virtualUser, webClient, restClient, threadStartTime, durationInSeconds);
 				}
 			} catch (Exception e) {
 				log.error("Could not create WebClient and/or RestClient for VirtualUser thread", e);
@@ -145,6 +142,30 @@ public class TestRunnerService {
 		});
 		virtualUserThread.setDaemon(true);
 		return virtualUserThread;
+	}
+
+	private void runActions(VirtualUser virtualUser, WebClient webClient, RestClient restClient, long threadStartTime, long durationInSeconds) {
+		ActionCollection actions = virtualUser.getActions(webClient, restClient);
+		log.info("Running {{}} actions for virtual user", actions.size());
+		for (Action action : actions) {
+			try {
+				long workerTimeRunning = new Date().getTime() - threadStartTime;
+				if (workerTimeRunning > durationInSeconds * 1000) {
+					log.info("Worker has been running longer than {{}} seconds. Stopping.",  durationInSeconds);
+					break;
+				}
+				log.debug("Executing action {{}}", action.getClass().getSimpleName());
+
+				action.execute(webClient, restClient);
+				final long timeTaken = action.getTimeTaken();
+				storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
+			} catch (Exception e) {
+				log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
+				System.out.println(webClient.takeScreenshot("failed-scenario"));
+				// TODO: recordMeasurement action as failed somewhere
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

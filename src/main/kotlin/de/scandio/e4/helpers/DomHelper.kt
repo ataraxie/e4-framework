@@ -95,7 +95,7 @@ class DomHelper(
         }
         awaitElementPresent(selector, awaitClickableSeconds)
         findElement(selector).sendKeys(text)
-        await(10)
+        awaitMilliseconds(10)
     }
 
     fun insertTextTinyMce(text: String) {
@@ -105,7 +105,7 @@ class DomHelper(
 
     fun clearText(selector: String) {
         findElement(selector).clear()
-        await(10)
+        awaitMilliseconds(10)
     }
 
     fun click(selector: String, awaitClickableSeconds: Long = this.defaultWaitTillPresent) {
@@ -129,16 +129,24 @@ class DomHelper(
         return driver.findElements(By.cssSelector(cssSelector))
     }
 
-    fun await(ms: Long) {
-        driver.manage().timeouts().implicitlyWait(ms, TimeUnit.MILLISECONDS);
+    fun awaitMilliseconds(ms: Long) {
+        Thread.sleep(ms)
+    }
+
+    fun awaitSeconds(seconds: Long) {
+        Thread.sleep(seconds * 1000)
+    }
+
+    fun awaitMinutes(minutes: Long) {
+        Thread.sleep(minutes * 60 * 1000)
     }
 
     fun <T> wait(condition: ExpectedCondition<T>, duration: Long = this.defaultDuration) {
-        await(10)
+        awaitMilliseconds(10)
         driver.wait(
                 Duration.ofSeconds(duration),
                 condition
         )
-        await(10)
+        awaitMilliseconds(10)
     }
 }

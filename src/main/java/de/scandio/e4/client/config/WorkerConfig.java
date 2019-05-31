@@ -5,9 +5,10 @@ public class WorkerConfig {
 	private String username;
 	private String password;
 	private String testPackage;
-	private boolean repeatTeasts;
+	private boolean repeatTests;
 	private int numConcurrentUsers;
 	private int numWorkers;
+	private long durationInSeconds;
 
 
 	public String getTarget() {
@@ -42,12 +43,12 @@ public class WorkerConfig {
 		this.testPackage = testPackage;
 	}
 
-	public boolean isRepeatTeasts() {
-		return repeatTeasts;
+	public boolean isRepeatTests() {
+		return repeatTests;
 	}
 
-	public void setRepeatTeasts(boolean repeatTeasts) {
-		this.repeatTeasts = repeatTeasts;
+	public void setRepeatTests(boolean repeatTests) {
+		this.repeatTests = repeatTests;
 	}
 
 	public void setNumConcurrentUsers(int numConcurrentUsers) {
@@ -66,6 +67,14 @@ public class WorkerConfig {
 		return numWorkers;
 	}
 
+	public long getDurationInSeconds() {
+		return durationInSeconds;
+	}
+
+	public void setDurationInSeconds(long durationInSeconds) {
+		this.durationInSeconds = durationInSeconds;
+	}
+
 	public static WorkerConfig from(ClientConfig clientConfig) {
 		final WorkerConfig workerConfig = new WorkerConfig();
 
@@ -73,7 +82,8 @@ public class WorkerConfig {
 		workerConfig.setUsername(clientConfig.getTarget().getAdminUser());
 		workerConfig.setPassword(clientConfig.getTarget().getAdminPassword());
 
-		workerConfig.setRepeatTeasts(clientConfig.getDurationInSeconds() > 0);
+		workerConfig.setRepeatTests(clientConfig.getDurationInSeconds() > 0);
+		workerConfig.setDurationInSeconds(clientConfig.getDurationInSeconds());
 		workerConfig.setNumConcurrentUsers(clientConfig.getNumConcurrentUsers());
 		workerConfig.setNumWorkers(clientConfig.getWorkers().size());
 		workerConfig.setTestPackage(clientConfig.getTestPackage());
@@ -88,7 +98,7 @@ public class WorkerConfig {
 				", username='" + username + '\'' +
 				", password='" + password + '\'' +
 				", testPackage='" + testPackage + '\'' +
-				", repeatTeasts=" + repeatTeasts +
+				", repeatTests=" + repeatTests +
 				", numConcurrentUsers=" + numConcurrentUsers +
 				'}';
 	}

@@ -1,0 +1,14 @@
+{
+  "target": {
+    "url": "http://contabo:8090/",
+    "adminUser": "admin",
+    "adminPassword": "admin"
+  },
+  "testPackage": "de.scandio.e4.testpackages.vanilla.VanillaTestPackage",
+  "screenshotDir": "/tmp/selenium",
+  "numConcurrentUsers": 1,
+  "durationInSeconds": 10,
+  "workers": [
+    "http://e4-test:4444/"
+  ]
+}
