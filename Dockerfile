@@ -27,4 +27,4 @@ RUN mkdir -p /opt/selenium \
 RUN mkdir /tmp/e4
 
 CMD wget -O e4.jar $E4_JAR_URL \
- && java -jar e4.jar -p $E4_PORT --worker-only --screenshots-dir /tmp/e4
+ && java -jar e4.jar -p $E4_PORT --worker-only --screenshots-dir $E4_SCREENSHOTS_DIR
