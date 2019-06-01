@@ -17,20 +17,20 @@ driver.findElement\(By.id\("(.*)"\)\)\.click\(\)
 dom.click("#$1")
  */
 
-class ConfluenceDataCenterSetupStage2 : ConfluenceDataCenterSetupStage1() {
+class ConfluenceDataCenterSetupStage2 : SetupBaseTest() {
 
     @Before
-    override fun before() {
-        super.before()
+    fun before() {
+
     }
 
     @After
-    override fun tearDown() {
-        super.tearDown()
+    fun tearDown() {
+        driver.quit()
     }
 
     @Test
-    override fun test() {
+    fun test() {
         driver.navigate().to(BASE_URL + "setup/setupdata-start.action")
         dom.awaitSeconds(3) // just wait a bit for safety
 

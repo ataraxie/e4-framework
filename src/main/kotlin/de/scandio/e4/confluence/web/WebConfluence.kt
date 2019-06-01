@@ -42,8 +42,7 @@ class WebConfluence(
         // if (driver.currentUrl.equals("about:blank") || driver.currentUrl.equals("data:,")) { // only login once!
         navigateTo("login.action")
         dom.awaitElementPresent("form[name='loginform'], .login-section p.last, #main-content", 10)
-        try {
-            dom.findElement("form[name='loginform']")
+        if (dom.isElementPresent("form[name='loginform']")) {
             dom.insertText("#os_username", this.username)
             dom.insertText("#os_password", this.password)
             dom.click("#loginButton")
@@ -57,9 +56,16 @@ class WebConfluence(
                 dom.click(".intro-find-spaces-button-continue")
                 dom.awaitElementPresent(".pagebody", 10)
             }
-        } catch (e: Exception) {
+        } else {
             log.debug("Went to login screen but was already logged in")
         }
+    }
+
+    fun authenticateAdmin() {
+        navigateTo("authenticate.action?destination=/admin/viewgeneralconfig.action")
+        dom.insertText("#password", password)
+        dom.click("#authenticateButton")
+        dom.awaitElementPresent("#admin-navigation")
     }
 
     fun navigateTo(path: String) {

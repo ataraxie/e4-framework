@@ -25,48 +25,22 @@ driver.findElement\(By.id\("(.*)"\)\)\.click\(\)
 dom.click("#$1")
  */
 
-open class ConfluenceDataCenterSetupStage1 {
+open class ConfluenceDataCenterSetupStage1 : SetupBaseTest() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    protected val BASE_URL = "http://confluence-cluster-6153-lb:26153/"
-    protected val OUT_DIR = "/tmp/e4/out"
-    protected val USERNAME = "admin"
-    protected val PASSWORD = "admin"
-
-    protected val driver: WebDriver
-    protected val util: Util
-    protected val dom: DomHelper
-
-    protected var screenshotCount = 0
-
-    init {
-        WebDriverManager.chromedriver().setup()
-        val chromeOptions = ChromeOptions()
-        chromeOptions.addArguments("--headless")
-        this.driver = ChromeDriver(chromeOptions)
-        this.driver.manage().window().setSize(Dimension(1680, 1050))
-        this.util = Util()
-        this.dom = DomHelper(driver, 120, 120)
-        this.dom.defaultDuration = 120
-        this.dom.defaultWaitTillPresent = 120
-        this.dom.outDir = OUT_DIR
-        this.dom.screenshotBeforeClick = true
-        this.dom.screenshotBeforeInsert = true
-    }
-
     @Before
-    open fun before() {
+    fun before() {
 
     }
 
     @After
-    open fun tearDown() {
+    fun tearDown() {
         driver.quit()
     }
 
     @Test
-    open fun test() {
+    fun test() {
         driver.navigate().to(BASE_URL)
         dom.awaitSeconds(3) // just wait a bit for safety
 
@@ -106,11 +80,6 @@ open class ConfluenceDataCenterSetupStage1 {
         /* This takes a few minutes! Make sure the next step has a wait value! */
         log.info("Database setup in progress. This takes a while. Grab some coffee and run stage 2 afterwards\n")
         shot()
-    }
-
-    protected fun shot() {
-        this.screenshotCount += 1
-        this.util.takeScreenshot(driver, "$OUT_DIR/$screenshotCount-confluence-data-center-setup.png")
     }
 
 }

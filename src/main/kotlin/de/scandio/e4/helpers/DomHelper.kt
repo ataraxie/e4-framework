@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedCondition
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
+import java.lang.Exception
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
@@ -139,6 +140,15 @@ class DomHelper(
 
     fun awaitMinutes(minutes: Long) {
         Thread.sleep(minutes * 60 * 1000)
+    }
+
+    fun isElementPresent(selector: String): Boolean {
+        try {
+            findElement(selector)
+            return true
+        } catch (e: Exception) {
+            return false
+        }
     }
 
     fun <T> wait(condition: ExpectedCondition<T>, duration: Long = this.defaultDuration) {
