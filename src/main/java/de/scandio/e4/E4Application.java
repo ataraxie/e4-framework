@@ -96,6 +96,10 @@ public class E4Application {
 		outputDirOption.setRequired(false);
 		options.addOption(outputDirOption);
 
+		final Option skipValidationOption = new Option("s", "skip-validation", false, "Skip validation of test package");
+		outputDirOption.setRequired(false);
+		options.addOption(skipValidationOption);
+
 		final CommandLineParser parser = new DefaultParser();
 
 		try {

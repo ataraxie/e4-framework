@@ -24,7 +24,5 @@ RUN mkdir -p /opt/selenium \
 
 ## E4
 
-RUN mkdir /tmp/e4
-
-CMD wget -O e4.jar $E4_JAR_URL \
+CMD mkdir -p $E4_OUTPUT_DIR && wget -O e4.jar $E4_JAR_URL \
  && java -jar e4.jar -p $E4_PORT --worker-only --output-dir $E4_OUTPUT_DIR

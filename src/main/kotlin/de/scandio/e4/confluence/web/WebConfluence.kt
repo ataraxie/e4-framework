@@ -2,7 +2,6 @@ package de.scandio.e4.confluence.web
 
 import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
 import de.scandio.e4.worker.interfaces.WebClient
-import de.scandio.e4.worker.util.WorkerUtils
 import org.apache.commons.io.FileUtils
 import org.openqa.selenium.*
 import org.slf4j.LoggerFactory
@@ -15,7 +14,7 @@ import java.util.*
 class WebConfluence(
         val driver: WebDriver,
         val base: URI,
-        val screenshotDir: String,
+        val outputDir: String,
         val username: String,
         val password: String
 ): WebClient {
@@ -94,7 +93,7 @@ class WebConfluence(
     override fun takeScreenshot(screenshotName: String): String {
         val ts = driver as TakesScreenshot
         val source: File = ts.getScreenshotAs(OutputType.FILE)
-        val dest = "$screenshotDir/$screenshotName-${Date().time}.png"
+        val dest = "$outputDir/$screenshotName-${Date().time}.png"
         log.info("[SCREENSHOT] {{}}", dest)
         val destination = File(dest)
         FileUtils.copyFile(source, destination)
@@ -102,7 +101,7 @@ class WebConfluence(
     }
 
     override fun dumpHtml(dumpName: String): String {
-        val dest = "$screenshotDir/$dumpName-${Date().time}.html"
+        val dest = "$outputDir/$dumpName-${Date().time}.html"
         FileUtils.writeStringToFile(File(dest), driver.pageSource, "UTF-8", false);
         log.info("[DUMP] {{}}", dest)
         return dest

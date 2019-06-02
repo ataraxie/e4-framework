@@ -79,7 +79,7 @@ public class TestRunnerService {
 
 		int vuserIndex = 0;
 		for (VirtualUser vuser : virtualUsers) {
-			if ((vuserIndex + 1) % (workerIndex + 1) == 0) {
+			if (vuserIndex % numWorkers == workerIndex) {
 				final Thread virtualUserThread = createUserThread(vuser, config);
 				virtualUserThreads.add(virtualUserThread);
 				log.info("Created user thread: {{}}", vuser.getClass().getSimpleName());

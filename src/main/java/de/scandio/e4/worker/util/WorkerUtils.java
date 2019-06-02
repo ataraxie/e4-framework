@@ -18,19 +18,19 @@ import java.util.Random;
 
 public class WorkerUtils {
 
-	public static WebClient newChromeWebClient(String targetUrl, String screenshotDir, String username, String password) throws Exception {
+	public static WebClient newChromeWebClient(String targetUrl, String outputDir, String username, String password) throws Exception {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions chromeOptions = new ChromeOptions();
 		chromeOptions.addArguments("--headless");
 		WebDriver driver = new ChromeDriver(chromeOptions);
-		return new WebConfluence(driver, new URI(targetUrl), screenshotDir, username, password);
+		return new WebConfluence(driver, new URI(targetUrl), outputDir, username, password);
 	}
 
-	public static WebClient newPhantomJsWebClient(String targetUrl, String screenshotDir, String username, String password) throws Exception {
+	public static WebClient newPhantomJsWebClient(String targetUrl, String outputDir, String username, String password) throws Exception {
 		WebDriverManager.phantomjs().setup();
 		WebDriver driver = new PhantomJSDriver();
 		driver.manage().window().setSize(new Dimension(1400, 1000));
-		return new WebConfluence(driver, new URI(targetUrl), screenshotDir, username, password);
+		return new WebConfluence(driver, new URI(targetUrl), outputDir, username, password);
 	}
 
 	public static RestClient newRestClient(String targetUrl, String username, String password) {

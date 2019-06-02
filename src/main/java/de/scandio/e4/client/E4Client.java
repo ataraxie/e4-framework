@@ -35,7 +35,10 @@ public class E4Client {
 
 		final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(clientConfig.getTestPackage());
 		final TestPackage testPackageInstance = testPackage.newInstance();
-//		validateTestPackage(testPackageInstance, clientConfig);
+
+		if (!parsedArgs.hasOption("skip-validation")) {
+			validateTestPackage(testPackageInstance, clientConfig);
+		}
 
 		final List<String> workers = clientConfig.getWorkers();
 
