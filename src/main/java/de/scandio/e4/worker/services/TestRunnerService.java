@@ -1,13 +1,13 @@
 package de.scandio.e4.worker.services;
 
 import de.scandio.e4.client.config.WorkerConfig;
+import de.scandio.e4.dto.Measurement;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
 import de.scandio.e4.worker.collections.ActionCollection;
 import de.scandio.e4.worker.collections.VirtualUserCollection;
 import de.scandio.e4.worker.interfaces.*;
 import de.scandio.e4.worker.util.UserCredentials;
-import de.scandio.e4.worker.util.WorkerUtils;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 
 @Service
@@ -111,7 +110,6 @@ public class TestRunnerService {
 
 	private Thread createUserThread(VirtualUser virtualUser, WorkerConfig config) throws Exception {
 		final String targetUrl = config.getTarget();
-		final long threadStartTime = new Date().getTime();
 		final long durationInSeconds = config.getDurationInSeconds();
 
 		final Thread virtualUserThread = new Thread(() -> {
@@ -119,10 +117,12 @@ public class TestRunnerService {
 				final UserCredentials randomUser = userCredentialsService.getRandomUser();
 				final String username = randomUser.getUsername();
 				final String password = randomUser.getPassword();
-				final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getScreenshotsDir(), username, password);
+				final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getOutputDir(), username, password);
 				final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 
 				log.info("Executing virtual user {{}} with actual user {{}}", virtualUser.getClass().getSimpleName(), username);
+
+				final long threadStartTime = new Date().getTime();
 
 				if (durationInSeconds > 0) {
 					while (true) {
@@ -164,7 +164,14 @@ public class TestRunnerService {
 				webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
 				webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
 				final long timeTaken = action.getTimeTaken();
-				storageService.recordMeasurement(virtualUser, action, Thread.currentThread(), timeTaken);
+				final String nodeId = action.getNodeId(webClient);
+				Measurement measurement = new Measurement(
+						timeTaken,
+						WorkerUtils.getRuntimeName(),
+						virtualUser.getClass().getSimpleName(),
+						action.getClass().getSimpleName(),
+						nodeId);
+				storageService.recordMeasurement(measurement);
 			} catch (Exception e) {
 				log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
 				log.info(webClient.takeScreenshot("failed-scenario"));

@@ -10,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -111,7 +112,14 @@ public class RestConfluence implements RestClient {
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
 		HttpEntity<String> request = new HttpEntity<>(body, headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+		ResponseEntity<String> response;
+		try {
+			response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+		} catch (HttpClientErrorException e) {
+			log.error("Exception sending REST POST request for user {{}} with password {{}} and URL {{}}", this.username, this.password, url);
+			throw e;
+		}
 		String responseText = response.getBody();
 		log.debug("Response text {{}}", responseText);
 		return responseText;
@@ -138,7 +146,14 @@ public class RestConfluence implements RestClient {
 		headers.add("Authorization", getBasicAuth());
 
 		HttpEntity<String> request = new HttpEntity<>(headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+		ResponseEntity<String> response;
+		try {
+			response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+		} catch (HttpClientErrorException e) {
+			log.error("Exception sending REST GET request for user {{}} with password {{}} and URL {{}}", this.username, this.password, url);
+			throw e;
+		}
+
 		return response;
 	}
 

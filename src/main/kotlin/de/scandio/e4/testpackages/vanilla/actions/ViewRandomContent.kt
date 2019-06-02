@@ -19,7 +19,7 @@ open class ViewRandomContent : Action() {
         val randomContentId = restConfluence.randomContentId
         webConfluence.login()
         this.start = Date().time
-        webConfluence.goToPage(randomContentId)
+        webConfluence.goToPage(randomContentId)//361616
         this.end = Date().time
     }
 

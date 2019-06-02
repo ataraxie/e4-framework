@@ -27,4 +27,5 @@ public class PreparePostParams {
 	public void setWorkerIndex(int workerIndex) {
 		this.workerIndex = workerIndex;
 	}
+
 }

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ApplicationStatusService {
-	@Value("${screenshots.dir:screenshots}")
-	private String screenshotsDir;
+	@Value("${output.dir:outputs}")
+	private String outputDir;
 
 	private WorkerConfig config;
 	private PreparationStatus preparationStatus = PreparationStatus.UNPREPARED;
@@ -20,8 +20,8 @@ public class ApplicationStatusService {
 		return new ApplicationStatusResponse(config, preparationStatus, testsStatus);
 	}
 
-	public String getScreenshotsDir() {
-		return screenshotsDir;
+	public String getOutputDir() {
+		return outputDir;
 	}
 
 	public WorkerConfig getConfig() {

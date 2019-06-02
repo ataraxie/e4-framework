@@ -15,10 +15,13 @@ open abstract class SetupBaseTest {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    protected val BASE_URL = "http://confluence-cluster-6153-lb:26153/"
+    protected var BASE_URL = "http://confluence-cluster-6153-lb:26153/"
+//    protected var BASE_URL = "http://e4-test:8090/"
     protected val OUT_DIR = "/tmp/e4/out"
+    protected val IN_DIR = "/tmp/e4/in"
     protected val USERNAME = "admin"
     protected val PASSWORD = "admin"
+    protected val DATA_GENERATOR_JAR_FILENAME = "data-generator-LATEST.jar"
 
     protected val driver: WebDriver
     protected val util: Util
@@ -46,29 +49,6 @@ open abstract class SetupBaseTest {
     open fun shot() {
         this.screenshotCount += 1
         this.util.takeScreenshot(driver, "$OUT_DIR/$screenshotCount-confluence-data-center-setup.png")
-    }
-
-    open fun installPlugin(absoluteFilePath: String) {
-        webConfluence.login()
-        webConfluence.authenticateAdmin()
-        println("Installing ${absoluteFilePath.split('/').last()}")
-        goTo("plugins/servlet/upm")
-        shot()
-        dom.awaitElementPresent(".upm-plugin-list-container", 30)
-        shot()
-        dom.click("#upm-upload")
-        println("-> Waiting for upload dialog...")
-        dom.awaitElementPresent("#upm-upload-file")
-        dom.findElement("#upm-upload-file").sendKeys(absoluteFilePath)
-        dom.click("#upm-upload-dialog button.confirm")
-        println("-> Waiting till upload is fully done...")
-        dom.awaitClass("#upm-manage-container", "loading", 30)
-        dom.awaitNoClass("#upm-manage-container", "loading", 30)
-        println("--> SUCCESS")
-    }
-
-    open fun goTo(url: String) {
-        driver.navigate().to("$BASE_URL$url")
     }
 
 }

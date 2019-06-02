@@ -4,11 +4,11 @@ import org.junit.Test
 
 class InstallDataGenerator : SetupBaseTest() {
 
-    val JAR_FILE_PATH = "/tmp/e4/data-generator-LATEST.jar"
+    val JAR_FILE_PATH = "$IN_DIR/$DATA_GENERATOR_JAR_FILENAME"
 
     @Test
     fun test() {
-        super.installPlugin(JAR_FILE_PATH)
+        webConfluence.installPlugin(JAR_FILE_PATH)
     }
 
 }

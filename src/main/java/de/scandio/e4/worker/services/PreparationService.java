@@ -19,6 +19,9 @@ import java.util.List;
 
 @Service
 public class PreparationService {
+
+    private static final String DEFAULT_USER_PASSWORD = "password"; // TODO: extract to client config!
+
     private static final Logger log = LoggerFactory.getLogger(PreparationService.class);
 
     private final ApplicationStatusService applicationStatusService;
@@ -48,15 +51,16 @@ public class PreparationService {
 
         final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(config.getTestPackage());
         final TestPackage testPackageInstance = testPackage.newInstance();
+
         final ActionCollection setupScenarios = testPackageInstance.getSetupActions();
-        final WebClient webClient = WorkerUtils.newChromeWebClient(config.getTarget(), applicationStatusService.getScreenshotsDir(), config.getUsername(), config.getPassword());
+        final WebClient webClient = WorkerUtils.newChromeWebClient(config.getTarget(), applicationStatusService.getOutputDir(), config.getUsername(), config.getPassword());
         final RestConfluence restConfluence = (RestConfluence) WorkerUtils.newRestClient(config.getTarget(), config.getUsername(), config.getPassword());
 
         try {
             List<String> usernames = restConfluence.getConfluenceUsers();
             List<UserCredentials> userCredentials = new ArrayList<>();
             for (String username : usernames) {
-                userCredentials.add(new UserCredentials(username, username)); // TODO: passwords!
+                userCredentials.add(new UserCredentials(username, DEFAULT_USER_PASSWORD));
             }
             userCredentialsService.storeUsers(userCredentials);
 

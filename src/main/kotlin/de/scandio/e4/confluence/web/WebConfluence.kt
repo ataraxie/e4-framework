@@ -4,12 +4,10 @@ import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.WorkerUtils
 import org.apache.commons.io.FileUtils
-import org.openqa.selenium.OutputType
-import org.openqa.selenium.TakesScreenshot
-import org.openqa.selenium.TimeoutException
-import org.openqa.selenium.WebDriver
+import org.openqa.selenium.*
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.Exception
 import java.net.URI
 import java.net.URLEncoder
 import java.util.*
@@ -33,6 +31,17 @@ class WebConfluence(
         this.driver.quit()
     }
 
+    override fun getNodeId(): String {
+        var nodeId = ""
+        try {
+            nodeId = dom.findElement("#footer-cluster-node").text
+            nodeId = nodeId.replace("(", "").replace(")", "").replace(" ", "")
+        } catch (e: Exception) {
+            log.warn("Could not obtain node ID from footer. Leaving blank.")
+        }
+        return nodeId
+    }
+
     fun getDomHelper(): DomHelper {
         return this.dom
     }
@@ -48,6 +57,10 @@ class WebConfluence(
             dom.click("#loginButton")
             try {
                 dom.awaitElementPresent(".pagebody", 10)
+                if (dom.isElementPresent("#dashboard-onboarding-dialog")) {
+                    dom.click("#dashboard-onboarding-dialog .aui-button-primary")
+                    dom.awaitMilliseconds(50)
+                }
             } catch (e: TimeoutException) {
                 dom.click("#grow-intro-video-skip-button", 5)
                 dom.click("#grow-ic-content button[data-action='skip']")
@@ -89,7 +102,7 @@ class WebConfluence(
     }
 
     override fun dumpHtml(dumpName: String): String {
-        val dest = "$screenshotDir/${WorkerUtils.getRuntimeName()}-$dumpName.html"
+        val dest = "$screenshotDir/$dumpName-${Date().time}.html"
         FileUtils.writeStringToFile(File(dest), driver.pageSource, "UTF-8", false);
         log.info("[DUMP] {{}}", dest)
         return dest
@@ -104,6 +117,7 @@ class WebConfluence(
         navigateTo("pages/viewpage.action?pageId=$pageId")
         dom.awaitElementPresent("#main-content")
     }
+
 
     fun goToPage(spaceKey: String, pageTitle: String) {
         val encodedPageTitle = URLEncoder.encode(pageTitle, "UTF-8")
@@ -157,6 +171,65 @@ class WebConfluence(
         dom.awaitMilliseconds(1000) // TODO: Not sure why this anymore
         dom.click("#create-space-form .aui-button[name='create']")
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
+    }
+
+    fun disablePlugin(pluginKey: String) {
+        login()
+        authenticateAdmin()
+        val upmRowSelector = ".upm-plugin[data-key='$pluginKey']"
+        println("Disabling plugin: $pluginKey")
+        navigateTo("plugins/servlet/upm/manage/all")
+        dom.awaitElementPresent(".upm-plugin-list-container", 20)
+        dom.click(upmRowSelector, 20)
+        dom.click("$upmRowSelector .aui-button[data-action='DISABLE']", 20)
+        dom.awaitElementPresent("$upmRowSelector .aui-button[data-action='ENABLE']")
+        println("--> SUCCESS")
+    }
+
+    fun installPlugin(absoluteFilePath: String) {
+        login()
+        authenticateAdmin()
+        println("Installing ${absoluteFilePath.split('/').last()}")
+        navigateTo("plugins/servlet/upm")
+        dom.awaitElementPresent(".upm-plugin-list-container", 30)
+        dom.click("#upm-upload", 30)
+        println("-> Waiting for upload dialog...")
+        dom.awaitElementPresent("#upm-upload-file", 30)
+        dom.findElement("#upm-upload-file").sendKeys(absoluteFilePath)
+        dom.click("#upm-upload-dialog button.confirm", 30)
+        println("-> Waiting till upload is fully done...")
+        dom.awaitClass("#upm-manage-container", "loading", 30)
+        dom.awaitNoClass("#upm-manage-container", "loading", 30)
+        println("--> SUCCESS")
+    }
+
+
+
+    fun setLogLevel(packagePath: String, logLevel: String) {
+        login()
+        authenticateAdmin()
+        navigateTo("admin/viewlog4j.action")
+        dom.insertText("[name='extraClassName']", packagePath)
+        dom.click("[name='extraLevelName'] option[value='$logLevel']")
+        dom.click("#addEntryButton")
+        dom.awaitElementPresent("[id='$packagePath']")
+    }
+
+    fun disableSecurityCheckbox(checkboxSelector: String) {
+        login()
+        authenticateAdmin()
+        navigateTo("admin/editsecurityconfig.action")
+        dom.click(checkboxSelector)
+        dom.click("#confirm")
+        dom.awaitElementPresent("form[action='editsecurityconfig.action']")
+    }
+
+    fun disableSecureAdminSessions() {
+        disableSecurityCheckbox("#webSudoEnabled")
+    }
+
+    fun disableCaptchas() {
+        disableSecurityCheckbox("#enableElevatedSecurityCheck")
     }
 
 }

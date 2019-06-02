@@ -8,16 +8,10 @@ import java.util.Map;
 
 public class VirtualUserCollection extends ArrayList<Class<? extends VirtualUser>> {
 
-	private double totalWeight = 0;
-
 	private Map<Class<? extends VirtualUser>, Double> weights = new HashMap<>();
 
 	public void add(Class<? extends VirtualUser> virtualUserClass, double weight) throws Exception {
 		super.add(virtualUserClass);
-		this.totalWeight += weight;
-		if (this.totalWeight > 1) {
-			throw new Exception("Total weight is now above 1 in this collection!");
-		}
 		this.weights.put(virtualUserClass, weight);
 	}
 

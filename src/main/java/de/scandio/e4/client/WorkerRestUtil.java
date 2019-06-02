@@ -1,5 +1,6 @@
 package de.scandio.e4.client;
 
+import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.ApplicationStatusResponse;
 import de.scandio.e4.worker.rest.PreparePostParams;
