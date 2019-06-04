@@ -39,9 +39,10 @@ public class StorageService {
 				"id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"timestamp DATETIME default current_timestamp," +
 				"time_taken INTEGER NOT NULL," +
-				"thread_id TEXT," +
 				"virtual_user TEXT NOT NULL," +
 				"action TEXT NOT NULL," +
+				"testpackage TEXT NOT NULL, " +
+				"thread_id TEXT," +
 				"node_id TEXT)";
 
 		stmt.executeUpdate(sql);
@@ -51,13 +52,14 @@ public class StorageService {
 	public void recordMeasurement(Measurement measurement) throws Exception {
 
 		Statement stmt = this.connection.createStatement();
-		String sqlTemplate = "INSERT INTO E4 (timestamp,time_taken,thread_id,virtual_user,action,node_id) " +
-				"VALUES(%d,%d,'%s','%s','%s','%s')";
+		String sqlTemplate = "INSERT INTO E4 (timestamp,time_taken,virtual_user,action,testpackage,thread_id,node_id) " +
+				"VALUES(%d,%d,'%s','%s','%s','%s','%s')";
 		String sql = String.format(sqlTemplate,
 				new Date().getTime(),
 				measurement.getTimeTaken(),
 				measurement.getVirtualUser(),
 				measurement.getAction(),
+				measurement.getTestPackage(),
 				measurement.getThreadId(),
 				measurement.getNodeId()
 		);

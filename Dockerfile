@@ -1,5 +1,7 @@
 FROM openjdk:8u171
 
+VOLUME /tmp/e4
+
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     unzip \

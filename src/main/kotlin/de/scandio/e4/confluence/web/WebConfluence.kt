@@ -19,6 +19,11 @@ class WebConfluence(
         val password: String
 ): WebClient {
 
+
+    override fun getUser(): String {
+        return this.username
+    }
+
     private val log = LoggerFactory.getLogger(javaClass)
     var dom: DomHelper = DomHelper(driver)
 
@@ -55,7 +60,7 @@ class WebConfluence(
             dom.insertText("#os_password", this.password)
             dom.click("#loginButton")
             try {
-                dom.awaitElementPresent(".pagebody", 10)
+                dom.awaitElementPresent(".pagebody", 20)
                 if (dom.isElementPresent("#dashboard-onboarding-dialog")) {
                     dom.click("#dashboard-onboarding-dialog .aui-button-primary")
                     dom.awaitMilliseconds(50)
@@ -66,7 +71,7 @@ class WebConfluence(
                 dom.click(".intro-find-spaces-relevant-spaces label:first-child .intro-find-spaces-space")
                 dom.awaitMilliseconds(1000)
                 dom.click(".intro-find-spaces-button-continue")
-                dom.awaitElementPresent(".pagebody", 10)
+                dom.awaitElementPresent(".pagebody", 20)
             }
         } else {
             log.debug("Went to login screen but was already logged in")
@@ -91,19 +96,31 @@ class WebConfluence(
     }
 
     override fun takeScreenshot(screenshotName: String): String {
-        val ts = driver as TakesScreenshot
-        val source: File = ts.getScreenshotAs(OutputType.FILE)
-        val dest = "$outputDir/$screenshotName-${Date().time}.png"
-        log.info("[SCREENSHOT] {{}}", dest)
-        val destination = File(dest)
-        FileUtils.copyFile(source, destination)
+        var dest = ""
+        try {
+            val ts = driver as TakesScreenshot
+            val source: File = ts.getScreenshotAs(OutputType.FILE)
+            dest = "$outputDir/$screenshotName-${Date().time}.png"
+            log.info("[SCREENSHOT] {{}}", dest)
+            val destination = File(dest)
+            FileUtils.copyFile(source, destination)
+        } catch (e: Exception) {
+            log.warn("FAILED TO CREATE SCREENSHOT WITH EXCEPTION: " + e.javaClass.simpleName)
+        }
+
         return dest
     }
 
     override fun dumpHtml(dumpName: String): String {
-        val dest = "$outputDir/$dumpName-${Date().time}.html"
-        FileUtils.writeStringToFile(File(dest), driver.pageSource, "UTF-8", false);
-        log.info("[DUMP] {{}}", dest)
+        var dest = ""
+        try {
+            dest = "$outputDir/$dumpName-${Date().time}.html"
+            FileUtils.writeStringToFile(File(dest), driver.pageSource, "UTF-8", false);
+            log.info("[DUMP] {{}}", dest)
+        } catch (e: Exception) {
+            log.warn("FAILED TO CREATE SCREENSHOT WITH EXCEPTION: " + e.javaClass.simpleName + " " + e.message)
+        }
+
         return dest
     }
 

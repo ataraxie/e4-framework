@@ -10,15 +10,17 @@ public class Measurement {
 	private String virtualUser;
 	private String nodeId;
 	private String action;
+	private String testPackage;
 
 	public Measurement(Long timeTaken, String threadId,
-					   String virtualUser, String action, String nodeId) {
+					   String virtualUser, String action, String nodeId, String testPackage) {
 		this.timestamp = new Date().getTime();
 		this.timeTaken = timeTaken;
 		this.threadId = threadId;
 		this.virtualUser = virtualUser;
 		this.action = action;
 		this.nodeId = nodeId;
+		this.testPackage = testPackage;
 	}
 
 	public long getTimestamp() {
@@ -43,5 +45,9 @@ public class Measurement {
 
 	public String getAction() {
 		return action;
+	}
+
+	public String getTestPackage() {
+		return testPackage;
 	}
 }

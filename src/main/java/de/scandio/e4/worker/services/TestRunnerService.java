@@ -80,14 +80,22 @@ public class TestRunnerService {
 		int vuserIndex = 0;
 		for (VirtualUser vuser : virtualUsers) {
 			if (vuserIndex % numWorkers == workerIndex) {
-				final Thread virtualUserThread = createUserThread(vuser, config);
+				final Thread virtualUserThread = createUserThread(testPackageInstance, vuser, config);
 				virtualUserThreads.add(virtualUserThread);
 				log.info("Created user thread: {{}}", vuser.getClass().getSimpleName());
 			}
 			vuserIndex++;
 		}
 
-		virtualUserThreads.forEach(Thread::start);
+		virtualUserThreads.forEach(thread -> {
+			try {
+				Thread.sleep(5000);
+				thread.start();
+			} catch (InterruptedException e) {
+				log.error("Could not start user thread", e);
+			}
+
+		});
 		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
 		log.info("Waiting for tests to finish...");
@@ -108,7 +116,7 @@ public class TestRunnerService {
 		}
 	}
 
-	private Thread createUserThread(VirtualUser virtualUser, WorkerConfig config) throws Exception {
+	private Thread createUserThread(TestPackage testPackage, VirtualUser virtualUser, WorkerConfig config) throws Exception {
 		final String targetUrl = config.getTarget();
 		final long durationInSeconds = config.getDurationInSeconds();
 
@@ -117,8 +125,6 @@ public class TestRunnerService {
 				final UserCredentials randomUser = userCredentialsService.getRandomUser();
 				final String username = randomUser.getUsername();
 				final String password = randomUser.getPassword();
-				final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getOutputDir(), username, password);
-				final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 
 				log.info("Executing virtual user {{}} with actual user {{}}", virtualUser.getClass().getSimpleName(), username);
 
@@ -129,15 +135,15 @@ public class TestRunnerService {
 						long timePassedSinceStart = new Date().getTime() - threadStartTime;
 						if (timePassedSinceStart < durationInSeconds * 1000) {
 							log.info("{{}}ms have passed since start which is below {{}}sec. Running again.", timePassedSinceStart, durationInSeconds);
-							runActions(virtualUser, webClient, restClient, threadStartTime, durationInSeconds);
+							runActions(testPackage, virtualUser, threadStartTime, durationInSeconds, targetUrl, username, password);
 						} else {
 							log.info("{{}}ms have passed since start which is above {{}}sec. Stopping.", timePassedSinceStart, durationInSeconds);
-							webClient.quit();
+							//webClient.quit();
 							break;
 						}
 					}
 				} else {
-					runActions(virtualUser, webClient, restClient, threadStartTime, durationInSeconds);
+					runActions(testPackage, virtualUser, threadStartTime, durationInSeconds, targetUrl, username, password);
 				}
 
 			} catch (Exception e) {
@@ -149,35 +155,43 @@ public class TestRunnerService {
 		return virtualUserThread;
 	}
 
-	private void runActions(VirtualUser virtualUser, WebClient webClient, RestClient restClient, long threadStartTime, long durationInSeconds) {
-		ActionCollection actions = virtualUser.getActions(webClient, restClient);
-		log.info("Running {{}} actions for virtual user", actions.size());
-		for (Action action : actions) {
-			try {
-				long workerTimeRunning = new Date().getTime() - threadStartTime;
-				if (workerTimeRunning > durationInSeconds * 1000) {
-					log.info("Worker has been running longer than {{}} seconds. Stopping.",  durationInSeconds);
-					break;
+	// TODO: as obvious, too many params
+	private void runActions(TestPackage testPackage, VirtualUser virtualUser, long threadStartTime, long durationInSeconds, String targetUrl, String username, String password) throws Exception {
+		final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getOutputDir(), username, password);
+		final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
+
+		try {
+			ActionCollection actions = virtualUser.getActions(webClient, restClient);
+			log.info("Running {{}} actions for virtual user", actions.size());
+			for (Action action : actions) {
+				try {
+					long workerTimeRunning = new Date().getTime() - threadStartTime;
+					if (workerTimeRunning > durationInSeconds * 1000) {
+						log.info("Worker has been running longer than {{}} seconds. Stopping.",  durationInSeconds);
+						break;
+					}
+					log.debug("Executing action {{}}", action.getClass().getSimpleName());
+					action.executeWithRandomDelay(webClient, restClient);
+					//webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
+					//webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
+					final long timeTaken = action.getTimeTaken();
+					final String nodeId = action.getNodeId(webClient);
+					Measurement measurement = new Measurement(
+							timeTaken,
+							WorkerUtils.getRuntimeName(),
+							virtualUser.getClass().getSimpleName(),
+							action.getClass().getSimpleName(),
+							nodeId, testPackage.getClass().getSimpleName());
+					storageService.recordMeasurement(measurement);
+				} catch (Exception e) {
+					log.error("FAILED ACTION: "+action.getClass().getSimpleName());
+					webClient.takeScreenshot("failed-scenario");
+					// TODO: recordMeasurement action as failed somewhere
+					e.printStackTrace();
 				}
-				log.debug("Executing action {{}}", action.getClass().getSimpleName());
-				action.executeWithRandomDelay(webClient, restClient);
-				webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
-				webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
-				final long timeTaken = action.getTimeTaken();
-				final String nodeId = action.getNodeId(webClient);
-				Measurement measurement = new Measurement(
-						timeTaken,
-						WorkerUtils.getRuntimeName(),
-						virtualUser.getClass().getSimpleName(),
-						action.getClass().getSimpleName(),
-						nodeId);
-				storageService.recordMeasurement(measurement);
-			} catch (Exception e) {
-				log.error("FAILED SCENARIO: "+action.getClass().getSimpleName());
-				log.info(webClient.takeScreenshot("failed-scenario"));
-				// TODO: recordMeasurement action as failed somewhere
-				e.printStackTrace();
 			}
+		} finally {
+			webClient.quit();
 		}
 	}
 

@@ -16,4 +16,6 @@ public interface WebClient {
 
 	String getNodeId();
 
+	String getUser();
+
 }

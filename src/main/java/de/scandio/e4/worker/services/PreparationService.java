@@ -60,7 +60,9 @@ public class PreparationService {
             List<String> usernames = restConfluence.getConfluenceUsers();
             List<UserCredentials> userCredentials = new ArrayList<>();
             for (String username : usernames) {
-                userCredentials.add(new UserCredentials(username, DEFAULT_USER_PASSWORD));
+                if (!username.equals(config.getUsername())) {
+                    userCredentials.add(new UserCredentials(username, DEFAULT_USER_PASSWORD));
+                }
             }
             userCredentialsService.storeUsers(userCredentials);
 

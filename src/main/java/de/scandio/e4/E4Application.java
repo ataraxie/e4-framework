@@ -15,6 +15,7 @@ public class E4Application {
 
 	public static void main(String[] args) {
 		final CommandLine parsedArgs = parseArgs(args);
+		java.security.Security.setProperty("networkaddress.cache.ttl" , "60");
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.info("Shutdown signal received.. shutting down threads.");

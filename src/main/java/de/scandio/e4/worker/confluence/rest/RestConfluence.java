@@ -165,4 +165,8 @@ public class RestConfluence implements RestClient {
 		return "Basic " + base64Creds;
 	}
 
+	@Override
+	public String getUser() {
+		return this.username;
+	}
 }

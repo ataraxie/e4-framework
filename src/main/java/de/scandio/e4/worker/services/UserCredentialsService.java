@@ -16,7 +16,7 @@ public class UserCredentialsService {
 	/**
 	 * Currently every user has the same password - this might change in the future.
 	 */
-	public static final String STANDARD_PASSWORD = "ENJOY!";
+	public static final String STANDARD_PASSWORD = "password";
 
 	private List<UserCredentials> storedUsers = new ArrayList<>();
 
