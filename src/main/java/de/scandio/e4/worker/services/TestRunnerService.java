@@ -87,15 +87,7 @@ public class TestRunnerService {
 			vuserIndex++;
 		}
 
-		virtualUserThreads.forEach(thread -> {
-			try {
-				Thread.sleep(5000);
-				thread.start();
-			} catch (InterruptedException e) {
-				log.error("Could not start user thread", e);
-			}
-
-		});
+		virtualUserThreads.forEach(Thread::start);
 		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
 		log.info("Waiting for tests to finish...");
@@ -138,7 +130,6 @@ public class TestRunnerService {
 							runActions(testPackage, virtualUser, threadStartTime, durationInSeconds, targetUrl, username, password);
 						} else {
 							log.info("{{}}ms have passed since start which is above {{}}sec. Stopping.", timePassedSinceStart, durationInSeconds);
-							//webClient.quit();
 							break;
 						}
 					}
