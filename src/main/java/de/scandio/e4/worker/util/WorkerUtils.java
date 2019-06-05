@@ -5,11 +5,9 @@ import de.scandio.e4.worker.confluence.rest.RestConfluence;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.WebClient;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -22,16 +20,17 @@ public class WorkerUtils {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions chromeOptions = new ChromeOptions();
 		chromeOptions.addArguments("--headless");
+		chromeOptions.addArguments("--disable-impl-side-painting");
 		WebDriver driver = new ChromeDriver(chromeOptions);
 		return new WebConfluence(driver, new URI(targetUrl), outputDir, username, password);
 	}
 
-	public static WebClient newPhantomJsWebClient(String targetUrl, String outputDir, String username, String password) throws Exception {
-		WebDriverManager.phantomjs().setup();
-		WebDriver driver = new PhantomJSDriver();
-		driver.manage().window().setSize(new Dimension(1400, 1000));
-		return new WebConfluence(driver, new URI(targetUrl), outputDir, username, password);
-	}
+//	public static WebClient newPhantomJsWebClient(String targetUrl, String outputDir, String username, String password) throws Exception {
+//		WebDriverManager.phantomjs().setup();
+//		WebDriver driver = new PhantomJSDriver();
+//		driver.manage().window().setSize(new Dimension(1400, 1000));
+//		return new WebConfluence(driver, new URI(targetUrl), outputDir, username, password);
+//	}
 
 	public static RestClient newRestClient(String targetUrl, String username, String password) {
 		RestClient restClient = new RestConfluence(targetUrl, username, password);

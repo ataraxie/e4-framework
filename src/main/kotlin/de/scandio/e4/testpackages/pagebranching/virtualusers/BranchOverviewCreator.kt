@@ -29,7 +29,7 @@ import java.util.*
  */
 class BranchOverviewCreator : VirtualUser {
 
-    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
+    override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         val virtualUserStartTime = Date().time
         val spaceKey = "PB"

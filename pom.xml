@@ -69,11 +69,11 @@
 			<artifactId>selenium-chrome-driver</artifactId>
 			<version>${chromedriver.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.codeborne</groupId>
-			<artifactId>phantomjsdriver</artifactId>
-			<version>${phantomjsdriver.version}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.codeborne</groupId>-->
+<!--			<artifactId>phantomjsdriver</artifactId>-->
+<!--			<version>${phantomjsdriver.version}</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-server</artifactId>

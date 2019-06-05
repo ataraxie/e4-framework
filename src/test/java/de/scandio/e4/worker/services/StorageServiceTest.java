@@ -1,10 +1,9 @@
 package de.scandio.e4.worker.services;
 
-import de.scandio.e4.dto.Measurement;
+import de.scandio.e4.worker.model.E4Measurement;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,7 +32,7 @@ public class StorageServiceTest {
 	//@Test
 	public void testRecordMeasurement() throws Exception {
 		// Test will pass if there is no exception
-		Measurement measurement = new Measurement(
+		E4Measurement measurement = new E4Measurement(
 				1000L,
 				WorkerUtils.getRuntimeName(),
 				"VirtualUser",

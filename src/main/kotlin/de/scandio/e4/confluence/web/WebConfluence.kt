@@ -193,30 +193,30 @@ class WebConfluence(
         login()
         authenticateAdmin()
         val upmRowSelector = ".upm-plugin[data-key='$pluginKey']"
-        println("Disabling plugin: $pluginKey")
+        log.info("Disabling plugin: $pluginKey")
         navigateTo("plugins/servlet/upm/manage/all")
-        dom.awaitElementPresent(".upm-plugin-list-container", 20)
-        dom.click(upmRowSelector, 20)
-        dom.click("$upmRowSelector .aui-button[data-action='DISABLE']", 20)
+        dom.awaitElementPresent(".upm-plugin-list-container", 40)
+        dom.click(upmRowSelector, 40)
+        dom.click("$upmRowSelector .aui-button[data-action='DISABLE']", 40)
         dom.awaitElementPresent("$upmRowSelector .aui-button[data-action='ENABLE']")
-        println("--> SUCCESS")
+        log.info("--> SUCCESS")
     }
 
     fun installPlugin(absoluteFilePath: String) {
         login()
         authenticateAdmin()
-        println("Installing ${absoluteFilePath.split('/').last()}")
+        log.info("Installing ${absoluteFilePath.split('/').last()}")
         navigateTo("plugins/servlet/upm")
-        dom.awaitElementPresent(".upm-plugin-list-container", 30)
-        dom.click("#upm-upload", 30)
-        println("-> Waiting for upload dialog...")
-        dom.awaitElementPresent("#upm-upload-file", 30)
+        dom.awaitElementPresent(".upm-plugin-list-container", 40)
+        dom.click("#upm-upload", 40)
+        log.info("-> Waiting for upload dialog...")
+        dom.awaitElementPresent("#upm-upload-file", 40)
         dom.findElement("#upm-upload-file").sendKeys(absoluteFilePath)
-        dom.click("#upm-upload-dialog button.confirm", 30)
-        println("-> Waiting till upload is fully done...")
-        dom.awaitClass("#upm-manage-container", "loading", 30)
-        dom.awaitNoClass("#upm-manage-container", "loading", 30)
-        println("--> SUCCESS")
+        dom.click("#upm-upload-dialog button.confirm", 40)
+        log.info("-> Waiting till upload is fully done...")
+        dom.awaitClass("#upm-manage-container", "loading", 40)
+        dom.awaitNoClass("#upm-manage-container", "loading", 40)
+        log.info("--> SUCCESS")
     }
 
 
@@ -234,6 +234,7 @@ class WebConfluence(
     fun disableSecurityCheckbox(checkboxSelector: String) {
         login()
         authenticateAdmin()
+        log.info("Disabling security checkbox $checkboxSelector")
         navigateTo("admin/editsecurityconfig.action")
         dom.click(checkboxSelector)
         dom.click("#confirm")

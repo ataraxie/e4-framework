@@ -9,5 +9,5 @@ import de.scandio.e4.worker.collections.ActionCollection;
  * The actions should be run in a separate thread.
  */
 public interface VirtualUser {
-	ActionCollection getActions(WebClient webClient, RestClient restClient);
+	ActionCollection getActions();
 }

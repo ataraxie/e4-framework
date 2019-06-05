@@ -33,7 +33,7 @@ open class BranchCreator : VirtualUser {
 
     protected var virtualUserStartTime: Long = 0
 
-    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
+    override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         virtualUserStartTime = Date().time
 

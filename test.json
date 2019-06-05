@@ -1,14 +1,20 @@
 {
   "target": {
-    "url": "http://contabo:8090/",
+    "url": "http://confluence-cluster-6153-lb:26153/",
     "adminUser": "admin",
     "adminPassword": "admin"
   },
   "testPackage": "de.scandio.e4.testpackages.vanilla.VanillaTestPackage",
-  "screenshotDir": "/tmp/selenium",
-  "numConcurrentUsers": 1,
-  "durationInSeconds": 10,
+  "numConcurrentUsers": 25,
+  "durationInSeconds": 30,
   "workers": [
-    "http://e4-test:4444/"
+    "http://e4w-oregon:3000"
+  ],
+  "__workers": [
+    "http://e4w-oregon:3000",
+    "http://e4w-oregon:3001"
+  ],
+  "_workers": [
+    "http://localhost:3000"
   ]
 }

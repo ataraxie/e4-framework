@@ -18,7 +18,6 @@ open class ViewDashboardAction : Action() {
         webConfluence.login()
         this.start = Date().time
         webConfluence.navigateTo("dashboard.action")
-        webConfluence.takeScreenshot("TEST")
         dom.awaitElementPresent("#page")
         this.end = Date().time
     }

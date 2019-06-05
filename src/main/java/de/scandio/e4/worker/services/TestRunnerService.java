@@ -1,7 +1,8 @@
 package de.scandio.e4.worker.services;
 
 import de.scandio.e4.client.config.WorkerConfig;
-import de.scandio.e4.dto.Measurement;
+import de.scandio.e4.worker.model.E4Error;
+import de.scandio.e4.worker.model.E4Measurement;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
 import de.scandio.e4.worker.collections.ActionCollection;
@@ -138,6 +139,14 @@ public class TestRunnerService {
 				}
 
 			} catch (Exception e) {
+				E4Error e4Error = new E4Error(
+						"CREATE_CLIENTS",
+						e.getClass().getSimpleName());
+				try {
+					storageService.recordError(e4Error);
+				} catch (Exception ex) {
+					log.error("Could not record error in database");
+				}
 				log.error("Could not create WebClient and/or RestClient for VirtualUser thread", e);
 			}
 
@@ -148,42 +157,47 @@ public class TestRunnerService {
 
 	// TODO: as obvious, too many params
 	private void runActions(TestPackage testPackage, VirtualUser virtualUser, long threadStartTime, long durationInSeconds, String targetUrl, String username, String password) throws Exception {
-		final WebClient webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getOutputDir(), username, password);
-		final RestClient restClient = WorkerUtils.newRestClient(targetUrl, username, password);
-
-		try {
-			ActionCollection actions = virtualUser.getActions(webClient, restClient);
-			log.info("Running {{}} actions for virtual user", actions.size());
-			for (Action action : actions) {
-				try {
-					long workerTimeRunning = new Date().getTime() - threadStartTime;
-					if (workerTimeRunning > durationInSeconds * 1000) {
-						log.info("Worker has been running longer than {{}} seconds. Stopping.",  durationInSeconds);
-						break;
-					}
-					log.debug("Executing action {{}}", action.getClass().getSimpleName());
-					action.executeWithRandomDelay(webClient, restClient);
-					//webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
-					//webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
-					final long timeTaken = action.getTimeTaken();
-					final String nodeId = action.getNodeId(webClient);
-					Measurement measurement = new Measurement(
-							timeTaken,
-							WorkerUtils.getRuntimeName(),
-							virtualUser.getClass().getSimpleName(),
-							action.getClass().getSimpleName(),
-							nodeId, testPackage.getClass().getSimpleName());
-					storageService.recordMeasurement(measurement);
-				} catch (Exception e) {
-					log.error("FAILED ACTION: "+action.getClass().getSimpleName());
-					webClient.takeScreenshot("failed-scenario");
-					// TODO: recordMeasurement action as failed somewhere
-					e.printStackTrace();
+		ActionCollection actions = virtualUser.getActions();
+		log.info("Running {{}} actions for virtual user", actions.size());
+		for (Action action : actions) {
+			String runtime = WorkerUtils.getRuntimeName();
+			String vuserClass = virtualUser.getClass().getSimpleName();
+			String actionClass = action.getClass().getSimpleName();
+			String testpackageClass = testPackage.getClass().getSimpleName();
+			WebClient webClient = null;
+			RestClient restClient = null;
+			try {
+				long workerTimeRunning = new Date().getTime() - threadStartTime;
+				if (workerTimeRunning > durationInSeconds * 1000) {
+					log.info("Worker has been running longer than {{}} seconds. Stopping.",  durationInSeconds);
+					break;
+				}
+				log.debug("Executing action {{}}", action.getClass().getSimpleName());
+				webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getOutputDir(), username, password);
+				restClient = WorkerUtils.newRestClient(targetUrl, username, password);
+				action.executeWithRandomDelay(webClient, restClient);
+				//webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
+				//webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
+				final long timeTaken = action.getTimeTaken();
+				final String nodeId = action.getNodeId(webClient);
+				E4Measurement measurement = new E4Measurement(
+						timeTaken,
+						runtime,
+						vuserClass,
+						actionClass,
+						nodeId,
+						testpackageClass);
+				storageService.recordMeasurement(measurement);
+			} catch (Exception e) {
+				log.error("FAILED ACTION: "+action.getClass().getSimpleName());
+				E4Error e4error = new E4Error("ACTION_FAILED", e.getClass().getName());
+				storageService.recordError(e4error);
+				webClient.takeScreenshot("failed-scenario");
+			} finally {
+				if (webClient != null) {
+					webClient.quit();
 				}
 			}
-		} finally {
-			webClient.quit();
 		}
 	}
-
 }

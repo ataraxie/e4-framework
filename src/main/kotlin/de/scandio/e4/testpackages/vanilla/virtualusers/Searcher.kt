@@ -31,7 +31,7 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 class Searcher : VirtualUser {
 
-    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
+    override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewRandomContent())
 //        actions.add(QuicksearchAction("E4"))

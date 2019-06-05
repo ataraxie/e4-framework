@@ -25,11 +25,11 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 class BranchMerger : BranchCreator() {
 
-    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
+    override fun getActions(): ActionCollection {
         val actions = ActionCollection()
 
         // PREPARATION
-        actions.addAllExcludeFromMeasurement(super.getActions(webClient, restClient))
+        actions.addAllExcludeFromMeasurement(super.getActions())
 
         // ACTIONS
         actions.add(MergeBranchAction("PB", "Branch 1", "PB Origin 1 ($virtualUserStartTime)"))

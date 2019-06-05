@@ -30,7 +30,7 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 class Reader : VirtualUser {
 
-    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
+    override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewRandomContent())
         return actions

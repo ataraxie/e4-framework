@@ -1,9 +1,7 @@
 package de.scandio.e4.worker.services;
 
-import de.scandio.e4.dto.Measurement;
-import de.scandio.e4.worker.interfaces.Action;
-import de.scandio.e4.worker.interfaces.VirtualUser;
-import de.scandio.e4.worker.util.WorkerUtils;
+import de.scandio.e4.worker.model.E4Error;
+import de.scandio.e4.worker.model.E4Measurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,7 +33,7 @@ public class StorageService {
 
 		Statement stmt = connection.createStatement();
 
-		String sql = "CREATE TABLE E4(" +
+		String sql = "CREATE TABLE E4Measurement(" +
 				"id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"timestamp DATETIME default current_timestamp," +
 				"time_taken INTEGER NOT NULL," +
@@ -47,25 +45,36 @@ public class StorageService {
 
 		stmt.executeUpdate(sql);
 		stmt.close();
+
+		stmt = connection.createStatement();
+
+		sql = "CREATE TABLE E4Error(" +
+				"id INTEGER PRIMARY KEY AUTOINCREMENT," +
+				"timestamp DATETIME default current_timestamp," +
+				"key TEXT NOT NULL, " +
+				"type TEXT NOT NULL)";
+
+		stmt.executeUpdate(sql);
+		stmt.close();
+
 	}
 
-	public void recordMeasurement(Measurement measurement) throws Exception {
+	public void recordMeasurement(E4Measurement e4measurement) throws Exception {
 
 		Statement stmt = this.connection.createStatement();
-		String sqlTemplate = "INSERT INTO E4 (timestamp,time_taken,virtual_user,action,testpackage,thread_id,node_id) " +
+		String sqlTemplate = "INSERT INTO E4Measurement (timestamp,time_taken,virtual_user,action,testpackage,thread_id,node_id) " +
 				"VALUES(%d,%d,'%s','%s','%s','%s','%s')";
 		String sql = String.format(sqlTemplate,
 				new Date().getTime(),
-				measurement.getTimeTaken(),
-				measurement.getVirtualUser(),
-				measurement.getAction(),
-				measurement.getTestPackage(),
-				measurement.getThreadId(),
-				measurement.getNodeId()
+				e4measurement.getTimeTaken(),
+				e4measurement.getVirtualUser(),
+				e4measurement.getAction(),
+				e4measurement.getTestPackage(),
+				e4measurement.getThreadId(),
+				e4measurement.getNodeId()
 		);
 
-		log.warn("[RECORD]{}|{}|{}|{}|{}", measurement.getTimeTaken(), measurement.getThreadId(),
-				measurement.getVirtualUser(), measurement.getAction(), measurement.getNodeId());
+		log.info("[REC_MEASURE]{}", e4measurement);
 
 		stmt.executeUpdate(sql);
 		stmt.close();
@@ -78,4 +87,22 @@ public class StorageService {
 	public void setWorkerIndex(int workerIndex) {
 		this.workerIndex = workerIndex;
 	}
+
+	public void recordError(E4Error e4error) throws Exception {
+		Statement stmt = this.connection.createStatement();
+		String sqlTemplate = "INSERT INTO E4Error (timestamp,key,type) " +
+				"VALUES(%d,'%s','%s')";
+
+		String sql = String.format(sqlTemplate,
+				new Date().getTime(),
+				e4error.getKey(),
+				e4error.getType());
+
+		log.info("[REC_ERROR]{}", e4error);
+		log.info(sql);
+
+		stmt.executeUpdate(sql);
+		stmt.close();
+	}
+
 }

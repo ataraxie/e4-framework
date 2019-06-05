@@ -53,7 +53,6 @@ public class PreparationService {
         final TestPackage testPackageInstance = testPackage.newInstance();
 
         final ActionCollection setupScenarios = testPackageInstance.getSetupActions();
-        final WebClient webClient = WorkerUtils.newChromeWebClient(config.getTarget(), applicationStatusService.getOutputDir(), config.getUsername(), config.getPassword());
         final RestConfluence restConfluence = (RestConfluence) WorkerUtils.newRestClient(config.getTarget(), config.getUsername(), config.getPassword());
 
         try {
@@ -65,11 +64,19 @@ public class PreparationService {
                 }
             }
             userCredentialsService.storeUsers(userCredentials);
-
-            for (Action action : setupScenarios) {
-                action.execute(webClient, restConfluence);
-                log.info("Finished prep action "+ action.getClass().getSimpleName());
-            }
+            if (!setupScenarios.isEmpty()) {
+				final WebClient webClient = WorkerUtils.newChromeWebClient(config.getTarget(), applicationStatusService.getOutputDir(), config.getUsername(), config.getPassword());
+				try {
+					for (Action action : setupScenarios) {
+						action.execute(webClient, restConfluence);
+						log.info("Finished prep action "+ action.getClass().getSimpleName());
+					}
+				} finally {
+					webClient.quit();
+				}
+			} else {
+            	log.info("No setup scenarios given.");
+			}
 
             log.info("[E4W] Preparations are finished!");
             applicationStatusService.setPreparationStatus(PreparationStatus.FINISHED);
@@ -77,8 +84,6 @@ public class PreparationService {
             log.error("Preparation Action failed.");
             ex.printStackTrace();
             applicationStatusService.setPreparationStatus(PreparationStatus.ERROR);
-        } finally {
-            webClient.quit();
         }
     }
 

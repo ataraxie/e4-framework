@@ -20,7 +20,7 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 class Creator : VirtualUser {
 
-    override fun getActions(webClient: WebClient, restClient: RestClient): ActionCollection {
+    override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewRandomContent())
 //        val spaceKey = "E4${getRandomNumber(1, 999)}"

@@ -54,7 +54,7 @@ abstract class TestPackageTestRun {
         for (virtualUserClass in testPackage.virtualUsers) {
             val virtualUser = virtualUserClass.newInstance()
             log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
-            val measurement = executeActions(virtualUser.getActions(this.webConfluence, this.restConfluence))
+            val measurement = executeActions(virtualUser.actions)
             log.info("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
         }
         log.info("DONE executing ${testPackage.virtualUsers.size} virtual users")
