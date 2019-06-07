@@ -1,9 +1,11 @@
 package de.scandio.e4.worker.confluence.rest;
 
 import com.google.gson.Gson;
+import de.scandio.e4.client.config.ClientConfig;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.util.WorkerUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -13,6 +15,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -169,4 +172,5 @@ public class RestConfluence implements RestClient {
 	public String getUser() {
 		return this.username;
 	}
+
 }

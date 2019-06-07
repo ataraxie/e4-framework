@@ -176,8 +176,8 @@ public class TestRunnerService {
 				webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getOutputDir(), username, password);
 				restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 				action.executeWithRandomDelay(webClient, restClient);
-				//webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
-				//webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
+//				webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
+//				webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
 				final long timeTaken = action.getTimeTaken();
 				final String nodeId = action.getNodeId(webClient);
 				E4Measurement measurement = new E4Measurement(
@@ -189,7 +189,7 @@ public class TestRunnerService {
 						testpackageClass);
 				storageService.recordMeasurement(measurement);
 			} catch (Exception e) {
-				log.error("FAILED ACTION: "+action.getClass().getSimpleName());
+				log.error("FAILED ACTION: "+action.getClass().getSimpleName(), e);
 				E4Error e4error = new E4Error("ACTION_FAILED", e.getClass().getName());
 				storageService.recordError(e4error);
 				webClient.takeScreenshot("failed-scenario");

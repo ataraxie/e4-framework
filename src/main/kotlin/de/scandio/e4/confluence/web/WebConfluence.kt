@@ -1,7 +1,8 @@
 package de.scandio.e4.confluence.web
 
-import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
+import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.util.RandomData
 import org.apache.commons.io.FileUtils
 import org.openqa.selenium.*
 import org.slf4j.LoggerFactory
@@ -76,6 +77,7 @@ class WebConfluence(
         } else {
             log.debug("Went to login screen but was already logged in")
         }
+        dom.awaitMilliseconds(500) // safety
     }
 
     fun authenticateAdmin() {
@@ -92,7 +94,25 @@ class WebConfluence(
         } else {
             log.info("[SELENIUM] Already on page")
         }
+    }
 
+    fun navigateToLoginIfNecessary(path: String) {
+        navigateTo(path)
+        takeScreenshot("navigateToLoginIfNecessary-1")
+        dom.awaitElementClickable("#full-height-container")
+        takeScreenshot("navigateToLoginIfNecessary-2")
+        if (dom.isElementPresent("form[name='loginform']")) {
+            dom.insertText("#os_username", this.username)
+            dom.insertText("#os_password", this.password)
+            dom.click("#loginButton")
+        }
+        dom.awaitSeconds(3)
+        takeScreenshot("navigateToLoginIfNecessary-3")
+        if (dom.isElementPresent("#authenticateButton")) {
+            dom.insertText("#password", password)
+            dom.click("#authenticateButton")
+            dom.awaitElementPresent("#admin-navigation")
+        }
     }
 
     override fun takeScreenshot(screenshotName: String): String {
@@ -161,21 +181,48 @@ class WebConfluence(
         dom.awaitElementClickable("#rte-button-publish")
     }
 
+    fun search(searchString: String) {
+        navigateTo("search/searchv3.action")
+        dom.awaitElementPresent("#query-string")
+        dom.insertText("#query-string", searchString)
+        log.debug("Searching for string $searchString")
+        dom.click("#search-query-submit-button")
+        dom.awaitElementPresent(".search-results")
+        dom.awaitElementInsivible(".search-blanket")
+    }
+
     fun savePage() {
         dom.click("#rte-button-publish")
         dom.awaitElementPresent("#main-content")
     }
 
+    fun createDefaultPage(pageTitleBeginning: String) {
+        dom.click("#quick-create-page-button")
+        dom.awaitElementPresent("#wysiwyg")
+        val pageTitle = "$pageTitleBeginning $username (${Date().time})"
+        log.debug("Creating page with title $pageTitle")
+        publishDefaultPage(pageTitle)
+    }
+
     fun createDefaultPage(spaceKey: String, pageTitle: String) {
-        val loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer eget aliquet nibh praesent. Platea dictumst quisque sagittis purus sit amet volutpat consequat mauris. Montes nascetur ridiculus mus mauris vitae ultricies leo integer. In fermentum posuere urna nec. Viverra vitae congue eu consequat ac felis. Sed egestas egestas fringilla phasellus faucibus scelerisque eleifend donec pretium. Non diam phasellus vestibulum lorem sed risus ultricies. Amet tellus cras adipiscing enim eu turpis egestas pretium. A pellentesque sit amet porttitor eget dolor morbi. Integer quis auctor elit sed vulputate mi sit amet. Leo in vitae turpis massa sed elementum tempus egestas. Non odio euismod lacinia at quis risus sed vulputate odio. Nunc scelerisque viverra mauris in. Tortor at risus viverra adipiscing at. Bibendum at varius vel pharetra vel turpis."
         navigateTo("pages/createpage.action?spaceKey=$spaceKey")
         dom.awaitElementPresent("#wysiwyg")
+        publishDefaultPage(pageTitle)
+    }
+
+    private fun setPageTitleInEditor(pageTitle: String) {
         dom.click("#content-title-div")
         dom.insertText("#content-title", pageTitle)
-        dom.click("#wysiwygTextarea_ifr")
-        dom.insertTextTinyMce("<h1>Lorem Ipsum</h1><p>$loremIpsum</p>")
-        dom.click("#rte-button-publish")
-        dom.awaitElementPresent("#main-content")
+    }
+
+    private fun publishDefaultPage(pageTitle: String) {
+        if (dom.isElementPresent("#closeDisDialog")) {
+            dom.click("#closeDisDialog")
+            dom.awaitMilliseconds(100)
+        }
+        setPageTitleInEditor(pageTitle)
+        dom.addTextTinyMce("<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>")
+        savePage()
     }
 
     fun createEmptySpace(spaceKey: String, spaceName: String) {
@@ -190,41 +237,50 @@ class WebConfluence(
     }
 
     fun disablePlugin(pluginKey: String) {
-        login()
-        authenticateAdmin()
         val upmRowSelector = ".upm-plugin[data-key='$pluginKey']"
         log.info("Disabling plugin: $pluginKey")
-        navigateTo("plugins/servlet/upm/manage/all")
+        navigateToLoginIfNecessary("plugins/servlet/upm/manage/all")
+        takeScreenshot("disable-plugin-1")
         dom.awaitElementPresent(".upm-plugin-list-container", 40)
+        takeScreenshot("disable-plugin-2")
         dom.click(upmRowSelector, 40)
+        takeScreenshot("disable-plugin-3")
         dom.click("$upmRowSelector .aui-button[data-action='DISABLE']", 40)
+        takeScreenshot("disable-plugin-4")
         dom.awaitElementPresent("$upmRowSelector .aui-button[data-action='ENABLE']")
         log.info("--> SUCCESS")
     }
 
-    fun installPlugin(absoluteFilePath: String) {
-        login()
-        authenticateAdmin()
+    fun installPlugin(absoluteFilePath: String, pluginKey: String) {
         log.info("Installing ${absoluteFilePath.split('/').last()}")
-        navigateTo("plugins/servlet/upm")
-        dom.awaitElementPresent(".upm-plugin-list-container", 40)
+        navigateToLoginIfNecessary("plugins/servlet/upm")
+        takeScreenshot("install-plugin-1")
+        dom.awaitElementClickable(".upm-plugin-list-container", 40)
+        takeScreenshot("install-plugin-2")
         dom.click("#upm-upload", 40)
+        takeScreenshot("install-plugin-3")
         log.info("-> Waiting for upload dialog...")
-        dom.awaitElementPresent("#upm-upload-file", 40)
+        dom.awaitElementClickable("#upm-upload-file", 40)
+        takeScreenshot("install-plugin-4")
         dom.findElement("#upm-upload-file").sendKeys(absoluteFilePath)
         dom.click("#upm-upload-dialog button.confirm", 40)
+        takeScreenshot("install-plugin-5")
         log.info("-> Waiting till upload is fully done...")
         dom.awaitClass("#upm-manage-container", "loading", 40)
         dom.awaitNoClass("#upm-manage-container", "loading", 40)
-        log.info("--> SUCCESS")
+        takeScreenshot("install-plugin-6")
+        log.info("--> SUCCESS (we think, but please check!)")
     }
 
-
+    fun disableMarketplaceConnectivity() {
+        navigateToLoginIfNecessary("plugins/servlet/upm")
+        dom.click("#link-bar-settings a", 30)
+        dom.click("#upm-checkbox-pacDisabled", 30)
+        dom.click("#upm-settings-dialog .aui-button.confirm")
+    }
 
     fun setLogLevel(packagePath: String, logLevel: String) {
-        login()
-        authenticateAdmin()
-        navigateTo("admin/viewlog4j.action")
+        navigateToLoginIfNecessary("admin/viewlog4j.action")
         dom.insertText("[name='extraClassName']", packagePath)
         dom.click("[name='extraLevelName'] option[value='$logLevel']")
         dom.click("#addEntryButton")
@@ -232,13 +288,12 @@ class WebConfluence(
     }
 
     fun disableSecurityCheckbox(checkboxSelector: String) {
-        login()
-        authenticateAdmin()
         log.info("Disabling security checkbox $checkboxSelector")
-        navigateTo("admin/editsecurityconfig.action")
+        navigateToLoginIfNecessary("admin/editsecurityconfig.action")
         dom.click(checkboxSelector)
         dom.click("#confirm")
-        dom.awaitElementPresent("form[action='editsecurityconfig.action']")
+        dom.awaitSeconds(10) // TODO: below doesn't work
+//        dom.awaitElementPresent("form[action='editsecurityconfig.action']", 50)
     }
 
     fun disableSecureAdminSessions() {
@@ -247,6 +302,28 @@ class WebConfluence(
 
     fun disableCaptchas() {
         disableSecurityCheckbox("#enableElevatedSecurityCheck")
+    }
+
+    fun editPageAddContent(contentId: Long, htmlContentToAdd: String) {
+        log.debug("Adding content {{}} to content {{}}", htmlContentToAdd, contentId)
+        navigateTo("pages/editpage.action?pageId=$contentId")
+        dom.awaitElementPresent("#wysiwyg")
+        dom.addTextTinyMce(htmlContentToAdd)
+        dom.awaitMilliseconds(50)
+        savePage()
+    }
+
+    fun addRandomComment(htmlComment: String) {
+        log.debug("Adding comment {{}} to content {{}}", htmlComment)
+        dom.click(".quick-comment-prompt")
+        dom.awaitElementPresent("#wysiwyg")
+        dom.insertTextTinyMce(htmlComment)
+        saveComment()
+    }
+
+    private fun saveComment() {
+        dom.click("#rte-button-publish")
+        dom.awaitElementPresent(".comment.focused")
     }
 
 }

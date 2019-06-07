@@ -52,22 +52,14 @@ public class E4Client {
 	}
 
 	private void validateTestPackage(TestPackage testPackageInstance, ClientConfig clientConfig) throws Exception {
-		double customVsVanillaRatio = 0.5;
 		double totalWeight = 0;
-		int numConcurrentUsers = clientConfig.getNumConcurrentUsers();
-		boolean isVanillaPackage = "VanillaTestPackage".equals(testPackageInstance.getClass().getSimpleName());
-		double ratio = isVanillaPackage ? (1 - customVsVanillaRatio) : customVsVanillaRatio;
 		VirtualUserCollection vusers = testPackageInstance.getVirtualUsers();
 		for (Class<? extends VirtualUser> virtualUserClass : vusers) {
 			double weight = vusers.getWeight(virtualUserClass);
 			String formula = "Weight("+weight+") % 0.04 == 0";
 			boolean legalWeight = (weight * 100) % (int)(0.04*100) == 0;
 			if (!legalWeight) {
-				throw new Exception("Illegal weights. Current formula: " + formula);
-			}
-			if (numConcurrentUsers * weight * ratio % 1 != 0) {
-				formula = "ConcurrentUsers("+numConcurrentUsers+") * Weight("+weight+") * Ratio("+ratio+") == EVEN";
-				throw new Exception("Formula didn't end up with full virtual users: " + formula);
+				throw new Exception("Illegal weight {"+weight+"}. Current formula: " + formula);
 			}
 			totalWeight += weight;
 		}

@@ -33,13 +33,13 @@ class ConfluenceDataCenterSetupStage2 : SetupBaseTest() {
     @Test
     fun test() {
         try {
-            webConfluence.navigateTo("setup/setupdata-start.action")
+            driver.navigate().to(BASE_URL) // TODO use webConfluence.navigateTo
             dom.awaitSeconds(3) // just wait a bit for safety
 
             /* Step 6: Setup data */
             dom.click("input[Value='Empty Site']")
 
-            // Step 7: User management */
+            /* Step 7: User management */
             dom.click("#internal")
 
             /* Step 8: Admin account */
@@ -51,7 +51,7 @@ class ConfluenceDataCenterSetupStage2 : SetupBaseTest() {
             dom.click("#setup-next-button")
 
 
-            driver.findElement(By.linkText("Start")).click()
+            dom.click(".setup-success-button .aui-button-primary.finishAction")
 
             dom.insertText("#grow-intro-space-name", "TEST")
             dom.click("#grow-intro-create-space")
@@ -67,10 +67,10 @@ class ConfluenceDataCenterSetupStage2 : SetupBaseTest() {
             webConfluence.disableCaptchas()
             webConfluence.disablePlugin("com.atlassian.troubleshooting.plugin-confluence")
             webConfluence.setLogLevel("co.goodsoftware", "INFO")
-            webConfluence.installPlugin("$IN_DIR/$DATA_GENERATOR_JAR_FILENAME")
+            webConfluence.installPlugin("$IN_DIR/$DATA_GENERATOR_JAR_FILENAME", "co.goodsoftware.good-confluence-data-generator")
 
             shot()
-        } catch (e: TimeoutException) {
+        } catch (e: Exception) {
             shot()
         }
 

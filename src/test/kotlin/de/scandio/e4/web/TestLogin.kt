@@ -1,6 +1,6 @@
 package de.scandio.e4.setup
 
-import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
+import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.confluence.web.WebConfluence
 import de.scandio.e4.worker.util.Util
 import io.github.bonigarcia.wdm.WebDriverManager

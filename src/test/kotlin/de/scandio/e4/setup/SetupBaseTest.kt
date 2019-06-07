@@ -1,7 +1,8 @@
 package de.scandio.e4.setup
 
-import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
+import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.confluence.web.WebConfluence
+import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.util.Util
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.openqa.selenium.Dimension
@@ -23,12 +24,14 @@ open abstract class SetupBaseTest {
     protected val PASSWORD = "admin"
     protected val DATA_GENERATOR_JAR_FILENAME = "data-generator-LATEST.jar"
 
-    protected val driver: WebDriver
-    protected val util: Util
-    protected val dom: DomHelper
-    protected val webConfluence: WebConfluence
+    protected var driver: WebDriver
+    protected var util: Util
+    protected var dom: DomHelper
+    protected var webConfluence: WebConfluence
+    protected var restConfluence: RestConfluence
 
     protected var screenshotCount = 0
+    protected var dumpCount = 0
 
     init {
         WebDriverManager.chromedriver().setup()
@@ -37,7 +40,26 @@ open abstract class SetupBaseTest {
         this.driver = ChromeDriver(chromeOptions)
         this.driver.manage().window().setSize(Dimension(1680, 1050))
         this.util = Util()
-        this.dom = DomHelper(driver, 120, 120)
+        this.dom = DomHelper(driver, 60, 60)
+        this.dom.defaultDuration = 120
+        this.dom.defaultWaitTillPresent = 120
+        this.dom.outDir = OUT_DIR
+        this.dom.screenshotBeforeClick = true
+        this.dom.screenshotBeforeInsert = true
+        this.webConfluence = WebConfluence(driver, URI(BASE_URL), OUT_DIR, USERNAME, PASSWORD)
+        this.restConfluence = RestConfluence(BASE_URL, USERNAME, PASSWORD)
+    }
+
+    open fun refreshWebClient() {
+        this.webConfluence.quit()
+
+        WebDriverManager.chromedriver().setup()
+        val chromeOptions = ChromeOptions()
+        chromeOptions.addArguments("--headless")
+        this.driver = ChromeDriver(chromeOptions)
+        this.driver.manage().window().setSize(Dimension(1680, 1050))
+        this.util = Util()
+        this.dom = DomHelper(driver, 60, 60)
         this.dom.defaultDuration = 120
         this.dom.defaultWaitTillPresent = 120
         this.dom.outDir = OUT_DIR
@@ -48,7 +70,14 @@ open abstract class SetupBaseTest {
 
     open fun shot() {
         this.screenshotCount += 1
-        this.util.takeScreenshot(driver, "$OUT_DIR/$screenshotCount-confluence-data-center-setup.png")
+        val path = this.util.takeScreenshot(driver, "$OUT_DIR/$screenshotCount-confluence-data-center-setup.png")
+        println(path)
+    }
+
+    open fun dump() {
+        this.dumpCount += 1
+        val path = this.util.dumpHtml(driver, "$OUT_DIR/$dumpCount-confluence-data-center-setup.html")
+        println(path)
     }
 
 }

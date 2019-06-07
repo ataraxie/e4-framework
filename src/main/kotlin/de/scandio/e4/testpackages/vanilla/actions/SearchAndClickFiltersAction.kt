@@ -1,7 +1,8 @@
-package de.scandio.e4.testpackages.vanilla.actions
+package de.scandio.e4.testpackages.vanillaro.actions
 
-import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
+import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.confluence.web.WebConfluence
+import de.scandio.e4.testpackages.vanilla.actions.SearchAction
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*

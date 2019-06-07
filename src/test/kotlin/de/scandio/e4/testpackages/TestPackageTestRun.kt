@@ -7,6 +7,7 @@ import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.TestPackage
+import de.scandio.e4.worker.util.Util
 import de.scandio.e4.worker.util.WorkerUtils
 import org.slf4j.LoggerFactory
 import org.slf4j.LoggerFactory.getILoggerFactory
@@ -21,6 +22,9 @@ abstract class TestPackageTestRun {
     protected var webConfluence: WebConfluence? = null
     protected var restConfluence: RestConfluence? = null
 
+    protected var screenshotCount = 0
+    protected val util: Util
+
 
     abstract fun getBaseUrl(): String
     abstract fun getOutDir(): String
@@ -29,6 +33,7 @@ abstract class TestPackageTestRun {
     abstract fun getTestPackage(): TestPackage
 
     init {
+        this.util = Util()
         setLogLevel("org.apache", Level.ERROR)
         setLogLevel("org.openqa.selenium.phantomjs.PhantomJSDriverService", Level.ERROR)
     }
@@ -98,6 +103,12 @@ abstract class TestPackageTestRun {
             }
         }
         return Measurement(totalTimeTaken, numExcludedActions, numActionsRun)
+    }
+
+    open fun shot() {
+        this.screenshotCount += 1
+        val path = this.util.takeScreenshot(webConfluence!!.driver, "${getOutDir()}/$screenshotCount-test-run.png")
+        print(path)
     }
 
     class Measurement(val totalTimeTaken: Long, val numExcludedActions: Int, val numActionsRun: Int)

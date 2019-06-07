@@ -1,4 +1,4 @@
-package de.scandio.atlassian.it.pocketquery.helpers
+package de.scandio.e4.helpers
 
 import de.scandio.e4.enjoy.wait
 import de.scandio.e4.worker.util.Util
@@ -9,19 +9,21 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedCondition
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
+import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.Duration
-import java.util.concurrent.TimeUnit
 
 class DomHelper(
         val driver: WebDriver,
         var defaultDuration: Long = 20,
-        var defaultWaitTillPresent: Long = 1,
+        var defaultWaitTillPresent: Long = 10,
         var screenshotBeforeClick: Boolean = false,
         var screenshotBeforeInsert: Boolean = false,
         var outDir: String = "/tmp",
         val util: Util = Util()
 ) {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     fun clickCreateSpace() {
         val js = driver as JavascriptExecutor
@@ -29,11 +31,11 @@ class DomHelper(
     }
 
     fun awaitNoClass(selector: String, className: String, duration: Long = this.defaultDuration) {
-        awaitElementPresent("$selector:not(.$className)",duration)
+        awaitElementClickable("$selector:not(.$className)",duration)
     }
 
     fun awaitClass(selector: String, className: String, duration: Long = this.defaultDuration) {
-        awaitElementPresent("$selector.$className", duration)
+        awaitElementClickable("$selector.$className", duration)
     }
 
     fun awaitAttributeNotPresent(selector: String, attrName: String) {
@@ -96,17 +98,31 @@ class DomHelper(
         }
         awaitElementPresent(selector, awaitClickableSeconds)
         findElement(selector).sendKeys(text)
-        awaitMilliseconds(10)
+        awaitMilliseconds(50)
     }
 
-    fun insertTextTinyMce(text: String) {
+    fun addTextTinyMce(html: String) {
+        awaitElementPresent("#wysiwygTextarea_ifr")
+        awaitMilliseconds(100)
         val js = driver as JavascriptExecutor
-        js.executeScript("tinyMCE.activeEditor.setContent('${text.replace("'", "\\'")}')")
+        val oldContent = js.executeScript("return tinyMCE.activeEditor.getContent()")
+        val newContent = "$oldContent${html.replace("'", "\\'")}"
+        log.debug("Insert into TinyMCE. Old content {{}}; new content {{}}", oldContent, newContent)
+        js.executeScript("tinyMCE.activeEditor.setContent('$newContent')")
+    }
+
+    fun insertTextTinyMce(html: String) {
+        awaitElementPresent("#wysiwygTextarea_ifr")
+        awaitMilliseconds(100)
+        val js = driver as JavascriptExecutor
+        val escapedHtml = html.replace("'", "\\'")
+        log.debug("Insert into TinyMCE. New content {{}}", html)
+        js.executeScript("tinyMCE.activeEditor.setContent('$escapedHtml')")
     }
 
     fun clearText(selector: String) {
         findElement(selector).clear()
-        awaitMilliseconds(10)
+        awaitMilliseconds(50)
     }
 
     fun click(selector: String, awaitClickableSeconds: Long = this.defaultWaitTillPresent) {

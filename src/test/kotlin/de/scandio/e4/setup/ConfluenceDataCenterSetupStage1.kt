@@ -1,16 +1,8 @@
 package de.scandio.e4.setup
 
-import de.scandio.atlassian.it.pocketquery.helpers.DomHelper
-import de.scandio.e4.worker.util.Util
-import io.github.bonigarcia.wdm.WebDriverManager
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.By
-import org.openqa.selenium.Dimension
 import org.slf4j.LoggerFactory
 
 
@@ -41,7 +33,24 @@ open class ConfluenceDataCenterSetupStage1 : SetupBaseTest() {
 
     @Test
     fun test() {
-        driver.navigate().to(BASE_URL)
+        try {
+//            setupStep1()
+//            dom.awaitMinutes(5)
+//            refreshWebClient()
+//            setupStep2()
+//            refreshWebClient()
+            setupStep3()
+        } catch (e: Exception) {
+            shot()
+            dump()
+            throw e
+        } finally {
+            webConfluence.quit()
+        }
+    }
+
+    fun setupStep1() {
+        driver.navigate().to(BASE_URL) // TODO use webConfluence.navigateTo
         dom.awaitSeconds(3) // just wait a bit for safety
 
         /* Step 1: Test vs. Production */
@@ -80,6 +89,72 @@ open class ConfluenceDataCenterSetupStage1 : SetupBaseTest() {
         /* This takes a few minutes! Make sure the next step has a wait value! */
         log.info("Database setup in progress. This takes a while. Grab some coffee and run stage 2 afterwards\n")
         shot()
+    }
+
+    fun setupStep2() {
+        driver.navigate().to(BASE_URL) // TODO use webConfluence.navigateTo
+        dom.awaitSeconds(3) // just wait a bit for safety
+
+        /* Step 6: Setup data */
+        dom.click("input[Value='Empty Site']")
+
+        /* Step 7: User management */
+        dom.click("#internal")
+
+        /* Step 8: Admin account */
+
+        dom.insertText("#fullName", "Administrator")
+        dom.insertText("#email", "admin@example.com")
+        dom.insertText("#password", "admin")
+        dom.insertText("#confirm", "admin")
+        dom.click("#setup-next-button")
+
+
+        dom.click(".setup-success-button .aui-button-primary.finishAction")
+
+        dom.insertText("#grow-intro-space-name", "TEST")
+        dom.click("#grow-intro-create-space")
+        dom.click("#onboarding-skip-editor-tutorial")
+        dom.click("#editor-precursor > .cell")
+        dom.click("#content-title")
+        dom.insertText("#content-title", "Test Page")
+        dom.click("#rte-button-publish")
+        dom.awaitElementPresent("#main-content")
+
+        shot()
+    }
+
+    fun setupStep3() {
+        /* Step 9: Admin config */
+//        webConfluence.disableMarketplaceConnectivity()
+//        webConfluence.disableSecureAdminSessions()
+//        webConfluence.disableCaptchas()
+//        webConfluence.disablePlugin("com.atlassian.troubleshooting.plugin-confluence")
+//        webConfluence.setLogLevel("co.goodsoftware", "INFO")
+        webConfluence.installPlugin("$IN_DIR/$DATA_GENERATOR_JAR_FILENAME", "co.goodsoftware.good-confluence-data-generator")
+    }
+
+    private fun pollTillDbReady() {
+        val pollMax = 5
+        var pollCount = 1
+        while (true) {
+            val done = dom.isElementPresent("form[action='setupdata.action']")
+            if (done) {
+                log.info("Done!")
+                break
+            } else {
+                if (pollCount >= pollMax) {
+                    shot()
+                    log.warn("Waited for {} minutes. Won't wait longer.", pollMax)
+                    break
+                } else {
+                    log.info("Not done yet. Waiting for another minute")
+                    shot()
+                    pollCount++
+                    dom.awaitMinutes(1)
+                }
+            }
+        }
     }
 
 }

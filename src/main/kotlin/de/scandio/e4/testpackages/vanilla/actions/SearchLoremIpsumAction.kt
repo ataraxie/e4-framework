@@ -1,35 +1,37 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
 import de.scandio.e4.confluence.web.WebConfluence
-import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.util.RandomData
 import org.slf4j.LoggerFactory
 import java.util.*
 
-
-open class ViewRandomContent : Action() {
+class SearchLoremIpsumAction : Action() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    protected var start: Long = 0
-    protected var end: Long = 0
+    private var start: Long = 0
+    private var end: Long = 0
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
-        log.debug("ViewRandomContent.execute with web user {{}} and REST user {{}}", webClient.user, restClient.user)
+        log.debug("SearchLoremIpsumAction.execute with web user {{}} and REST user {{}}", webClient.user, restClient.user)
+
         val webConfluence = webClient as WebConfluence
-        val restConfluence = restClient as RestConfluence
-        // IMPORTANT: do this before measuring because it invokes a REST call!
-        val randomContentId = restConfluence.randomContentId
         webConfluence.login()
+        val keywordSize = RandomData.LIST_LOREM_IPSUM.size
+        val queryIndex = Random().nextInt(keywordSize)
+        val query = RandomData.LIST_LOREM_IPSUM.get(queryIndex)
         this.start = Date().time
-        webConfluence.goToPage(randomContentId)
+        webConfluence.search(query)
         this.end = Date().time
     }
 
     override fun getTimeTaken(): Long {
         return this.end - this.start
     }
+
+
 
 }

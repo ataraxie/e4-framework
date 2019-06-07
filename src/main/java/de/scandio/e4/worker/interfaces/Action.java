@@ -8,15 +8,17 @@ import java.util.Random;
 
 public abstract class Action {
 
+	private static Random RAND = new Random();
+
 	private Logger log = LoggerFactory.getLogger(Action.class);
 
 	public abstract void execute(@NotNull WebClient webClient, @NotNull RestClient restClient) throws Exception;
 
 	public void executeWithRandomDelay(@NotNull WebClient webClient, @NotNull RestClient restClient) throws Exception {
-		long randomSleepTime = new Random().nextInt(10000);
-		log.info("Next action. Sleeping for {{}}ms", randomSleepTime);
+		long randomWait = 2000 + RAND.nextInt(2000);
+		log.info("Next action. Sleeping for {{}}ms", randomWait);
 //		log.info("SKIPPING SLEEP FEATURE!");
-		Thread.sleep(randomSleepTime);
+		Thread.sleep(randomWait);
 		execute(webClient, restClient);
 	}
 
