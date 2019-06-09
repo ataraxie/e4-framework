@@ -27,18 +27,7 @@ class BranchMerger : BranchCreator() {
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
-
-        // PREPARATION
-        actions.addAllExcludeFromMeasurement(super.getActions())
-
-        // ACTIONS
-        actions.add(MergeBranchAction("PB", "Branch 1", "PB Origin 1 ($virtualUserStartTime)"))
-        actions.add(MergeBranchAction("PB", "Branch 2", "PB Origin 1 ($virtualUserStartTime)"))
-        actions.add(MergeBranchAction("PB", "Branch 1", "PB Origin 2 ($virtualUserStartTime)"))
-        actions.add(MergeBranchAction("PB", "Branch 2", "PB Origin 2 ($virtualUserStartTime)"))
-        actions.add(MergeBranchAction("PB", "Branch 1", "PB Origin 3 ($virtualUserStartTime)"))
-        actions.add(MergeBranchAction("PB", "Branch 2", "PB Origin 3 ($virtualUserStartTime)"))
-
+        actions.add(MergeBranchAction("PB"))
         return actions
     }
 }

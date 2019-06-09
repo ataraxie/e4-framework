@@ -95,7 +95,10 @@ public class TestRunnerService {
 		for (Thread virtualUserThread : virtualUserThreads) {
 			virtualUserThread.join();
 		}
-		log.info("All tests are finished!");
+		log.info("All tests are finished! Your database is at {{}}. It has a table {{}} with the results and a table {{}} with errors",
+				storageService.getDatabaseFilePath(),
+				StorageService.TABLE_NAME_MEASUREMENT,
+				StorageService.TABLE_NAME_ERROR);
 
 		applicationStatusService.setTestsStatus(TestsStatus.FINISHED);
 	}
@@ -141,7 +144,9 @@ public class TestRunnerService {
 			} catch (Exception e) {
 				E4Error e4Error = new E4Error(
 						"CREATE_CLIENTS",
-						e.getClass().getSimpleName());
+						e.getClass().getSimpleName(),
+						virtualUser.getClass().getSimpleName(),
+						"");
 				try {
 					storageService.recordError(e4Error);
 				} catch (Exception ex) {
@@ -190,7 +195,10 @@ public class TestRunnerService {
 				storageService.recordMeasurement(measurement);
 			} catch (Exception e) {
 				log.error("FAILED ACTION: "+action.getClass().getSimpleName(), e);
-				E4Error e4error = new E4Error("ACTION_FAILED", e.getClass().getName());
+				E4Error e4error = new E4Error("ACTION_FAILED",
+						e.getClass().getName(),
+						virtualUser.getClass().getSimpleName(),
+						action.getClass().getSimpleName());
 				storageService.recordError(e4error);
 				webClient.takeScreenshot("failed-scenario");
 			} finally {

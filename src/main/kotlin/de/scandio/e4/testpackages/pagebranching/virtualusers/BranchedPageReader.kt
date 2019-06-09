@@ -30,10 +30,6 @@ class BranchedPageReader : VirtualUser {
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewPageAction("PB", "Branch 1: PB Root Origin"))
-        actions.add(ViewPageAction("PB", "Branch 2: PB Root Origin"))
-        actions.add(ViewPageAction("PB", "Branch 3: PB Root Origin"))
-        actions.add(ViewPageAction("PB", "Branch 4: PB Root Origin"))
-        actions.add(ViewPageAction("PB", "Branch 5: PB Root Origin"))
         return actions
     }
 

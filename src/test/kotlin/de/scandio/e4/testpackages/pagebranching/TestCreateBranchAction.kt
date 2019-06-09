@@ -1,10 +1,12 @@
 package de.scandio.e4.setup
 
+import de.scandio.e4.testpackages.pagebranching.actions.CreateBranchAction
+import de.scandio.e4.testpackages.pagebranching.actions.MergeBranchAction
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class TestLogin: TestBase() {
+class TestCreateBranchAction : TestBase() {
 
     @Before
     fun before() {
@@ -19,7 +21,9 @@ class TestLogin: TestBase() {
     @Test
     fun test() {
         try {
-            this.webConfluence.login()
+            CreateBranchAction("PB").execute(webConfluence, restConfluence)
+            webConfluence.takeScreenshot("test")
+
         } catch (e: Exception) {
             this.webConfluence.takeScreenshot("fail")
             throw e

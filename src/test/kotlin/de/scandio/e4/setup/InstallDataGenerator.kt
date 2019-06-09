@@ -8,7 +8,7 @@ class InstallDataGenerator : SetupBaseTest() {
 
     @Test
     fun test() {
-        webConfluence.installPlugin(JAR_FILE_PATH, "co.goodsoftware.good-confluence-data-generator")
+        webConfluence.installPlugin(JAR_FILE_PATH)
     }
 
 }

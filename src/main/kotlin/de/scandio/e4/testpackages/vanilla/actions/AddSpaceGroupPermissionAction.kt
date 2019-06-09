@@ -1,16 +1,18 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
 import de.scandio.e4.confluence.web.WebConfluence
-import de.scandio.e4.worker.interfaces.RestClient
+import de.scandio.e4.worker.confluence.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.util.RandomData
 import java.util.*
 
-class CreatePageAction(
-        val spaceKey: String,
-        var pageTitle: String,
-        var appendUsernameToPageTitle: Boolean = false,
-        var appendTimestampToPageTitle: Boolean = false
+class AddSpaceGroupPermissionAction(
+        val spaceKey : String,
+        val groupName: String,
+        val permissionKey: String,
+        val shallBePermitted: Boolean
 ) : Action() {
 
     private var start: Long = 0
@@ -19,16 +21,8 @@ class CreatePageAction(
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         webConfluence.login()
-        if (appendUsernameToPageTitle) {
-            pageTitle += " (${webClient.username})"
-        }
-
-        if (appendTimestampToPageTitle) {
-            pageTitle += " (${Date().time})"
-        }
-
         this.start = Date().time
-        webConfluence.createDefaultPage(spaceKey, pageTitle)
+        webConfluence.addSpaceGroupPermission(spaceKey, groupName, permissionKey, shallBePermitted)
         this.end = Date().time
     }
 

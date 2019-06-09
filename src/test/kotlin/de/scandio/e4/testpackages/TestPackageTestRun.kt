@@ -9,6 +9,7 @@ import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.util.Util
 import de.scandio.e4.worker.util.WorkerUtils
+import org.openqa.selenium.Dimension
 import org.slf4j.LoggerFactory
 import org.slf4j.LoggerFactory.getILoggerFactory
 
@@ -18,9 +19,6 @@ abstract class TestPackageTestRun {
     val loggerContext = getILoggerFactory() as LoggerContext
 
     private val log = LoggerFactory.getLogger(javaClass)
-
-    protected var webConfluence: WebConfluence? = null
-    protected var restConfluence: RestConfluence? = null
 
     protected var screenshotCount = 0
     protected val util: Util
@@ -42,20 +40,10 @@ abstract class TestPackageTestRun {
         loggerContext.getLogger(packagePath).level = level
     }
 
-    protected fun setup() {
-
-        this.webConfluence = WorkerUtils.newChromeWebClient(
-                getBaseUrl(), getOutDir(), getUsername(), getPassword()) as WebConfluence
-        this.restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
-    }
-
-    protected fun shutdown() {
-        webConfluence!!.driver.quit()
-    }
-
     protected fun executeTestPackage(testPackage: TestPackage) {
         log.info("==============================================================")
         log.info("START executing ${testPackage.virtualUsers.size} virtual users")
+
         for (virtualUserClass in testPackage.virtualUsers) {
             val virtualUser = virtualUserClass.newInstance()
             log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
@@ -75,10 +63,16 @@ abstract class TestPackageTestRun {
     }
 
     protected fun executeAction(action: Action) {
-        action.execute(webConfluence!!, restConfluence!!)
+        val webConfluence = WorkerUtils.newChromeWebClientPreparePhase(
+                getBaseUrl(), getOutDir(), getUsername(), getPassword()) as WebConfluence
+        webConfluence.webDriver.manage().window().size = Dimension(2000, 1500)
+        val restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
+        log.info("Executing action ${action.javaClass.simpleName}")
+        action.execute(webConfluence, restConfluence)
         val runtimeName = "afteraction-${action.javaClass.simpleName}"
-        webConfluence!!.takeScreenshot(runtimeName)
-        webConfluence!!.dumpHtml(runtimeName)
+        webConfluence.takeScreenshot(runtimeName)
+        webConfluence.dumpHtml(runtimeName)
+        webConfluence.quit()
         log.info("Time taken: ${action.timeTaken}")
     }
 
@@ -87,8 +81,12 @@ abstract class TestPackageTestRun {
         var numExcludedActions = 0
         var numActionsRun = 0
         for (action in actions) {
+            val webConfluence = WorkerUtils.newChromeWebClientPreparePhase(
+                    getBaseUrl(), getOutDir(), getUsername(), getPassword()) as WebConfluence
+            val restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
             try {
-                action.execute(webConfluence!!, restConfluence!!)
+                log.info("Executing action ${action.javaClass.simpleName}")
+                action.execute(webConfluence, restConfluence)
                 if (!actions.isExcludedFromMeasurement(action)) {
                     totalTimeTaken += action.timeTaken
                     numActionsRun += 1
@@ -98,16 +96,17 @@ abstract class TestPackageTestRun {
                 }
             } finally {
                 val runtimeName = "afteraction-${action.javaClass.simpleName}"
-                webConfluence!!.takeScreenshot(runtimeName)
-                webConfluence!!.dumpHtml(runtimeName)
+                webConfluence.takeScreenshot(runtimeName)
+                webConfluence.dumpHtml(runtimeName)
+                webConfluence.quit()
             }
         }
         return Measurement(totalTimeTaken, numExcludedActions, numActionsRun)
     }
 
-    open fun shot() {
+    open fun shot(webConfluence: WebConfluence) {
         this.screenshotCount += 1
-        val path = this.util.takeScreenshot(webConfluence!!.driver, "${getOutDir()}/$screenshotCount-test-run.png")
+        val path = this.util.takeScreenshot(webConfluence.driver, "${getOutDir()}/$screenshotCount-test-run.png")
         print(path)
     }
 

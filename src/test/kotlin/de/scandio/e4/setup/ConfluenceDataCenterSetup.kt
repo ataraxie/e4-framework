@@ -6,18 +6,7 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 
 
-/*
-Search/Replace for Java export from Selenium Chrome addon:
-
-driver.findElement\(By.id\("(.*)"\)\).sendKeys\("(.*)"\)
-dom.insertText("#$1", "$2")
-
-
-driver.findElement\(By.id\("(.*)"\)\)\.click\(\)
-dom.click("#$1")
- */
-
-open class ConfluenceDataCenterSetupStage1 : SetupBaseTest() {
+open class ConfluenceDataCenterSetup : SetupBaseTest() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -34,12 +23,30 @@ open class ConfluenceDataCenterSetupStage1 : SetupBaseTest() {
     @Test
     fun test() {
         try {
-//            setupStep1()
-//            dom.awaitMinutes(5)
-//            refreshWebClient()
-//            setupStep2()
-//            refreshWebClient()
-            setupStep3()
+            setupStep1()
+            dom.awaitMinutes(4)
+            pollTillDbReady()
+            refreshWebClient()
+            setupStep2()
+            refreshWebClient(true, true)
+
+            /* Step 9: Admin config */
+            webConfluence.disableMarketplaceConnectivity()
+            refreshWebClient(true, true)
+            webConfluence.disableSecureAdminSessions()
+            refreshWebClient(true, true)
+            webConfluence.disableCaptchas()
+            refreshWebClient(true, true)
+            webConfluence.setLogLevel("co.goodsoftware", "INFO")
+            refreshWebClient(true, true)
+            webConfluence.disablePlugin("com.atlassian.troubleshooting.plugin-confluence")
+            refreshWebClient(true, true)
+            webConfluence.disablePlugin("com.atlassian.plugins.base-hipchat-integration-plugin")
+            refreshWebClient(true, true)
+            webConfluence.installPlugin("$IN_DIR/$DATA_GENERATOR_JAR_FILENAME")
+
+            refreshWebClient(true, true)
+            installPageBranching()
         } catch (e: Exception) {
             shot()
             dump()
@@ -47,6 +54,23 @@ open class ConfluenceDataCenterSetupStage1 : SetupBaseTest() {
         } finally {
             webConfluence.quit()
         }
+    }
+
+    fun installPageBranching() {
+        val PB_JAR_FILE_PATH = "/tmp/e4/in/page-branching-1.2.0.jar"
+
+        val ROW_SELECTOR = ".upm-plugin[data-key='de.scandio.confluence.plugins.page-branching']"
+        val LICENSE_SELECTOR = "$ROW_SELECTOR textarea.edit-license-key"
+        val LICENSE = "AAABOA0ODAoPeNqVkV9PwjAUxd/7KZr4vGUbAZSkiToWNWFABH3y5dLdjSalW247At/ewpgaow88NOmfc8/9ndubvDY8hyNPIh7fTpJkEkU8na79Ob5j83a3QVqUbxbJiiBmU7SSVONUbcQSKuSPBEZulal4WRNPa1PqFo3EjwnP9qBbOElZSnjeTMGhODkH0TBIYub1DqSbww5FiVodwopaU9xbCaZQdVhgL8lyUPo/zXcn4ahFppVEY/HdQ5/uEuaLjUPjUTE7NIqOP0BGQRKxAsPeT35lCBvdVsrYsPFJg02fNPQ4ao9dqwVVYJTtmq86C/602zyzVTYXfgWzeDAajMfDMZt1WH8TXB7XxwbP40gXeZ69pi8Ps+vgVg7IIYkStMXrStHPiBpS9pJt2ZLcgsXfv/YJlTfDSTAsAhQ8YDyCfUAyEm1uFV0+INy9Ywp3YAIUTk/kpoQImX1esfH2Zp08B6IiGnQ=X02fj"
+
+        webConfluence.login()
+        webConfluence.authenticateAdmin()
+        webConfluence.installPlugin(PB_JAR_FILE_PATH)
+        dom.click("#upm-plugin-status-dialog .cancel")
+        dom.insertText(LICENSE_SELECTOR, LICENSE)
+        dom.awaitSeconds(5)
+        dom.click("$ROW_SELECTOR .submit-license")
+        dom.awaitSeconds(5)
     }
 
     fun setupStep1() {
@@ -125,34 +149,30 @@ open class ConfluenceDataCenterSetupStage1 : SetupBaseTest() {
     }
 
     fun setupStep3() {
-        /* Step 9: Admin config */
-//        webConfluence.disableMarketplaceConnectivity()
-//        webConfluence.disableSecureAdminSessions()
-//        webConfluence.disableCaptchas()
-//        webConfluence.disablePlugin("com.atlassian.troubleshooting.plugin-confluence")
-//        webConfluence.setLogLevel("co.goodsoftware", "INFO")
-        webConfluence.installPlugin("$IN_DIR/$DATA_GENERATOR_JAR_FILENAME", "co.goodsoftware.good-confluence-data-generator")
+
     }
 
     private fun pollTillDbReady() {
-        val pollMax = 5
+        val pollMax = 8
         var pollCount = 1
         while (true) {
-            val done = dom.isElementPresent("form[action='setupdata.action']")
-            if (done) {
+            refreshWebClient(false, false)
+            driver.navigate().to(BASE_URL)
+            dom.awaitSeconds(10)
+            if (dom.isElementPresent("form[action='setupdata.action']")) {
                 log.info("Done!")
                 break
+            }
+
+            if (pollCount >= pollMax) {
+                shot()
+                log.warn("Waited for {} minutes. Won't wait longer.", pollMax)
+                throw Exception("Waited too long")
             } else {
-                if (pollCount >= pollMax) {
-                    shot()
-                    log.warn("Waited for {} minutes. Won't wait longer.", pollMax)
-                    break
-                } else {
-                    log.info("Not done yet. Waiting for another minute")
-                    shot()
-                    pollCount++
-                    dom.awaitMinutes(1)
-                }
+                log.info("Not done yet. Waiting for another minute")
+                shot()
+                pollCount++
+                dom.awaitMinutes(1)
             }
         }
     }

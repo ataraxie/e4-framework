@@ -96,25 +96,6 @@ class WebConfluence(
         }
     }
 
-    fun navigateToLoginIfNecessary(path: String) {
-        navigateTo(path)
-        takeScreenshot("navigateToLoginIfNecessary-1")
-        dom.awaitElementClickable("#full-height-container")
-        takeScreenshot("navigateToLoginIfNecessary-2")
-        if (dom.isElementPresent("form[name='loginform']")) {
-            dom.insertText("#os_username", this.username)
-            dom.insertText("#os_password", this.password)
-            dom.click("#loginButton")
-        }
-        dom.awaitSeconds(3)
-        takeScreenshot("navigateToLoginIfNecessary-3")
-        if (dom.isElementPresent("#authenticateButton")) {
-            dom.insertText("#password", password)
-            dom.click("#authenticateButton")
-            dom.awaitElementPresent("#admin-navigation")
-        }
-    }
-
     override fun takeScreenshot(screenshotName: String): String {
         var dest = ""
         try {
@@ -122,6 +103,7 @@ class WebConfluence(
             val source: File = ts.getScreenshotAs(OutputType.FILE)
             dest = "$outputDir/$screenshotName-${Date().time}.png"
             log.info("[SCREENSHOT] {{}}", dest)
+            println(dest)
             val destination = File(dest)
             FileUtils.copyFile(source, destination)
         } catch (e: Exception) {
@@ -137,6 +119,7 @@ class WebConfluence(
             dest = "$outputDir/$dumpName-${Date().time}.html"
             FileUtils.writeStringToFile(File(dest), driver.pageSource, "UTF-8", false);
             log.info("[DUMP] {{}}", dest)
+            println(dest)
         } catch (e: Exception) {
             log.warn("FAILED TO CREATE SCREENSHOT WITH EXCEPTION: " + e.javaClass.simpleName + " " + e.message)
         }
@@ -164,7 +147,7 @@ class WebConfluence(
     fun goToEditPage() {
         dom.awaitElementClickable("#editPageLink")
         dom.click("#editPageLink")
-        dom.awaitElementPresent("#inviteToEditLink", 30)
+        dom.awaitElementClickable("#content-title-div", 40)
     }
 
     fun goToBlogpost(spaceKey: String, blogpostTitle: String, blogpostCreationDate: String) {
@@ -173,12 +156,26 @@ class WebConfluence(
     }
 
     fun insertMacro(macroId: String, macroSearchTerm: String) {
+        log.debug("Trying to insert macro {{}}", macroId)
         dom.click("#rte-button-insert")
+        debugScreen("insert-macro-1")
         dom.click("#rte-insert-macro")
+        debugScreen("insert-macro-2")
         dom.insertText("#macro-browser-search", macroSearchTerm)
+        debugScreen("insert-macro-3")
         dom.click("#macro-$macroId")
+        debugScreen("insert-macro-4")
         dom.click("#macro-details-page button.ok", 5)
+        debugScreen("insert-macro-5")
         dom.awaitElementClickable("#rte-button-publish")
+        dom.awaitMilliseconds(100)
+    }
+
+    fun debugScreen(snapshotName: String) {
+        if (log.isDebugEnabled) {
+            takeScreenshot(snapshotName)
+            dumpHtml(snapshotName)
+        }
     }
 
     fun search(searchString: String) {
@@ -192,6 +189,7 @@ class WebConfluence(
     }
 
     fun savePage() {
+        dom.removeElementWithJQuery(".aui-blanket")
         dom.click("#rte-button-publish")
         dom.awaitElementPresent("#main-content")
     }
@@ -239,48 +237,48 @@ class WebConfluence(
     fun disablePlugin(pluginKey: String) {
         val upmRowSelector = ".upm-plugin[data-key='$pluginKey']"
         log.info("Disabling plugin: $pluginKey")
-        navigateToLoginIfNecessary("plugins/servlet/upm/manage/all")
-        takeScreenshot("disable-plugin-1")
+        navigateTo("plugins/servlet/upm/manage/all")
+        debugScreen("disable-plugin-1")
         dom.awaitElementPresent(".upm-plugin-list-container", 40)
-        takeScreenshot("disable-plugin-2")
+        debugScreen("disable-plugin-2")
         dom.click(upmRowSelector, 40)
-        takeScreenshot("disable-plugin-3")
+        debugScreen("disable-plugin-3")
         dom.click("$upmRowSelector .aui-button[data-action='DISABLE']", 40)
-        takeScreenshot("disable-plugin-4")
+        debugScreen("disable-plugin-4")
         dom.awaitElementPresent("$upmRowSelector .aui-button[data-action='ENABLE']")
         log.info("--> SUCCESS")
     }
 
-    fun installPlugin(absoluteFilePath: String, pluginKey: String) {
+    fun installPlugin(absoluteFilePath: String) {
         log.info("Installing ${absoluteFilePath.split('/').last()}")
-        navigateToLoginIfNecessary("plugins/servlet/upm")
-        takeScreenshot("install-plugin-1")
+        navigateTo("plugins/servlet/upm")
+        debugScreen("install-plugin-1")
         dom.awaitElementClickable(".upm-plugin-list-container", 40)
-        takeScreenshot("install-plugin-2")
+        debugScreen("install-plugin-2")
         dom.click("#upm-upload", 40)
-        takeScreenshot("install-plugin-3")
+        debugScreen("install-plugin-3")
         log.info("-> Waiting for upload dialog...")
         dom.awaitElementClickable("#upm-upload-file", 40)
-        takeScreenshot("install-plugin-4")
+        debugScreen("install-plugin-4")
         dom.findElement("#upm-upload-file").sendKeys(absoluteFilePath)
         dom.click("#upm-upload-dialog button.confirm", 40)
-        takeScreenshot("install-plugin-5")
+        debugScreen("install-plugin-5")
         log.info("-> Waiting till upload is fully done...")
         dom.awaitClass("#upm-manage-container", "loading", 40)
         dom.awaitNoClass("#upm-manage-container", "loading", 40)
-        takeScreenshot("install-plugin-6")
+        debugScreen("install-plugin-6")
         log.info("--> SUCCESS (we think, but please check!)")
     }
 
     fun disableMarketplaceConnectivity() {
-        navigateToLoginIfNecessary("plugins/servlet/upm")
+        navigateTo("plugins/servlet/upm")
         dom.click("#link-bar-settings a", 30)
         dom.click("#upm-checkbox-pacDisabled", 30)
         dom.click("#upm-settings-dialog .aui-button.confirm")
     }
 
     fun setLogLevel(packagePath: String, logLevel: String) {
-        navigateToLoginIfNecessary("admin/viewlog4j.action")
+        navigateTo("admin/viewlog4j.action")
         dom.insertText("[name='extraClassName']", packagePath)
         dom.click("[name='extraLevelName'] option[value='$logLevel']")
         dom.click("#addEntryButton")
@@ -289,7 +287,7 @@ class WebConfluence(
 
     fun disableSecurityCheckbox(checkboxSelector: String) {
         log.info("Disabling security checkbox $checkboxSelector")
-        navigateToLoginIfNecessary("admin/editsecurityconfig.action")
+        navigateTo("admin/editsecurityconfig.action")
         dom.click(checkboxSelector)
         dom.click("#confirm")
         dom.awaitSeconds(10) // TODO: below doesn't work
@@ -324,6 +322,20 @@ class WebConfluence(
     private fun saveComment() {
         dom.click("#rte-button-publish")
         dom.awaitElementPresent(".comment.focused")
+    }
+
+    fun addSpaceGroupPermission(spaceKey: String, groupName: String, permissionKey: String, permitted: Boolean) {
+        navigateTo("spaces/spacepermissions.action?key=$spaceKey")
+        val selector = ".permissionCell[data-permission='$permissionKey'][data-permission-group='$groupName'][data-permission-set='${!permitted}']"
+        dom.click("form[name='editspacepermissions'] #edit")
+        dom.insertText("#groups-to-add-autocomplete", groupName)
+        dom.click("input[name='groupsToAddButton']")
+        dom.awaitSeconds(3) //TODO!!
+
+        if (dom.isElementPresent(selector)) {
+            dom.click(selector)
+        }
+        dom.click(".primary-button-container input[type='submit']")
     }
 
 }

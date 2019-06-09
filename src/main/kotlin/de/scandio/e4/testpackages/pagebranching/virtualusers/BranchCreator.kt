@@ -35,21 +35,7 @@ open class BranchCreator : VirtualUser {
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
-        virtualUserStartTime = Date().time
-
-        // PREPARATION
-        actions.addExcludeFromMeasurement(CreatePageAction("PB", "PB Origin 1 ($virtualUserStartTime)"))
-        actions.addExcludeFromMeasurement(CreatePageAction("PB", "PB Origin 2 ($virtualUserStartTime)"))
-        actions.addExcludeFromMeasurement(CreatePageAction("PB", "PB Origin 3 ($virtualUserStartTime)"))
-
-        // ACTIONS
-        actions.add(CreateBranchAction("PB", "PB Origin 1 ($virtualUserStartTime)", "Branch 1"))
-        actions.add(CreateBranchAction("PB", "PB Origin 1 ($virtualUserStartTime)", "Branch 2"))
-        actions.add(CreateBranchAction("PB", "PB Origin 2 ($virtualUserStartTime)", "Branch 1"))
-        actions.add(CreateBranchAction("PB", "PB Origin 2 ($virtualUserStartTime)", "Branch 2"))
-        actions.add(CreateBranchAction("PB", "PB Origin 3 ($virtualUserStartTime)", "Branch 1"))
-        actions.add(CreateBranchAction("PB", "PB Origin 3 ($virtualUserStartTime)", "Branch 2"))
-
+        actions.add(CreateBranchAction("PB"))
         return actions
     }
 

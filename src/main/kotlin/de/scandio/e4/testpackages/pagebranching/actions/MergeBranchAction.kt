@@ -28,28 +28,38 @@ import java.util.*
  * @author Felix Grund
  */
 open class MergeBranchAction (
-        val spaceKey: String,
-        var branchName: String,
-        val originPageTitle: String
-    ) : Action() {
-
-    protected var start: Long = 0
-    protected var end: Long = 0
+        spaceKey: String,
+        originPageTitle: String = "PLACEHOLDER",
+        branchName: String = "PLACEHOLDER"
+    ) : CreateBranchAction(spaceKey, originPageTitle, branchName) {
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         val dom = DomHelper(webConfluence.driver)
 
         webConfluence.login()
-        webConfluence.goToPage(spaceKey, "$branchName: $originPageTitle")
+
+        if (originPageTitle.equals("PLACEHOLDER")) {
+            super.originPageTitle = "MergeBranchAction (${Date().time})"
+            super.createOriginPage(webConfluence)
+        }
+        if (branchName.equals("PLACEHOLDER")) {
+            super.branchName = "Branch (${Date().time})"
+            super.createBranch(webConfluence)
+        }
 
         this.start = Date().time
         dom.click("#action-menu-link")
         dom.awaitElementClickable(".pagebranching-merge-link")
+        webConfluence.debugScreen("mergebranch-1")
         dom.click(".pagebranching-merge-link")
+        webConfluence.debugScreen("mergebranch-2")
         dom.awaitElementClickable("#merge-branch-confirmation-dialog-submit-and-archive-button")
+        webConfluence.debugScreen("mergebranch-3")
         dom.click("#merge-branch-confirmation-dialog-submit-and-archive-button")
-        dom.awaitElementPresent(".page-branching-original-meta")
+        webConfluence.debugScreen("mergebranch-4")
+        dom.awaitElementPresent(".page-metadata-modification-info")
+        webConfluence.debugScreen("mergebranch-5")
         this.end = Date().time
     }
 

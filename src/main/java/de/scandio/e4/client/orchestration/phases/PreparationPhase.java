@@ -42,7 +42,7 @@ public class PreparationPhase implements OrchestrationPhase {
 
 		for (String workerURL : workers) {
 			log.info("Waiting for "+workerURL+" to finish preparing...");
-			WorkerRestUtil.pollStatusUntil(workerURL, 2000, 30, response -> {
+			WorkerRestUtil.pollStatusUntil(workerURL, 2000, 100, response -> {
 				final PreparationStatus preparationStatus = response.getPreparationStatus();
 
 				if (preparationStatus.equals(PreparationStatus.ONGOING) || preparationStatus.equals(PreparationStatus.UNPREPARED)) {

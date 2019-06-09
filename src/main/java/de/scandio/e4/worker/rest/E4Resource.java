@@ -97,7 +97,6 @@ public class E4Resource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStatus() {
 		final ApplicationStatusResponse applicationStatus = applicationStatusService.getApplicationStatus();
-		log.debug("[ENDPOINT] /status\n{}", applicationStatus);
 		return Response.status(200).entity(applicationStatus).build();
 	}
 

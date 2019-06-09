@@ -15,19 +15,24 @@ public class StorageService {
 
 	private static final Logger log = LoggerFactory.getLogger(StorageService.class);
 
+	public static final String TABLE_NAME_MEASUREMENT = "E4Measurement";
+	public static final String TABLE_NAME_ERROR = "E4Error";
+
 	private ApplicationStatusService applicationStatusService;
 
 	private int workerIndex;
 	private Connection connection;
+	private final String databaseFilePath;
 
 	public StorageService(ApplicationStatusService applicationStatusService) throws Exception {
 		this.applicationStatusService = applicationStatusService;
-		initDatabase("e4-" + new Date().getTime() + ".sqlite");
+		String databaseFileName = "e4-" + new Date().getTime() + ".sqlite";
+		this.databaseFilePath = "jdbc:sqlite:" + this.applicationStatusService.getOutputDir() + "/" + databaseFileName;
+		initDatabase();
 	}
 
-	private void initDatabase(String databaseFileName) throws Exception {
-		String url = "jdbc:sqlite:" + this.applicationStatusService.getOutputDir() + "/" + databaseFileName;
-		this.connection = DriverManager.getConnection(url);
+	private void initDatabase() throws Exception {
+		this.connection = DriverManager.getConnection(this.databaseFilePath);
 		DatabaseMetaData meta = connection.getMetaData();
 		log.info("New DB created with driver {}", meta.getDriverName());
 
@@ -52,7 +57,9 @@ public class StorageService {
 				"id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"timestamp DATETIME default current_timestamp," +
 				"key TEXT NOT NULL, " +
-				"type TEXT NOT NULL)";
+				"type TEXT NOT NULL, " +
+				"virtual_user TEXT, " +
+				"action TEXT)";
 
 		stmt.executeUpdate(sql);
 		stmt.close();
@@ -90,13 +97,15 @@ public class StorageService {
 
 	public void recordError(E4Error e4error) throws Exception {
 		Statement stmt = this.connection.createStatement();
-		String sqlTemplate = "INSERT INTO E4Error (timestamp,key,type) " +
-				"VALUES(%d,'%s','%s')";
+		String sqlTemplate = "INSERT INTO E4Error (timestamp,key,type,virtual_user,action) " +
+				"VALUES(%d,'%s','%s','%s','%s')";
 
 		String sql = String.format(sqlTemplate,
 				new Date().getTime(),
 				e4error.getKey(),
-				e4error.getType());
+				e4error.getType(),
+				e4error.getVirtualUser(),
+				e4error.getAction());
 
 		log.info("[REC_ERROR]{}", e4error);
 		log.info(sql);
@@ -105,4 +114,7 @@ public class StorageService {
 		stmt.close();
 	}
 
+	public String getDatabaseFilePath() {
+		return databaseFilePath;
+	}
 }

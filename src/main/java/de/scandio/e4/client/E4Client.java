@@ -63,8 +63,8 @@ public class E4Client {
 			}
 			totalWeight += weight;
 		}
-		if (totalWeight != 1) {
-			throw new Exception("Total weights must sum up to exactly 1.0");
+		if ((int)(totalWeight * 100) != 100) {
+			throw new Exception("Total weights must sum up to exactly 1.0 but was {"+totalWeight+"}");
 		}
 	}
 

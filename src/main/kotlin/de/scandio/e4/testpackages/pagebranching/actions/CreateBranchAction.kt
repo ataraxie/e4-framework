@@ -2,6 +2,7 @@ package de.scandio.e4.testpackages.pagebranching.actions
 
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.confluence.web.WebConfluence
+import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -29,8 +30,8 @@ import java.util.*
  */
 open class CreateBranchAction (
     val spaceKey: String,
-    val originPageTitle: String,
-    var branchName: String
+    var originPageTitle: String = "PLACEHOLDER",
+    var branchName: String = "PLACEHOLDER"
     ) : Action() {
 
     protected var start: Long = 0
@@ -38,12 +39,29 @@ open class CreateBranchAction (
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
-        val dom = DomHelper(webConfluence.driver)
 
         webConfluence.login()
-        webConfluence.goToPage(spaceKey, originPageTitle)
-        webConfluence.takeScreenshot("TEST-1")
+
+        if (originPageTitle.equals("PLACEHOLDER")) {
+            originPageTitle = "CreateBranchAction (${Date().time})"
+            createOriginPage(webConfluence)
+        }
+        if (branchName.equals("PLACEHOLDER")) {
+            branchName = "Branch (${Date().time})"
+        }
+
         this.start = Date().time
+        createBranch(webConfluence)
+        this.end = Date().time
+    }
+
+    open fun createOriginPage(webConfluence: WebConfluence) {
+        webConfluence.createDefaultPage(spaceKey, originPageTitle)
+    }
+
+    open fun createBranch(webConfluence: WebConfluence) {
+        val dom = DomHelper(webConfluence.driver)
+        webConfluence.goToPage(spaceKey, originPageTitle)
         dom.awaitElementClickable("#action-menu-link")
         dom.click("#action-menu-link")
         dom.awaitElementClickable(".pagebranching-create-branch-link")
@@ -52,10 +70,8 @@ open class CreateBranchAction (
         dom.clearText("input#branch-name")
         dom.insertText("input#branch-name", branchName)
         dom.click("#pagebranching-branch-page-button")
-        webConfluence.takeScreenshot("TEST-2")
         dom.awaitMilliseconds(2000)
         dom.awaitElementPresent(".page-branching-branch-meta")
-        this.end = Date().time
     }
 
     override fun getTimeTaken(): Long {

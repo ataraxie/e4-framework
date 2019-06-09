@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.slf4j.LoggerFactory
 import java.lang.Exception
+import java.net.URLEncoder
 import java.time.Duration
 
 class DomHelper(
@@ -28,6 +29,11 @@ class DomHelper(
     fun clickCreateSpace() {
         val js = driver as JavascriptExecutor
         js.executeScript("Confluence.SpaceBlueprint.Dialog.launch();")
+    }
+
+    fun removeElementWithJQuery(selector: String) {
+        val js = driver as JavascriptExecutor
+        js.executeScript("$(\".aui-blanket\").remove()")
     }
 
     fun awaitNoClass(selector: String, className: String, duration: Long = this.defaultDuration) {
@@ -74,10 +80,12 @@ class DomHelper(
 
     fun awaitElementClickable(selector: String, duration: Long = this.defaultDuration) {
         wait(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)), duration)
+        awaitMilliseconds(10)
     }
 
     fun awaitElementClickable(element: WebElement, duration: Long = this.defaultDuration) {
         wait(ExpectedConditions.elementToBeClickable(element), duration)
+        awaitMilliseconds(10)
     }
 
     fun awaitElementNotClickable(selector: String, duration: Long = this.defaultDuration) {
@@ -106,7 +114,7 @@ class DomHelper(
         awaitMilliseconds(100)
         val js = driver as JavascriptExecutor
         val oldContent = js.executeScript("return tinyMCE.activeEditor.getContent()")
-        val newContent = "$oldContent${html.replace("'", "\\'")}"
+        val newContent = "$oldContent$html".replace("'", "\\'")
         log.debug("Insert into TinyMCE. Old content {{}}; new content {{}}", oldContent, newContent)
         js.executeScript("tinyMCE.activeEditor.setContent('$newContent')")
     }
@@ -127,7 +135,8 @@ class DomHelper(
 
     fun click(selector: String, awaitClickableSeconds: Long = this.defaultWaitTillPresent) {
         if (this.screenshotBeforeClick) {
-            this.util.takeScreenshot(driver, "$outDir/click-$selector.png")
+            val safeSelector = URLEncoder.encode("$selector", "UTF-8")
+            this.util.takeScreenshot(driver, "$outDir/click-$safeSelector.png")
         }
         awaitElementClickable(selector, awaitClickableSeconds)
         findElement(selector).click()

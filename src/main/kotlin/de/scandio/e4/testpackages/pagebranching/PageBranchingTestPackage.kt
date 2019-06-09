@@ -3,8 +3,10 @@ package de.scandio.e4.testpackages.pagebranching
 import de.scandio.e4.testpackages.pagebranching.actions.CreateBranchAction
 import de.scandio.e4.testpackages.pagebranching.actions.CreateOverviewPageAction
 import de.scandio.e4.testpackages.pagebranching.virtualusers.*
+import de.scandio.e4.testpackages.vanilla.actions.AddSpaceGroupPermissionAction
 import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
+import de.scandio.e4.testpackages.vanilla.virtualusers.*
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.collections.VirtualUserCollection
 import de.scandio.e4.worker.interfaces.TestPackage
@@ -42,12 +44,20 @@ class PageBranchingTestPackage: TestPackage {
 
     override fun getVirtualUsers(): VirtualUserCollection {
         val virtualUsers = VirtualUserCollection()
-        virtualUsers.add(BranchCreator::class.java, 0.05)
-        virtualUsers.add(BranchMerger::class.java, 0.05)
-        virtualUsers.add(BranchOverviewCreator::class.java, 0.05)
-        virtualUsers.add(BranchOverviewReader::class.java, 0.1)
-        virtualUsers.add(BranchedPageReader::class.java, 0.25)
-        virtualUsers.add(OriginPageReader::class.java, 0.5)
+
+        virtualUsers.add(Commentor::class.java, 0.04)
+        virtualUsers.add(Reader::class.java, 0.2)
+        virtualUsers.add(Creator::class.java, 0.04)
+        virtualUsers.add(Searcher::class.java, 0.08)
+        virtualUsers.add(Editor::class.java, 0.08)
+        virtualUsers.add(Dashboarder::class.java, 0.08)
+
+        virtualUsers.add(BranchCreator::class.java, 0.04)
+        virtualUsers.add(BranchMerger::class.java, 0.04)
+        virtualUsers.add(BranchOverviewCreator::class.java, 0.04)
+        virtualUsers.add(BranchOverviewReader::class.java, 0.04)
+        virtualUsers.add(BranchedPageReader::class.java, 0.16)
+        virtualUsers.add(OriginPageReader::class.java, 0.16)
         return virtualUsers
     }
 
@@ -60,22 +70,17 @@ class PageBranchingTestPackage: TestPackage {
         // Assumption for all virtual users
         actions.add(CreateSpaceAction(spaceKey, spaceName))
 
+        actions.add(AddSpaceGroupPermissionAction("PB", "confluence-users", "removepage", true))
+
         // Assumption for BranchedPageReader and OriginPageReader
         actions.add(CreatePageAction(spaceKey, originPageTitle))
         actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 1"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 2"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 3"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 4"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 5"))
 
         // Assumption for BranchOverviewReader
         originPageTitle = "PB BranchOverviewReader Origin"
         actions.add(CreatePageAction(spaceKey, originPageTitle))
         actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 1"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 2"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 3"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 4"))
-        actions.add(CreateBranchAction(spaceKey, originPageTitle, "Branch 5"))
+
         actions.add(CreateOverviewPageAction(spaceKey, originPageTitle))
 
         return actions

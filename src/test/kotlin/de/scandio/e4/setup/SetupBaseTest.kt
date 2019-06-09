@@ -38,11 +38,11 @@ open abstract class SetupBaseTest {
         val chromeOptions = ChromeOptions()
         chromeOptions.addArguments("--headless")
         this.driver = ChromeDriver(chromeOptions)
-        this.driver.manage().window().setSize(Dimension(1680, 1050))
+        this.driver.manage().window().setSize(Dimension(2000, 1500))
         this.util = Util()
-        this.dom = DomHelper(driver, 60, 60)
-        this.dom.defaultDuration = 120
-        this.dom.defaultWaitTillPresent = 120
+        this.dom = DomHelper(driver, 40, 40)
+        this.dom.defaultDuration = 40
+        this.dom.defaultWaitTillPresent = 40
         this.dom.outDir = OUT_DIR
         this.dom.screenshotBeforeClick = true
         this.dom.screenshotBeforeInsert = true
@@ -50,7 +50,7 @@ open abstract class SetupBaseTest {
         this.restConfluence = RestConfluence(BASE_URL, USERNAME, PASSWORD)
     }
 
-    open fun refreshWebClient() {
+    open fun refreshWebClient(login: Boolean = false, authenticate: Boolean = false) {
         this.webConfluence.quit()
 
         WebDriverManager.chromedriver().setup()
@@ -66,6 +66,14 @@ open abstract class SetupBaseTest {
         this.dom.screenshotBeforeClick = true
         this.dom.screenshotBeforeInsert = true
         this.webConfluence = WebConfluence(driver, URI(BASE_URL), OUT_DIR, USERNAME, PASSWORD)
+
+        if (login) {
+            webConfluence.login()
+        }
+
+        if (authenticate) {
+            webConfluence.authenticateAdmin()
+        }
     }
 
     open fun shot() {

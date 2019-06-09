@@ -4,7 +4,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class TestLogin: TestBase() {
+class TestEditPage : TestBase() {
 
     @Before
     fun before() {
@@ -19,7 +19,9 @@ class TestLogin: TestBase() {
     @Test
     fun test() {
         try {
-            this.webConfluence.login()
+            webConfluence.login()
+            webConfluence.goToPage("TEST", "Test Page")
+            webConfluence.goToEditPage()
         } catch (e: Exception) {
             this.webConfluence.takeScreenshot("fail")
             throw e

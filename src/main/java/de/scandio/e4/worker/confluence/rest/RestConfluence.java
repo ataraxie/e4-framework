@@ -124,7 +124,7 @@ public class RestConfluence implements RestClient {
 			throw e;
 		}
 		String responseText = response.getBody();
-		log.debug("Response text {{}}", responseText);
+//		log.debug("Response text {{}}", responseText);
 		return responseText;
 	}
 
@@ -135,7 +135,7 @@ public class RestConfluence implements RestClient {
 	public String sendGetRequestReturnBody(String urlAfterBaseUrl) {
 		ResponseEntity<String> response = sendGetRequestReturnResponse(urlAfterBaseUrl);
 		String responseText = response.getBody();
-		log.debug("Response text {{}}", responseText);
+//		log.debug("Response text {{}}", responseText);
 		return responseText;
 	}
 

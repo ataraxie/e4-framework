@@ -29,17 +29,25 @@ import java.util.*
  * @author Felix Grund
  */
 class CreateOverviewPageAction(
-        val spaceKey: String,
-        val originPageTitle: String
-) : Action() {
-
-    private var start: Long = 0
-    private var end: Long = 0
+        spaceKey: String,
+        originPageTitle: String = "PLACEHOLDER",
+        branchName: String = "PLACEHOLDER"
+) : CreateBranchAction(spaceKey, originPageTitle, branchName) {
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         webConfluence.login()
+        if ("PLACEHOLDER".equals(originPageTitle)) {
+            originPageTitle = "CreateOverviewPageAction (${Date().time})"
+            super.createOriginPage(webConfluence)
+        }
+        if ("PLACEHOLDER".equals(branchName)) {
+            branchName = "Branch (${Date().time})"
+            super.createBranch(webConfluence)
+        }
+
         webConfluence.goToPage(spaceKey, originPageTitle)
+
         this.start = Date().time
         webConfluence.goToEditPage()
         webConfluence.insertMacro("page-branching-overview", "page branching")

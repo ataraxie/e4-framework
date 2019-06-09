@@ -10,6 +10,7 @@ import de.scandio.e4.worker.interfaces.TestPackage;
 import de.scandio.e4.worker.interfaces.WebClient;
 import de.scandio.e4.worker.util.UserCredentials;
 import de.scandio.e4.worker.util.WorkerUtils;
+import org.openqa.selenium.Dimension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -65,10 +66,19 @@ public class PreparationService {
             }
             userCredentialsService.storeUsers(userCredentials);
             if (!setupScenarios.isEmpty()) {
-				final WebClient webClient = WorkerUtils.newChromeWebClient(config.getTarget(), applicationStatusService.getOutputDir(), config.getUsername(), config.getPassword());
+				final WebClient webClient = WorkerUtils.newChromeWebClientPreparePhase(config.getTarget(), applicationStatusService.getOutputDir(), config.getUsername(), config.getPassword());
 				try {
 					for (Action action : setupScenarios) {
-						action.execute(webClient, restConfluence);
+						try {
+							log.info("Executing action {{}}", action.getClass().getSimpleName());
+							action.execute(webClient, restConfluence);
+						} catch (Exception e) {
+							log.error("Failed executing action {{}}", action.getClass().getSimpleName());
+							webClient.takeScreenshot("failed-action");
+							webClient.dumpHtml("failed-action");
+							throw e;
+						}
+
 						log.info("Finished prep action "+ action.getClass().getSimpleName());
 					}
 				} finally {

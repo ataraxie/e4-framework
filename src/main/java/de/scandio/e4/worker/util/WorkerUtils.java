@@ -5,12 +5,14 @@ import de.scandio.e4.worker.confluence.rest.RestConfluence;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.WebClient;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -23,6 +25,12 @@ public class WorkerUtils {
 		chromeOptions.addArguments("--disable-impl-side-painting");
 		WebDriver driver = new ChromeDriver(chromeOptions);
 		return new WebConfluence(driver, new URI(targetUrl), outputDir, username, password);
+	}
+
+	public static WebClient newChromeWebClientPreparePhase(String targetUrl, String outputDir, String username, String password) throws Exception {
+		WebClient webClient = newChromeWebClient(targetUrl, outputDir, username, password);
+		webClient.getWebDriver().manage().window().setSize(new Dimension(2000, 1500));
+		return webClient;
 	}
 
 //	public static WebClient newPhantomJsWebClient(String targetUrl, String outputDir, String username, String password) throws Exception {

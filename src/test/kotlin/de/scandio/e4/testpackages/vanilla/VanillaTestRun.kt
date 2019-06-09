@@ -23,26 +23,21 @@ class VanillaTestRun : TestPackageTestRun() {
 
     @Before
     fun before() {
-        super.setup()
+        //noop currently
     }
 
     @Test
     fun runTest() {
-        try {
-            if (PREPARATION_RUN) {
-                executeTestPackagePrepare(TEST_PACKAGE)
-            } else {
+        if (PREPARATION_RUN) {
+            executeTestPackagePrepare(TEST_PACKAGE)
+        } else {
 //                executeTestPackage(TEST_PACKAGE)
 
-                // Run a single action for testing:
-                 executeAction(AddRandomCommentAction())
+            // Run a single action for testing:
+             executeAction(AddRandomCommentAction())
 
-                // Run single virtual user for testing:
-                // executeActions(BranchCreator().actions)
-            }
-        } finally {
-            shot()
-            super.shutdown()
+            // Run single virtual user for testing:
+            // executeActions(BranchCreator().actions)
         }
     }
 
