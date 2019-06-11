@@ -10,6 +10,9 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    private val E4_LICENSE_CONF = System.getenv("E4_LICENSE_CONF")
+    private val E4_LICENSE_PAGEBRANCHING = System.getenv("E4_LICENSE_PAGEBRANCHING")
+
     @Before
     fun before() {
 
@@ -26,7 +29,7 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
             setupStep1()
             dom.awaitMinutes(4)
             pollTillDbReady()
-            refreshWebClient()
+            webConfluence.takeScreenshot("db-ready")
             setupStep2()
             refreshWebClient(true, true)
 
@@ -61,13 +64,12 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
 
         val ROW_SELECTOR = ".upm-plugin[data-key='de.scandio.confluence.plugins.page-branching']"
         val LICENSE_SELECTOR = "$ROW_SELECTOR textarea.edit-license-key"
-        val LICENSE = "AAABOA0ODAoPeNqVkV9PwjAUxd/7KZr4vGUbAZSkiToWNWFABH3y5dLdjSalW247At/ewpgaow88NOmfc8/9ndubvDY8hyNPIh7fTpJkEkU8na79Ob5j83a3QVqUbxbJiiBmU7SSVONUbcQSKuSPBEZulal4WRNPa1PqFo3EjwnP9qBbOElZSnjeTMGhODkH0TBIYub1DqSbww5FiVodwopaU9xbCaZQdVhgL8lyUPo/zXcn4ahFppVEY/HdQ5/uEuaLjUPjUTE7NIqOP0BGQRKxAsPeT35lCBvdVsrYsPFJg02fNPQ4ao9dqwVVYJTtmq86C/602zyzVTYXfgWzeDAajMfDMZt1WH8TXB7XxwbP40gXeZ69pi8Ps+vgVg7IIYkStMXrStHPiBpS9pJt2ZLcgsXfv/YJlTfDSTAsAhQ8YDyCfUAyEm1uFV0+INy9Ywp3YAIUTk/kpoQImX1esfH2Zp08B6IiGnQ=X02fj"
 
         webConfluence.login()
         webConfluence.authenticateAdmin()
         webConfluence.installPlugin(PB_JAR_FILE_PATH)
         dom.click("#upm-plugin-status-dialog .cancel")
-        dom.insertText(LICENSE_SELECTOR, LICENSE)
+        dom.insertText(LICENSE_SELECTOR, E4_LICENSE_PAGEBRANCHING)
         dom.awaitSeconds(5)
         dom.click("$ROW_SELECTOR .submit-license")
         dom.awaitSeconds(5)
@@ -88,7 +90,7 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
 
         /* Step 3: License */
         dom.click("#confLicenseString")
-        dom.insertText("#confLicenseString", "AAABLw0ODAoPeNp9kF9PgzAUxd/7KZr4og8sg8mYS0g0QJQEmJHpky933WU2YWXpn2V8ewt1mZroW\n3tue37nnquyE7SEngYR9RfLMFqGM5qkaxpM/TuSdEID0xXsMW6w5afJThqxvVcMxJZ3ky0S1olmY\nt/wI8ZaGiTPRrIPUJiCxnhw8aahFyxIwRkKhdnpwGX/bTj3gugMykrg7b8k+xESFBqlo9Vmo5jkB\n8074RRrYccCBPuDNfpUZr9BuWpeFUoVe75Taw1ysG6gVXhOnKdxkad1VnmFP5tHt5G/IPYW/1RWc\ngeCKxiD1C41fdxvnkgicVR/FzISvxjr/oBjy8mqLLOXJH8oSOtGbzbg4BmQFC+r2sKa1qBdkl4Pn\nVBXys37kmZHaM1IJJej6+YTcDek9jAsAhQMjndzQwNXokcsfeEbtiQJn5ZfSwIUaMVmEklmaIX9V\n0zou8i5649ihAg=X02f7")
+        dom.insertText("#confLicenseString", E4_LICENSE_CONF)
         dom.click("#setupTypeCustom")
 
         /* Step 4: Cluster configuration */
@@ -111,14 +113,12 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
         dom.click("#setup-next-button")
 
         /* This takes a few minutes! Make sure the next step has a wait value! */
-        log.info("Database setup in progress. This takes a while. Grab some coffee and run stage 2 afterwards\n")
+        log.info("Database setup in progress. This takes a while. Grab some coffee... :)")
         shot()
     }
 
     fun setupStep2() {
-        driver.navigate().to(BASE_URL) // TODO use webConfluence.navigateTo
-        dom.awaitSeconds(3) // just wait a bit for safety
-
+        webConfluence.navigateTo("setup/setupdata-start.action")
         /* Step 6: Setup data */
         dom.click("input[Value='Empty Site']")
 
@@ -138,12 +138,14 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
 
         dom.insertText("#grow-intro-space-name", "TEST")
         dom.click("#grow-intro-create-space")
-        dom.click("#onboarding-skip-editor-tutorial")
-        dom.click("#editor-precursor > .cell")
-        dom.click("#content-title")
-        dom.insertText("#content-title", "Test Page")
-        dom.click("#rte-button-publish")
-        dom.awaitElementPresent("#main-content")
+        dom.awaitSeconds(10)
+        webConfluence.navigateTo("logout.action")
+//        dom.click("#onboarding-skip-editor-tutorial")
+//        dom.click("#editor-precursor > .cell")
+//        dom.click("#content-title")
+//        dom.insertText("#content-title", "Test Page")
+//        dom.click("#rte-button-publish")
+//        dom.awaitElementClickable("#main-content")
 
         shot()
     }
@@ -160,7 +162,11 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
             driver.navigate().to(BASE_URL)
             dom.awaitSeconds(10)
             if (dom.isElementPresent("form[action='setupdata.action']")) {
-                log.info("Done!")
+                log.info("+++++++++++++++++++++++++++++++++++++++++!")
+                log.info("+++++++++++ Done with DB Setup ++++++++++!")
+                log.info("+++++++++++++++++++++++++++++++++++++++++!")
+                log.info("But waiting for another safety minute because the setup wizard is buggy...")
+                dom.awaitMinutes(1)
                 break
             }
 
