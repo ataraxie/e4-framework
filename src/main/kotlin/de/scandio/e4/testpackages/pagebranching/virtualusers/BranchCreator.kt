@@ -19,13 +19,10 @@ import java.util.*
  * - Space with key "PB"
  *
  * Preparation:
- * - Create 3 pages in space "PB" with titles
- *   - "PB Origin 1 (TIMESTAMP)"
- *   - "PB Origin 2 (TIMESTAMP)"
- *   - "PB Origin 3 (TIMESTAMP)"
+ * - Creates a random Confluence page
  *
- * Actions (all SELENIUM):
- * - Create 2 branches of each page with branch name "Branch X", where X is the index of creation
+ * Actions:
+ * - Creates a branch page of previously created page
  *
  * @author Felix Grund
  */

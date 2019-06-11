@@ -11,11 +11,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 /**
  * Confluence Reader Action.
  *
- * Assumptions:
- * TODO: list assumptions
- *
  * Actions:
- * TODO: list actions
+ * - Views a random Confluence page.
  *
  * @author Felix Grund
  */

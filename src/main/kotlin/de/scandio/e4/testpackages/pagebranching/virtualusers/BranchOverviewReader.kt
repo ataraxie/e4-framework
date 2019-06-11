@@ -15,7 +15,7 @@ import de.scandio.e4.worker.interfaces.WebClient
  * Assumptions:
  * - Space with spacekey "PB"
  * - Page with title "PB BranchOverviewReader Origin" in space "PB" containing a pagebranching-overview-macro
- * - At least 10 branches of page "PB BranchOverviewReader Origin" (so we have at least one full page in the overview)
+ * - Page branches of "PB BranchOverviewReader Origin" page
  *
  * Preparation:
  * - NONE

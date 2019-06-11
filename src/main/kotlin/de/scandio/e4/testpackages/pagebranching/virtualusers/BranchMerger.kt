@@ -13,13 +13,13 @@ import de.scandio.e4.worker.interfaces.WebClient
  * all branches that it will later merge first.
  *
  * Assumptions:
- * - Space with key "PB"
+ * - ALL ASSUMPTIONS FROM BranchCreator
  *
  * Preparation:
  * - ALL PREPARATIONS AND ACTIONS FROM BranchCreator
  *
- * Actions (all SELENIUM):
- * - Merge all branches into their origin pages
+ * Actions:
+ * - Merge branch created by BranchCreator into the origin page
  *
  * @author Felix Grund
  */

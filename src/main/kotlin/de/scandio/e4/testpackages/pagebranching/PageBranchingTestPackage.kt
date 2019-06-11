@@ -20,23 +20,23 @@ import de.scandio.e4.worker.interfaces.TestPackage
  * - Running Confluence with Page Branching app installed
  *
  * Setup:
- * - Create space with key "PB" and name "E4 Page Branching Space"
+ * - Create space with key "PB"
+ * - Give "removepage" space permission to confluence-users group
  * - Create page with title "PB Root Origin" in space "PB"
- * - Create 5 branches of page "PB Root Origin" with name "Branch X", where X is the index of creation
- * - Create page with title "PB BranchOverviewReader Origin" in space "PB"
- * - Create 5 branches of page "PB BranchOverviewReader Origin" with name "Branch X", where X is the index of creation
+ * - Create branch of page "PB Root Origin"
+ * - Create page with title "PB BranchOverviewReader Origin"
+ * - Create branch of page "PB BranchOverviewReader Origin"
  * - Edit page "PB BranchOverviewReader Origin" and add "pagebranching-overview-macro" into the page content
  *
  * Virtual Users:
- * - BranchCreator (weight 0.05): creates page branches
- * - BranchMerger (weight 0.05): merges page branches
- * - BranchOverviewCreator (weight 0.05): creates page branching overview pages
- * - BranchOverviewReader (weight 0.1): reads page branching overview pages
- * - BranchedPageReader (weight 0.25): reads page branches (branches from an origin page)
- * - OriginPageReader (weight 0.5): reads origin pages (from which branches were created)
+ * - BranchCreator (weight 0.04): creates page branches
+ * - BranchMerger (weight 0.04): merges page branches
+ * - BranchOverviewCreator (weight 0.04): creates page branching overview pages
+ * - BranchOverviewReader (weight 0.04): reads page branching overview pages
+ * - BranchedPageReader (weight 0.16): reads page branches (branches from an origin page)
+ * - OriginPageReader (weight 0.16): reads origin pages (from which branches were created)
  *
- * Weight ration CONFLUENCE / APP:
- * 0.75 / 0.25
+ * Sum of weight is 0.48 which leaves 0.52 for vanilla virtual users.
  *
  * @author Felix Grund
  */

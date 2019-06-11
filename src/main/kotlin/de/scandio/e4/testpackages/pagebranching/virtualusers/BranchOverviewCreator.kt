@@ -22,7 +22,7 @@ import java.util.*
  * - Create page in space "PB" with title "PB BranchOverviewCreator Origin (START_TIME)"
  * - Create 5 branches of page with the original page title and " - Branch X" appended, where X is the number
  *
- * Actions (all SELENIUM):
+ * Actions:
  * - Edit the page "PB BranchOverviewCreator Origin (START_TIME)" and add the pagebranching-overview macro
  *
  * @author Felix Grund

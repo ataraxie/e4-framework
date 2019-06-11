@@ -8,13 +8,10 @@ import de.scandio.e4.worker.interfaces.WebClient
 
 
 /**
- * Confluence Commentor VirtualUser.
- *
- * Assumptions:
- * - No specific assumptions (only need a dashboard)
+ * Confluence Dashboarder VirtualUser.
  *
  * Actions:
- * - View the Confluence dashboard (SELENIUM)
+ * - Views the Confluence dashboard
  *
  * @author Felix Grund
  */
