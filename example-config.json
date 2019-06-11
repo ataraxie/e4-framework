@@ -1,23 +1,15 @@
 {
   "target": {
-    "url": "http://localhost:8090/",
-    "adminUser": "herbertmeyer",
-    "adminPassword": "abc123"
+    "url": "http://confluence-baseurl-with-port",
+    "adminUser": "admin",
+    "adminPassword": "admin"
   },
-
-  "concurrentUsers": 50,
+  "testPackage": "de.scandio.e4.testpackages.vanilla.VanillaTestPackage",
+  "numConcurrentUsers": 250,
   "durationInSeconds": 600,
-
-  "appsToInstall": [
-    "C:\\Users\\Sven\\git\\diary\\target\\diary-2.0.0.jar"
-  ],
-
-  "testPackage": "de.scandio.e4.testpackages.delaymacro.DelayMacroTestPackage",
-
   "workers": [
-    "http://192.10.0.1/e4",
-    "http://192.10.0.2/e4"
-  ],
-
-  "screenshotDir": "/tmp/selenium"
+    "http://url-worker-1",
+    "http://url-worker-2",
+    "http://url-worker-3"
+  ]
 }
