@@ -10,11 +10,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 /**
  * Confluence Searcher VirtualUser.
  *
- * Assumptions:
- * TODO: list assumptions
- *
  * Actions:
- * TODO: list actions
+ * - Searches for random lorem ipsum words on the Confluence search page.
  *
  * @author Felix Grund
  */

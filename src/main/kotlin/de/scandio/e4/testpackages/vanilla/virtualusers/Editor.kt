@@ -11,11 +11,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 /**
  * Confluence Editor VirtualUser.
  *
- * Assumptions:
- * TODO: list assumptions
- *
  * Actions:
- * TODO: list actions
+ * - Edits a random Confluence page by adding text of random length to its content.
  *
  * @author Felix Grund
  */

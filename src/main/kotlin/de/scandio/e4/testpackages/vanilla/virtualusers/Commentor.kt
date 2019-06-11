@@ -11,11 +11,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 /**
  * Confluence Commentor VirtualUser.
  *
- * Assumptions:
- * TODO: list assumptions
- *
  * Actions:
- * TODO: list actions
+ * - Adds a lorem ipsum comment on a random page with write access.
  *
  * @author Felix Grund
  */

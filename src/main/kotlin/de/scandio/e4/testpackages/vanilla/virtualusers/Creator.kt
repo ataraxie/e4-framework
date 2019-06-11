@@ -11,11 +11,8 @@ import de.scandio.e4.worker.interfaces.WebClient
 /**
  * Confluence Creator VirtualUser.
  *
- * Assumptions:
- * TODO: list assumptions
- *
  * Actions:
- * TODO: list actions
+ * - Creates a page as child of a random page with text and macro content.
  *
  * @author Felix Grund
  */

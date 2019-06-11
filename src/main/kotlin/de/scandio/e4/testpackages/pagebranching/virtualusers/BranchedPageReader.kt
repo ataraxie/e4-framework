@@ -15,13 +15,13 @@ import de.scandio.e4.worker.interfaces.WebClient
  * Assumptions:
  * - Space with spacekey "PB"
  * - Page with title "PB Root Origin" in space "PB"
- * - 5 branches of page "PB Root Origin" with branch names "Branch X", where X is the index
+ * - Branched page of page "PB Root Origin"
  *
  * Preparation:
  * - NONE
  *
- * Actions (all SELENIUM):
- * - View each of the 5 branches of page with title "PageReader Origin" in space "PB"
+ * Actions:
+ * - View the original page from which the branch was created
  *
  * @author Felix Grund
  */
