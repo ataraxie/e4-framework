@@ -80,6 +80,10 @@ public class E4Client {
 				put("output.dir", parsedArgs.getOptionValue("output-dir"));
 				log.info("Set custom output dir: " + get("output.dir"));
 			}
+			if (parsedArgs.hasOption("input-dir")) {
+				put("input.dir", parsedArgs.getOptionValue("input-dir"));
+				log.info("Set custom input dir: " + get("input.dir"));
+			}
 		}};
 
 		final ConfigurableApplicationContext run = new SpringApplicationBuilder()

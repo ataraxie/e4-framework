@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 public class ApplicationStatusService {
 	@Value("${output.dir:outputs}")
 	private String outputDir;
+	@Value("${input.dir:inputs}")
+	private String inputDir;
 
 	private WorkerConfig config;
 	private PreparationStatus preparationStatus = PreparationStatus.UNPREPARED;
@@ -49,7 +51,6 @@ public class ApplicationStatusService {
 	}
 
 	public String getInputDir() {
-		// TODO
-		return null;
+		return inputDir;
 	}
 }

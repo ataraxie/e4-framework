@@ -66,6 +66,11 @@ public class E4Application {
 			log.info("Set custom output dir: " + props.get("output.dir"));
 		}
 
+		if (parsedArgs.hasOption("input-dir")) {
+			props.put("input.dir", parsedArgs.getOptionValue("input-dir"));
+			log.info("Set custom input dir: " + props.get("input.dir"));
+		}
+
 		new SpringApplicationBuilder()
 				.sources(E4Application.class)
 				.properties(props)
@@ -96,6 +101,10 @@ public class E4Application {
 		final Option outputDirOption = new Option("o", "output-dir", true, "Directory to save outputs to. By default this will be './outputs'.");
 		outputDirOption.setRequired(false);
 		options.addOption(outputDirOption);
+
+		final Option inputDirOption = new Option("i", "input-dir", true, "Directory where input files are saved. By default this will be './inputs'.");
+		inputDirOption.setRequired(false);
+		options.addOption(inputDirOption);
 
 		final Option skipValidationOption = new Option("s", "skip-validation", false, "Skip validation of test package");
 		outputDirOption.setRequired(false);
