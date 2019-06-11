@@ -178,7 +178,8 @@ public class TestRunnerService {
 					break;
 				}
 				log.debug("Executing action {{}}", action.getClass().getSimpleName());
-				webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getOutputDir(), username, password);
+				webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getInputDir(),
+						applicationStatusService.getOutputDir(), username, password);
 				restClient = WorkerUtils.newRestClient(targetUrl, username, password);
 				action.executeWithRandomDelay(webClient, restClient);
 //				webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());

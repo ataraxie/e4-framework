@@ -18,17 +18,21 @@ import java.util.Random;
 
 public class WorkerUtils {
 
-	public static WebClient newChromeWebClient(String targetUrl, String outputDir, String username, String password) throws Exception {
+	public static WebDriver newChromeDriver() {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions chromeOptions = new ChromeOptions();
 		chromeOptions.addArguments("--headless");
 		chromeOptions.addArguments("--disable-impl-side-painting");
-		WebDriver driver = new ChromeDriver(chromeOptions);
-		return new WebConfluence(driver, new URI(targetUrl), outputDir, username, password);
+		return new ChromeDriver(chromeOptions);
 	}
 
-	public static WebClient newChromeWebClientPreparePhase(String targetUrl, String outputDir, String username, String password) throws Exception {
-		WebClient webClient = newChromeWebClient(targetUrl, outputDir, username, password);
+	public static WebClient newChromeWebClient(String targetUrl, String inputDir, String outputDir, String username, String password) throws Exception {
+		WebDriver driver = newChromeDriver();
+		return new WebConfluence(driver, new URI(targetUrl), inputDir, outputDir, username, password);
+	}
+
+	public static WebClient newChromeWebClientPreparePhase(String targetUrl, String inputDir, String outputDir, String username, String password) throws Exception {
+		WebClient webClient = newChromeWebClient(targetUrl, inputDir, outputDir, username, password);
 		webClient.getWebDriver().manage().window().setSize(new Dimension(2000, 1500));
 		return webClient;
 	}

@@ -1,33 +1,38 @@
-package de.scandio.e4.setup
+package de.scandio.e4.testpackages.vanilla.actions
 
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import de.scandio.e4.confluence.web.WebConfluence
+import de.scandio.e4.worker.interfaces.Action
+import de.scandio.e4.worker.interfaces.RestClient
+import de.scandio.e4.worker.interfaces.WebClient
 import org.slf4j.LoggerFactory
+import java.util.*
 
-
-open class ConfluenceDataCenterSetup : SetupBaseTest() {
+class ConfluenceDataCenterSetupAction : Action() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Before
-    fun before() {
+    private var start: Long = 0
+    private var end: Long = 0
 
-    }
+    private var screenshotCount = 0
+    private var dumpCount = 0
 
-    @After
-    fun tearDown() {
-        driver.quit()
-    }
+    private var webConfluence: WebConfluence? = null
 
-    @Test
-    fun test() {
+    override fun execute(webClient: WebClient, restClient: RestClient) {
+        this.webConfluence = webClient as WebConfluence
+        val webConfluence = this.webConfluence!!
+        val dom = webConfluence.dom
+
+        dom.defaultDuration = 40
+        dom.defaultWaitTillPresent = 40
+        dom.screenshotBeforeClick = true
+        dom.screenshotBeforeInsert = true
+
+        this.start = Date().time
         try {
-            setupStep1()
-            dom.awaitMinutes(4)
-            pollTillDbReady()
-            webConfluence.takeScreenshot("db-ready")
-            setupStep2()
+            databaseSetup()
+            setupAdminAccountAndSpace()
             refreshWebClient(true, true)
 
             /* Step 9: Admin config */
@@ -43,10 +48,10 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
             refreshWebClient(true, true)
             webConfluence.disablePlugin("com.atlassian.plugins.base-hipchat-integration-plugin")
             refreshWebClient(true, true)
-            webConfluence.installPlugin("$IN_DIR/$DATA_GENERATOR_JAR_FILENAME")
+//            webConfluence.installPlugin("$DATA_GENERATOR_JAR_FILENAME")
 
             refreshWebClient(true, true)
-            installPageBranching()
+//            installPageBranching()
         } catch (e: Exception) {
             shot()
             dump()
@@ -54,27 +59,21 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
         } finally {
             webConfluence.quit()
         }
+        this.end = Date().time
     }
 
-    fun installPageBranching() {
-        val PB_JAR_FILE_PATH = "/tmp/e4/in/page-branching-1.2.0.jar"
+    private fun refreshWebClient(login: Boolean, authenticate: Boolean) {
 
-        val ROW_SELECTOR = ".upm-plugin[data-key='de.scandio.confluence.plugins.page-branching']"
-        val LICENSE_SELECTOR = "$ROW_SELECTOR textarea.edit-license-key"
-        val LICENSE = "AAABOA0ODAoPeNqVkV9PwjAUxd/7KZr4vGUbAZSkiToWNWFABH3y5dLdjSalW247At/ewpgaow88NOmfc8/9ndubvDY8hyNPIh7fTpJkEkU8na79Ob5j83a3QVqUbxbJiiBmU7SSVONUbcQSKuSPBEZulal4WRNPa1PqFo3EjwnP9qBbOElZSnjeTMGhODkH0TBIYub1DqSbww5FiVodwopaU9xbCaZQdVhgL8lyUPo/zXcn4ahFppVEY/HdQ5/uEuaLjUPjUTE7NIqOP0BGQRKxAsPeT35lCBvdVsrYsPFJg02fNPQ4ao9dqwVVYJTtmq86C/602zyzVTYXfgWzeDAajMfDMZt1WH8TXB7XxwbP40gXeZ69pi8Ps+vgVg7IIYkStMXrStHPiBpS9pJt2ZLcgsXfv/YJlTfDSTAsAhQ8YDyCfUAyEm1uFV0+INy9Ywp3YAIUTk/kpoQImX1esfH2Zp08B6IiGnQ=X02fj"
-
-        webConfluence.login()
-        webConfluence.authenticateAdmin()
-        webConfluence.installPlugin(PB_JAR_FILE_PATH)
-        dom.click("#upm-plugin-status-dialog .cancel")
-        dom.insertText(LICENSE_SELECTOR, LICENSE)
-        dom.awaitSeconds(5)
-        dom.click("$ROW_SELECTOR .submit-license")
-        dom.awaitSeconds(5)
     }
 
-    fun setupStep1() {
-        driver.navigate().to(BASE_URL) // TODO use webConfluence.navigateTo
+    override fun getTimeTaken(): Long {
+        return this.end - this.start
+    }
+
+
+    fun databaseSetup() {
+        webConfluence!!.navigateTo("")
+        val dom = webConfluence!!.dom
         dom.awaitSeconds(3) // just wait a bit for safety
 
         /* Step 1: Test vs. Production */
@@ -112,10 +111,15 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
 
         /* This takes a few minutes! Make sure the next step has a wait value! */
         log.info("Database setup in progress. This takes a while. Grab some coffee... :)")
+        dom.awaitMinutes(4)
+        pollTillDbReady()
         shot()
     }
 
-    fun setupStep2() {
+    fun setupAdminAccountAndSpace() {
+        val webConfluence = webConfluence!!
+        val dom = webConfluence.dom
+
         webConfluence.navigateTo("setup/setupdata-start.action")
         /* Step 6: Setup data */
         dom.click("input[Value='Empty Site']")
@@ -138,26 +142,18 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
         dom.click("#grow-intro-create-space")
         dom.awaitSeconds(10)
         webConfluence.navigateTo("logout.action")
-//        dom.click("#onboarding-skip-editor-tutorial")
-//        dom.click("#editor-precursor > .cell")
-//        dom.click("#content-title")
-//        dom.insertText("#content-title", "Test Page")
-//        dom.click("#rte-button-publish")
-//        dom.awaitElementClickable("#main-content")
 
         shot()
     }
 
-    fun setupStep3() {
-
-    }
-
     private fun pollTillDbReady() {
+        val webConfluence = webConfluence!!
+        val dom = webConfluence.dom
         val pollMax = 8
         var pollCount = 1
         while (true) {
             refreshWebClient(false, false)
-            driver.navigate().to(BASE_URL)
+            webConfluence.navigateTo("")
             dom.awaitSeconds(10)
             if (dom.isElementPresent("form[action='setupdata.action']")) {
                 log.info("+++++++++++++++++++++++++++++++++++++++++!")
@@ -180,5 +176,18 @@ open class ConfluenceDataCenterSetup : SetupBaseTest() {
             }
         }
     }
+
+    fun shot() {
+        this.screenshotCount += 1
+        val path = webConfluence!!.takeScreenshot("$screenshotCount-confluence-data-center-setup.png")
+        println(path)
+    }
+
+    fun dump() {
+        this.dumpCount += 1
+        val path = webConfluence!!.dumpHtml("$dumpCount-confluence-data-center-setup.html")
+        println(path)
+    }
+
 
 }

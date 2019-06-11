@@ -47,4 +47,9 @@ public class ApplicationStatusService {
 	public void setTestsStatus(TestsStatus testsStatus) {
 		this.testsStatus = testsStatus;
 	}
+
+	public String getInputDir() {
+		// TODO
+		return null;
+	}
 }

@@ -66,7 +66,7 @@ public class PreparationService {
             }
             userCredentialsService.storeUsers(userCredentials);
             if (!setupScenarios.isEmpty()) {
-				final WebClient webClient = WorkerUtils.newChromeWebClientPreparePhase(config.getTarget(), applicationStatusService.getOutputDir(), config.getUsername(), config.getPassword());
+				final WebClient webClient = WorkerUtils.newChromeWebClientPreparePhase(config.getTarget(), applicationStatusService.getInputDir(), applicationStatusService.getOutputDir(), config.getUsername(), config.getPassword());
 				try {
 					for (Action action : setupScenarios) {
 						try {
