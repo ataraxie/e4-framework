@@ -8,6 +8,7 @@ import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
 import de.scandio.e4.testpackages.vanilla.actions.InstallPluginAction
 import de.scandio.e4.testpackages.vanilla.actions.SetThemeAction
 import de.scandio.e4.testpackages.vanilla.virtualusers.*
+import de.scandio.e4.worker.client.ApplicationName
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.collections.VirtualUserCollection
 import de.scandio.e4.worker.interfaces.TestPackage
@@ -94,5 +95,9 @@ class LivelyThemeTestPackage: TestPackage {
 <p><ac:structured-macro ac:name="lively-dashboard-element" ac:schema-version="2" ac:macro-id="729b6b5c-efec-4b94-8a14-794ff8d78399"><ac:parameter ac:name="element">all-updates</ac:parameter></ac:structured-macro></p></ac:layout-cell><ac:layout-cell>
 <p><ac:structured-macro ac:name="lively-dashboard-element" ac:schema-version="2" ac:macro-id="1c5397c8-5466-453a-a820-38ccfebabd28"><ac:parameter ac:name="element">welcome-message</ac:parameter></ac:structured-macro></p></ac:layout-cell></ac:layout-section></ac:layout>
     """.trimIndent()
+
+    override fun getApplicationName(): ApplicationName {
+        return ApplicationName.confluence
+    }
 
 }

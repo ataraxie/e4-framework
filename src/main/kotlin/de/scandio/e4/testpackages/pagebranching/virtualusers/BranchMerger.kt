@@ -25,6 +25,9 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 class BranchMerger : BranchCreator() {
 
+    override fun onInit(restClient: RestClient) {
+    }
+
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(MergeBranchAction("PB"))

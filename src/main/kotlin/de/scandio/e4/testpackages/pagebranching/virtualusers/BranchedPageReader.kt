@@ -27,6 +27,9 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 class BranchedPageReader : VirtualUser() {
 
+    override fun onInit(restClient: RestClient) {
+    }
+
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewPageAction("PB", "Branch 1: PB Root Origin"))

@@ -30,6 +30,11 @@ public class NoopWebClient implements WebClient {
 	}
 
 	@Override
+	public void authenticateAdmin() {
+		
+	}
+
+	@Override
 	public String getNodeId() {
 		return null;
 	}
@@ -41,6 +46,16 @@ public class NoopWebClient implements WebClient {
 
 	@Override
 	public void refreshDriver() {
+
+	}
+
+	@Override
+	public void navigateTo(String path) {
+
+	}
+
+	@Override
+	public void navigateToBaseUrl() {
 
 	}
 }

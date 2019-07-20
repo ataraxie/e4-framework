@@ -2,6 +2,7 @@ package de.scandio.e4.testpackages.livelytheme.virtualusers
 
 import de.scandio.e4.testpackages.livelytheme.actions.FavPageToggleAction
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
 
 
@@ -22,6 +23,9 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  * @author Felix Grund
  */
 open class LivelyPageToggler : VirtualUser() {
+
+    override fun onInit(restClient: RestClient) {
+    }
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()

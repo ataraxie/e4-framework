@@ -4,6 +4,7 @@ import de.scandio.e4.testpackages.pagebranching.actions.CreateBranchAction
 import de.scandio.e4.testpackages.pagebranching.actions.CreateOverviewPageAction
 import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
 import java.util.*
 
@@ -26,6 +27,9 @@ import java.util.*
  * @author Felix Grund
  */
 class BranchOverviewCreator : VirtualUser() {
+
+    override fun onInit(restClient: RestClient) {
+    }
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()

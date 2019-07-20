@@ -26,6 +26,10 @@ import de.scandio.e4.worker.interfaces.WebClient
  * @author Felix Grund
  */
 class BranchOverviewReader : VirtualUser() {
+    
+    override fun onInit(restClient: RestClient) {
+    }
+
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewPageAction("PB", "PB BranchOverviewReader Origin"))

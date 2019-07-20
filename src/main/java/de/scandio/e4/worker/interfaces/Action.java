@@ -15,7 +15,7 @@ public abstract class Action {
 	public abstract void execute(@NotNull WebClient webClient, @NotNull RestClient restClient) throws Exception;
 
 	public void executeWithRandomDelay(@NotNull WebClient webClient, @NotNull RestClient restClient) throws Exception {
-		long randomWait = 2000 + RAND.nextInt(2000);
+		long randomWait = 2000 + RAND.nextInt(8000);
 		log.info("Next action. Sleeping for {{}}ms", randomWait);
 //		log.info("SKIPPING SLEEP FEATURE!");
 		Thread.sleep(randomWait);

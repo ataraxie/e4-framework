@@ -15,4 +15,4 @@ echo "LogFormat \"%{ms}T|%U\" custom" >> /etc/apache2/httpd.conf
 echo "CustomLog logs/e4.log custom" >> /etc/apache2/httpd.conf
 # END: EDIT
 
-exec "$@"
+httpd -DFOREGROUND

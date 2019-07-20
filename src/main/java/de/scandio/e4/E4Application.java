@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 @SpringBootApplication
 public class E4Application {
@@ -16,6 +17,8 @@ public class E4Application {
 	public static void main(String[] args) {
 		final CommandLine parsedArgs = parseArgs(args);
 		java.security.Security.setProperty("networkaddress.cache.ttl" , "60");
+		System.setProperty("webdriver.chrome.silentOutput", "true");
+		java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.info("Shutdown signal received.. shutting down threads.");
@@ -43,7 +46,7 @@ public class E4Application {
 	}
 
 	public static void startClient(CommandLine parsedArgs) throws Exception {
-		log.info("Starting E4 Client... Enjoy!");
+		log.info("E4 Client... Enjoy!");
 		final E4Client e4Client = new E4Client(parsedArgs);
 		e4Client.start();
 	}
@@ -56,7 +59,7 @@ public class E4Application {
 			port = "4444";
 		}
 
-		log.info("Starting E4 in worker-only mode... Enjoy!");
+		log.info("E4 in worker-only mode... Enjoy!");
 
 		final HashMap<String, Object> props = new HashMap<>();
 		props.put("server.port", port);
@@ -90,7 +93,7 @@ public class E4Application {
 		configOption.setRequired(false);
 		options.addOption(configOption);
 
-		final Option workerOnlyOption = new Option("w", "worker-only", false, "Run this E4 instance in worker-only-mode and listen for commands from an E4 client.");
+		final Option workerOnlyOption = new Option("w", "worker-only", false, "Run this E4 instance in worker-only-mode and listen for commands from an E4TestEnv client.");
 		workerOnlyOption.setRequired(false);
 		options.addOption(workerOnlyOption);
 

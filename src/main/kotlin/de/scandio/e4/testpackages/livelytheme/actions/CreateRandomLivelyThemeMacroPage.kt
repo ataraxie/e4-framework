@@ -1,12 +1,9 @@
 package de.scandio.e4.testpackages.livelytheme.actions
 
-import de.scandio.e4.confluence.web.WebConfluence
-import de.scandio.e4.worker.confluence.rest.RestConfluence
+import de.scandio.e4.clients.WebConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
-import org.openqa.selenium.Keys
-import org.openqa.selenium.interactions.Actions
 import org.slf4j.LoggerFactory
 import java.util.*
 

@@ -7,6 +7,7 @@ import de.scandio.e4.testpackages.vanilla.actions.AddSpaceGroupPermissionAction
 import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
 import de.scandio.e4.testpackages.vanilla.virtualusers.*
+import de.scandio.e4.worker.client.ApplicationName
 import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.collections.VirtualUserCollection
 import de.scandio.e4.worker.interfaces.TestPackage
@@ -84,5 +85,10 @@ class PageBranchingTestPackage: TestPackage {
 
         return actions
     }
+
+    override fun getApplicationName(): ApplicationName {
+        return ApplicationName.confluence
+    }
+
 
 }

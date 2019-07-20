@@ -14,10 +14,15 @@ public interface WebClient {
 
 	void login();
 
+	void authenticateAdmin();
+
 	String getNodeId();
 
 	String getUser();
 
 	void refreshDriver();
+
+	void navigateTo(String path);
+	void navigateToBaseUrl();
 
 }

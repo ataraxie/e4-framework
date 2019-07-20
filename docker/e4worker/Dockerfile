@@ -24,7 +24,7 @@ RUN mkdir -p /opt/selenium \
     && curl http://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip -o /opt/selenium/chromedriver_linux64.zip \
     && cd /opt/selenium; unzip /opt/selenium/chromedriver_linux64.zip; rm -rf chromedriver_linux64.zip; ln -fs /opt/selenium/chromedriver /usr/local/bin/chromedriver;
 
-## E4
+## E4TestEnv
 
 CMD mkdir -p $E4_OUTPUT_DIR && mkdir -p $E4_INPUT_DIR \
  && java -jar $E4_INPUT_DIR/e4.jar -p $E4_PORT --worker-only --output-dir $E4_OUTPUT_DIR --input-dir $E4_INPUT_DIR

@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
-import de.scandio.e4.confluence.web.WebConfluence
-import de.scandio.e4.worker.confluence.rest.RestConfluence
+import de.scandio.e4.clients.WebConfluence
+import de.scandio.e4.worker.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -17,7 +17,7 @@ class AddRandomCommentAction : Action() {
         val webConfluence = webClient as WebConfluence
         val restConfluence = restClient as RestConfluence
         // IMPORTANT: do this before measuring because it invokes a REST call!
-        val randomContentId = restConfluence.getRandomContentId()
+        val randomContentId = restConfluence.randomContentId
         webConfluence.login()
         webConfluence.goToPage(randomContentId)
         val randomHtml10Words = "<p>${RandomData.getRandomString(10)}</p>"

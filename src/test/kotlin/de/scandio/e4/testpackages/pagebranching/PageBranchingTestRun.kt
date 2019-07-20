@@ -1,19 +1,13 @@
 package de.scandio.e4.testpackages.pagebranching
 
+import de.scandio.e4.E4TestEnv
 import de.scandio.e4.testpackages.TestPackageTestRun
-import de.scandio.e4.worker.interfaces.TestPackage
 import org.junit.Before
 import org.junit.Test
 
 class PageBranchingTestRun : TestPackageTestRun() {
 
-    private val BASE_URL = "http://confluence-cluster-6153-lb:26153/"
-    private val OUT_DIR = "/tmp/e4/out"
-    private val IN_DIR = "/tmp/e4/in"
-    private val USERNAME = "admin"
-    private val PASSWORD = "admin"
     private val TEST_PACKAGE = PageBranchingTestPackage()
-    private val PREPARATION_RUN = true
 
     @Before
     fun before() {
@@ -22,7 +16,7 @@ class PageBranchingTestRun : TestPackageTestRun() {
 
     @Test
     fun runTest() {
-        if (PREPARATION_RUN) {
+        if (E4TestEnv.PREPARATION_RUN) {
             executeTestPackagePrepare(TEST_PACKAGE)
         } else {
             executeTestPackage(TEST_PACKAGE)
@@ -34,12 +28,5 @@ class PageBranchingTestRun : TestPackageTestRun() {
             // executeActions(BranchCreator().actions)
         }
     }
-
-    override fun getBaseUrl(): String { return BASE_URL }
-    override fun getOutDir(): String { return OUT_DIR }
-    override fun getInDir(): String { return IN_DIR }
-    override fun getUsername(): String { return USERNAME }
-    override fun getPassword(): String { return PASSWORD }
-    override fun getTestPackage(): TestPackage { return TEST_PACKAGE }
 
 }

@@ -16,7 +16,7 @@ import java.time.Duration
 
 class DomHelper(
         val driver: WebDriver,
-        var defaultDuration: Long = 20,
+        var defaultDuration: Long = 40,
         var defaultWaitTillPresent: Long = 10,
         var screenshotBeforeClick: Boolean = false,
         var screenshotBeforeInsert: Boolean = false,
@@ -57,7 +57,7 @@ class DomHelper(
         select.selectByValue(value)
     }
 
-    fun executeScript(script: String): Any {
+    fun executeScript(script: String): Any? {
         val js = driver as JavascriptExecutor
         return js.executeScript(script)
     }
@@ -76,6 +76,7 @@ class DomHelper(
     }
 
     fun awaitElementPresent(selector: String, duration: Long = this.defaultDuration) {
+        log.debug("Waiting for element {{}} to be present for {{}} seconds", duration, selector)
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
@@ -146,6 +147,7 @@ class DomHelper(
     }
 
     fun click(selector: String, awaitClickableSeconds: Long = this.defaultWaitTillPresent) {
+        log.debug("Click {{}} wait {{}}sec", selector, awaitClickableSeconds)
         if (this.screenshotBeforeClick) {
             val safeSelector = URLEncoder.encode("$selector", "UTF-8")
             this.util.takeScreenshot(driver, "$outDir/click-$safeSelector.png")

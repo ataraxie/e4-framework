@@ -1,6 +1,7 @@
 package de.scandio.e4.rest
 
-import de.scandio.e4.worker.confluence.rest.RestConfluence
+import de.scandio.e4.E4TestEnv
+import de.scandio.e4.worker.rest.RestConfluence
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -23,13 +24,7 @@ class TestGetConfluenceUsers {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private val BASE_URL = "http://e4-test:8090/"
-    private val OUT_DIR = "/tmp/e4/out"
-    private val USERNAME = "admin"
-    private val PASSWORD = "admin"
-
-    private val restConfluence = RestConfluence(BASE_URL, USERNAME, PASSWORD)
-
+    private val restConfluence = E4TestEnv.newAdminTestRestClient() as RestConfluence
 
     @Before
     fun before() {
@@ -43,7 +38,7 @@ class TestGetConfluenceUsers {
 
     @Test
     fun test() {
-        val confluenceUsers = restConfluence.confluenceUsers
+        val confluenceUsers = restConfluence.usernames
         log.info(confluenceUsers.toString())
         assertEquals(confluenceUsers.get(0), "admin")
     }

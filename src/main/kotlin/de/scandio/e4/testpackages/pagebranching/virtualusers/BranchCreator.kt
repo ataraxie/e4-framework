@@ -2,6 +2,7 @@ package de.scandio.e4.testpackages.pagebranching.virtualusers
 
 import de.scandio.e4.testpackages.pagebranching.actions.CreateBranchAction
 import de.scandio.e4.worker.collections.ActionCollection
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
 
 
@@ -24,6 +25,9 @@ import de.scandio.e4.worker.interfaces.VirtualUser
 open class BranchCreator : VirtualUser() {
 
     protected var virtualUserStartTime: Long = 0
+
+    override fun onInit(restClient: RestClient) {
+    }
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()

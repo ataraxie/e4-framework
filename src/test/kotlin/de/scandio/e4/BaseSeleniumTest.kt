@@ -2,9 +2,15 @@ package de.scandio.e4
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
+import de.scandio.e4.clients.WebConfluence
+import de.scandio.e4.clients.WebJira
 import de.scandio.e4.helpers.DomHelper
-import de.scandio.e4.confluence.web.WebConfluence
-import de.scandio.e4.worker.confluence.rest.RestConfluence
+import de.scandio.e4.worker.client.ApplicationName
+import de.scandio.e4.worker.interfaces.RestClient
+import de.scandio.e4.worker.interfaces.TestPackage
+import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.rest.RestConfluence
+import de.scandio.e4.worker.rest.RestJira
 import de.scandio.e4.worker.util.Util
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.openqa.selenium.Dimension
@@ -14,22 +20,16 @@ import org.openqa.selenium.chrome.ChromeOptions
 import org.slf4j.LoggerFactory
 import java.net.URI
 
-open abstract class BaseSeleniumTest {
+abstract class BaseSeleniumTest {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    protected var BASE_URL = System.getenv("E4_TARGET_URL")
-//    protected var BASE_URL = "http://e4-test:8090/"
-    protected val OUT_DIR = System.getenv("E4_OUT_DIR")
-    protected val IN_DIR = System.getenv("E4_IN_DIR")
-    protected val USERNAME = "admin"
-    protected val PASSWORD = "admin"
+    protected var webClient: WebClient? = null
+    protected var restClient: RestClient? = null
 
     protected var driver: WebDriver
     protected var util: Util
     protected var dom: DomHelper
-    protected var webConfluence: WebConfluence
-    protected var restConfluence: RestConfluence
 
     protected var screenshotCount = 0
     protected var dumpCount = 0
@@ -38,24 +38,25 @@ open abstract class BaseSeleniumTest {
         WebDriverManager.chromedriver().setup()
         val chromeOptions = ChromeOptions()
         chromeOptions.addArguments("--headless")
+
         this.driver = ChromeDriver(chromeOptions)
-        this.driver.manage().window().setSize(Dimension(2000, 1500))
+        this.driver.manage().window().size = Dimension(2000, 1500)
         this.util = Util()
         this.dom = DomHelper(driver, 40, 40)
         this.dom.defaultDuration = 40
         this.dom.defaultWaitTillPresent = 40
-        this.dom.outDir = OUT_DIR
+        this.dom.outDir = E4TestEnv.OUT_DIR
         this.dom.screenshotBeforeClick = true
         this.dom.screenshotBeforeInsert = true
-        this.webConfluence = WebConfluence(driver, URI(BASE_URL), IN_DIR, OUT_DIR, USERNAME, PASSWORD)
-        this.restConfluence = RestConfluence(BASE_URL, USERNAME, PASSWORD)
 
         val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         loggerContext.getLogger("org.apache").level = Level.WARN
+
+        setNewClients()
     }
 
     open fun refreshWebClient(login: Boolean = false, authenticate: Boolean = false) {
-        this.webConfluence.quit()
+//        webClient().quit()
 
         WebDriverManager.chromedriver().setup()
         val chromeOptions = ChromeOptions()
@@ -66,31 +67,58 @@ open abstract class BaseSeleniumTest {
         this.dom = DomHelper(driver, 60, 60)
         this.dom.defaultDuration = 120
         this.dom.defaultWaitTillPresent = 120
-        this.dom.outDir = OUT_DIR
+        this.dom.outDir = E4TestEnv.OUT_DIR
         this.dom.screenshotBeforeClick = true
         this.dom.screenshotBeforeInsert = true
 
-        this.webConfluence = WebConfluence(driver, URI(BASE_URL), IN_DIR, OUT_DIR, USERNAME, PASSWORD)
+        setNewClients()
 
         if (login) {
-            webConfluence.login()
+            webClient().login()
         }
 
         if (authenticate) {
-            webConfluence.authenticateAdmin()
+            webClient().authenticateAdmin()
         }
+    }
+
+    fun setNewClients() {
+        this.webClient = E4TestEnv.newAdminTestWebClient()
+        this.restClient = E4TestEnv.newAdminTestRestClient()
     }
 
     open fun shot() {
         this.screenshotCount += 1
-        val path = webConfluence.takeScreenshot("$screenshotCount-selenium-test.png")
+        val path = webClient().takeScreenshot("$screenshotCount-selenium-test.png")
         println(path)
     }
 
     open fun dump() {
         this.dumpCount += 1
-        val path = webConfluence.dumpHtml("$dumpCount-selenium-test.html")
+        val path = webClient().dumpHtml("$dumpCount-selenium-test.html")
         println(path)
+    }
+
+    fun webClient() : WebClient {
+        return this.webClient!!
+    }
+
+    fun restClient() : RestClient {
+        return this.restClient!!
+    }
+
+    fun runPrepareActions(testPackage: TestPackage) {
+        log.info("Running PREPARE actions")
+        for (action in testPackage.setupActions) {
+            try {
+                log.info("Executing PREPARE action ${action.javaClass.simpleName}")
+                action.execute(webClient(), restClient())
+            } catch (e: Exception) {
+                log.error("ERROR executing prepare action", e)
+                dump()
+                shot()
+            }
+        }
     }
 
 }

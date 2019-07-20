@@ -2,19 +2,19 @@ package de.scandio.e4.testpackages
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
-import de.scandio.e4.confluence.web.WebConfluence
+import de.scandio.e4.E4TestEnv
 import de.scandio.e4.worker.client.NoopWebClient
 import de.scandio.e4.worker.collections.ActionCollection
-import de.scandio.e4.worker.confluence.rest.RestConfluence
+import de.scandio.e4.worker.factories.ClientFactory
 import de.scandio.e4.worker.interfaces.Action
+import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.rest.RestConfluence
 import de.scandio.e4.worker.util.Util
-import de.scandio.e4.worker.util.WorkerUtils
 import org.openqa.selenium.Dimension
 import org.slf4j.LoggerFactory
 import org.slf4j.LoggerFactory.getILoggerFactory
-import java.lang.Exception
 
 
 abstract class TestPackageTestRun {
@@ -25,14 +25,6 @@ abstract class TestPackageTestRun {
 
     protected var screenshotCount = 0
     protected val util: Util
-
-
-    abstract fun getBaseUrl(): String
-    abstract fun getOutDir(): String
-    abstract fun getInDir(): String
-    abstract fun getUsername(): String
-    abstract fun getPassword(): String
-    abstract fun getTestPackage(): TestPackage
 
     init {
         this.util = Util()
@@ -69,18 +61,17 @@ abstract class TestPackageTestRun {
     protected fun executeAction(action: Action) {
         var webClient: WebClient = NoopWebClient()
         if (!action.isRestOnly()) {
-            webClient = WorkerUtils.newChromeWebClient(
-                    getBaseUrl(), getInDir(), getOutDir(), getUsername(), getPassword()) as WebConfluence
+            webClient = E4TestEnv.newAdminTestWebClient()
             webClient.webDriver.manage().window().size = Dimension(2000, 1500)
         }
-        val restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
+        val restConfluence = E4TestEnv.newAdminTestRestClient()
         log.info("Executing action ${action.javaClass.simpleName}")
         val runtimeName = "afteraction-${action.javaClass.simpleName}"
         try {
             action.execute(webClient, restConfluence)
             log.info("Time taken: ${action.timeTaken}")
         } finally {
-            if (!action.isRestOnly()) {
+            if (!action.isRestOnly) {
                 webClient.takeScreenshot(runtimeName)
                 webClient.dumpHtml(runtimeName)
                 webClient.quit()
@@ -93,17 +84,16 @@ abstract class TestPackageTestRun {
         var numExcludedActions = 0
         var numActionsRun = 0
         for (action in actions) {
-            var webConfluence: WebClient
+            var webClient: WebClient
             if (actions.allRestOnly()) {
-                webConfluence = NoopWebClient()
+                webClient = NoopWebClient()
             } else {
-                webConfluence = WorkerUtils.newChromeWebClient(
-                        getBaseUrl(), getInDir(), getOutDir(), getUsername(), getPassword()) as WebConfluence
+                webClient = E4TestEnv.newAdminTestWebClient()
             }
-            val restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
+            val restClient = E4TestEnv.newAdminTestRestClient()
             try {
                 log.info("Executing action ${action.javaClass.simpleName}")
-                action.execute(webConfluence, restConfluence)
+                action.execute(webClient, restClient)
                 if (!actions.isExcludedFromMeasurement(action)) {
                     totalTimeTaken += action.timeTaken
                     numActionsRun += 1
@@ -113,17 +103,17 @@ abstract class TestPackageTestRun {
                 }
             } finally {
                 val runtimeName = "afteraction-${action.javaClass.simpleName}"
-                webConfluence.takeScreenshot(runtimeName)
-                webConfluence.dumpHtml(runtimeName)
-                webConfluence.quit()
+                webClient.takeScreenshot(runtimeName)
+                webClient.dumpHtml(runtimeName)
+                webClient.quit()
             }
         }
         return Measurement(totalTimeTaken, numExcludedActions, numActionsRun)
     }
 
-    open fun shot(webConfluence: WebConfluence) {
+    open fun shot(webClient: WebClient) {
         this.screenshotCount += 1
-        val path = this.util.takeScreenshot(webConfluence.driver, "${getOutDir()}/$screenshotCount-test-run.png")
+        val path = this.util.takeScreenshot(webClient.webDriver, "${E4TestEnv.OUT_DIR}/$screenshotCount-test-run.png")
         print(path)
     }
 

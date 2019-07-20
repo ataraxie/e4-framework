@@ -1,6 +1,7 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
-import de.scandio.e4.confluence.web.WebConfluence
+import de.scandio.e4.clients.WebAtlassian
+import de.scandio.e4.clients.WebConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -17,10 +18,10 @@ class InstallPluginAction(
     private var end: Long = 0
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
-        val webConfluence = webClient as WebConfluence
-        webConfluence.login()
+        val webAtlassian = webClient as WebAtlassian
+        webAtlassian.login()
         this.start = Date().time
-        webConfluence.installPlugin(pluginName, pluginVersion, pluginLicense, pluginKey)
+        webAtlassian.installPlugin(pluginName, pluginVersion, pluginLicense, pluginKey)
         this.end = Date().time
     }
 

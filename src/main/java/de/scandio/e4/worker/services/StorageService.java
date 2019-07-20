@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.sql.*;
+import java.util.*;
 import java.util.Date;
 
 
@@ -24,10 +26,13 @@ public class StorageService {
 	private Connection connection;
 	private final String databaseFilePath;
 
+	private Map<String, List<Long>> idsForKey;
+
 	public StorageService(ApplicationStatusService applicationStatusService) throws Exception {
 		this.applicationStatusService = applicationStatusService;
 		String databaseFileName = "e4-" + new Date().getTime() + ".sqlite";
 		this.databaseFilePath = "jdbc:sqlite:" + this.applicationStatusService.getOutputDir() + "/" + databaseFileName;
+		this.idsForKey = new HashMap<>();
 		initDatabase();
 	}
 
@@ -116,5 +121,14 @@ public class StorageService {
 
 	public String getDatabaseFilePath() {
 		return databaseFilePath;
+	}
+
+	@Nullable
+	public List<Long> getIdsByKey(String key) {
+		return idsForKey.get(key);
+	}
+
+	public void setIdsForKey(String key, List<Long> entityIds) {
+		this.idsForKey.put(key, entityIds);
 	}
 }

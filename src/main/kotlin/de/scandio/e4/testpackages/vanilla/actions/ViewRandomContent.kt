@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
-import de.scandio.e4.confluence.web.WebConfluence
-import de.scandio.e4.worker.confluence.rest.RestConfluence
+import de.scandio.e4.clients.WebConfluence
+import de.scandio.e4.worker.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -10,8 +10,8 @@ import java.util.*
 
 
 open class ViewRandomContent(
-        val spaceKey: String = "",
-        val parentPageTitle: String = ""
+        val spaceKey: String? = null,
+        val parentPageTitle: String? = null
 ) : Action() {
 
     private val log = LoggerFactory.getLogger(javaClass)

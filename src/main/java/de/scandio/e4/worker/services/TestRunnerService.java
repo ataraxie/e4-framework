@@ -1,6 +1,7 @@
 package de.scandio.e4.worker.services;
 
 import de.scandio.e4.client.config.WorkerConfig;
+import de.scandio.e4.worker.factories.ClientFactory;
 import de.scandio.e4.worker.model.E4Error;
 import de.scandio.e4.worker.model.E4Measurement;
 import de.scandio.e4.dto.PreparationStatus;
@@ -14,17 +15,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
 public class TestRunnerService {
+
 	private static final Logger log = LoggerFactory.getLogger(TestRunnerService.class);
 	private final ApplicationStatusService applicationStatusService;
 	private final StorageService storageService;
 	private final UserCredentialsService userCredentialsService;
+
+	// TODO: Make thread-safe
+	private static int numFinishedThreads = 0;
+	private static int numFailedActions = 0;
+	private static int numActionsExecuted = 0;
+
+	private long mainThreadStartTime;
 
 	public TestRunnerService(ApplicationStatusService applicationStatusService, StorageService storageService, UserCredentialsService userCredentialsService) {
 		this.applicationStatusService = applicationStatusService;
@@ -50,54 +59,95 @@ public class TestRunnerService {
 		final String testPackageKey = config.getTestPackage();
 		final String targetUrl = config.getTarget();
 
-		log.info("Running test package {{}} against URL {{}}", testPackageKey, targetUrl);
+		log.info(">>> MAIN E4 THREAD: Running test package {{}} against URL {{}}", testPackageKey, targetUrl);
 
-		final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(testPackageKey);
-		final TestPackage testPackageInstance = testPackage.newInstance();
-		final VirtualUserCollection virtualUserCollection = testPackageInstance.getVirtualUsers();
+		final Class<TestPackage> testPackageClass = (Class<TestPackage>) Class.forName(testPackageKey);
+		final TestPackage testPackage = testPackageClass.newInstance();
+		final VirtualUserCollection virtualUserCollection = testPackage.getVirtualUsers();
 
 		final List<VirtualUser> virtualUsers = new ArrayList<>();
 		final int numConcurrentUsers = config.getNumConcurrentUsers();
 		final int numWorkers = config.getNumWorkers();
+
+		final List<Thread> virtualUserThreads = new ArrayList<>();
+		final int numVirtualUsersThisWorker = numConcurrentUsers / numWorkers;
+
+		final int workerIndex = storageService.getWorkerIndex();
+
+		log.info(">>> MAIN E4 THREAD: This worker with index {{}} needs to start {{}} users.", workerIndex, numVirtualUsersThisWorker);
+
 		for (Class<? extends VirtualUser> virtualUserClass : virtualUserCollection) {
 			double weight = virtualUserCollection.getWeight(virtualUserClass);
 			double numInstances = numConcurrentUsers * weight;
 			for (int i = 0; i < numInstances; i++) {
-				virtualUsers.add(virtualUserClass.newInstance());
+				virtualUsers.add(createVirtualUser(virtualUserClass, config, testPackage));
 			}
 		}
 
 		logVirtualUsers(virtualUsers);
 
-		final List<Thread> virtualUserThreads = new ArrayList<>();
-		final int numVirtualUsersThisWorker = numConcurrentUsers / numWorkers;
-
-		final List<UserCredentials> allUserCredentials = userCredentialsService.getAllUsers();
-		final UserCredentials userCredentials = WorkerUtils.getRandomItem(allUserCredentials);
-		final int workerIndex = storageService.getWorkerIndex();
-
-		log.info("This worker with index {{}} needs to start {{}} users.", workerIndex, numVirtualUsersThisWorker);
-
 		int vuserIndex = 0;
 		for (VirtualUser vuser : virtualUsers) {
 			if (vuserIndex % numWorkers == workerIndex) {
-				final Thread virtualUserThread = createUserThread(testPackageInstance, vuser, config);
+				final Thread virtualUserThread = createUserThread(testPackage, vuser, config);
 				virtualUserThreads.add(virtualUserThread);
 				log.info("Created user thread: {{}}", vuser.getClass().getSimpleName());
 			}
 			vuserIndex++;
 		}
 
-		virtualUserThreads.forEach(Thread::start);
+		this.mainThreadStartTime = new Date().getTime();
+		final int numVirtualUsers = virtualUserThreads.size();
+		final int randomStartDelayMaxMs = numVirtualUsers * 500; // e.g. 25 sec for 50 users, 125 sec for 250 users
+
+		log.info(">>> MAIN E4 THREAD: random start delay max interval for all {{}} threads is {{}}sec", numVirtualUsers, randomStartDelayMaxMs / 1000);
+
+		final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(virtualUserThreads.size());
+		for (Thread thread : virtualUserThreads) {
+			executor.schedule(thread, new Random().nextInt(randomStartDelayMaxMs), TimeUnit.MILLISECONDS);
+		}
+
 		applicationStatusService.setTestsStatus(TestsStatus.RUNNING);
 
-		log.info("Waiting for tests to finish...");
-		for (Thread virtualUserThread : virtualUserThreads) {
-			virtualUserThread.join();
+
+		while (numFinishedThreads < numVirtualUsers) {
+			log.info(">>> MAIN E4 THREAD: Checking finished threads: {{}}", numFinishedThreads);
+			Thread.sleep(3000);
 		}
-		log.info("All tests are finished! Your database is at {{}}", storageService.getDatabaseFilePath());
+
+		log.info(">>> MAIN E4 THREAD: All {{}} threads are finished. {{}} actions were executed with {{}} errors. Your database is at {{}}", numVirtualUsers, numActionsExecuted, numFailedActions, storageService.getDatabaseFilePath());
 
 		applicationStatusService.setTestsStatus(TestsStatus.FINISHED);
+	}
+
+	private VirtualUser createVirtualUser(
+			Class<? extends VirtualUser> virtualUserClass,
+			WorkerConfig config,
+			TestPackage testPackage) throws Exception {
+
+		VirtualUser virtualUser = virtualUserClass.newInstance();
+
+		UserCredentials userCredentials;
+		if (virtualUser.isAdminRequired()) {
+			userCredentials = new UserCredentials(config.getUsername(), config.getPassword());
+		} else {
+			userCredentials = userCredentialsService.getRandomUser();
+		}
+
+		virtualUser.setImpersonatedUser(userCredentials);
+
+		log.info("Creating virtual user {{}} with actual user {{}}", virtualUserClass.getSimpleName(), userCredentials.getUsername());
+
+
+		RestClient initialRestClient = ClientFactory.newRestClient(
+				testPackage.getApplicationName(),
+				storageService,
+				config.getTarget(),
+				userCredentials.getUsername(),
+				userCredentials.getPassword());
+
+		virtualUser.onInit(initialRestClient);
+		return virtualUser;
 	}
 
 	private void logVirtualUsers(List<VirtualUser> virtualUsers) {
@@ -109,40 +159,32 @@ public class TestRunnerService {
 		}
 	}
 
-	private Thread createUserThread(TestPackage testPackage, VirtualUser virtualUser, WorkerConfig config) throws Exception {
+	private Thread createUserThread(TestPackage testPackage, VirtualUser virtualUser, WorkerConfig config) {
 		final String targetUrl = config.getTarget();
 		final long durationInSeconds = config.getDurationInSeconds();
 
+		log.info("Executing virtual user {{}} with actual user {{}}", virtualUser.getClass().getSimpleName(), virtualUser.getImpersonatedUser().getUsername());
+
 		final Thread virtualUserThread = new Thread(() -> {
 			try {
-				String username;
-				String password;
-				if (virtualUser.isAdminRequired()) {
-					username = config.getUsername();
-					password = config.getPassword();
-				} else {
-					final UserCredentials randomUser = userCredentialsService.getRandomUser();
-					username = randomUser.getUsername();
-					password = randomUser.getPassword();
-				}
-
-				log.info("Executing virtual user {{}} with actual user {{}}", virtualUser.getClass().getSimpleName(), username);
-
-				final long threadStartTime = new Date().getTime();
+				final long delayInSeconds = (new Date().getTime() - this.mainThreadStartTime) / 1000;
+				log.info("Thread for user {{}} started after {{}}sec", virtualUser.getImpersonatedUser().getUsername(), delayInSeconds);
 
 				if (durationInSeconds > 0) {
 					while (true) {
-						long timePassedSinceStart = new Date().getTime() - threadStartTime;
+						long timePassedSinceStart = new Date().getTime() - this.mainThreadStartTime;
 						if (timePassedSinceStart < durationInSeconds * 1000) {
-							log.info("{{}}ms have passed since start which is below {{}}sec. Running again.", timePassedSinceStart, durationInSeconds);
-							runActions(testPackage, virtualUser, threadStartTime, durationInSeconds, targetUrl, username, password);
+							log.info("{{}}sec have passed since start which is below {{}}sec. Running again.", timePassedSinceStart / 1000, durationInSeconds);
+							numActionsExecuted += 1;
+							runActions(testPackage, virtualUser, durationInSeconds, targetUrl);
 						} else {
-							log.info("{{}}ms have passed since start which is above {{}}sec. Stopping.", timePassedSinceStart, durationInSeconds);
+							log.info("{{}}sec have passed since start which is above {{}}sec. Stopping.", timePassedSinceStart / 1000, durationInSeconds);
+							numFinishedThreads += 1;
 							break;
 						}
 					}
 				} else {
-					runActions(testPackage, virtualUser, threadStartTime, durationInSeconds, targetUrl, username, password);
+					runActions(testPackage, virtualUser, durationInSeconds, targetUrl);
 				}
 
 			} catch (Exception e) {
@@ -165,9 +207,11 @@ public class TestRunnerService {
 	}
 
 	// TODO: as obvious, too many params
-	private void runActions(TestPackage testPackage, VirtualUser virtualUser, long threadStartTime, long durationInSeconds, String targetUrl, String username, String password) throws Exception {
+	private void runActions(TestPackage testPackage, VirtualUser virtualUser, long durationInSeconds, String targetUrl) throws Exception {
 		ActionCollection actions = virtualUser.getActions();
 		log.info("Running {{}} actions for virtual user", actions.size());
+		String username = virtualUser.getImpersonatedUser().getUsername();
+		String password = virtualUser.getImpersonatedUser().getPassword();
 		for (Action action : actions) {
 			String runtime = WorkerUtils.getRuntimeName();
 			String vuserClass = virtualUser.getClass().getSimpleName();
@@ -176,18 +220,22 @@ public class TestRunnerService {
 			WebClient webClient = null;
 			RestClient restClient;
 			try {
-				long workerTimeRunning = new Date().getTime() - threadStartTime;
+				long workerTimeRunning = new Date().getTime() - this.mainThreadStartTime;
 				if (workerTimeRunning > durationInSeconds * 1000) {
-					log.info("Worker has been running longer than {{}} seconds. Stopping.",  durationInSeconds);
+					log.info("Worker has been running longer than {{}}sec. Stopping.",  durationInSeconds);
 					break;
 				}
 				log.debug("Executing action {{}}", action.getClass().getSimpleName());
-				webClient = WorkerUtils.newChromeWebClient(targetUrl, applicationStatusService.getInputDir(),
+				webClient = ClientFactory.newChromeWebClient(testPackage.getApplicationName(), targetUrl, applicationStatusService.getInputDir(),
 						applicationStatusService.getOutputDir(), username, password);
-				restClient = WorkerUtils.newRestClient(targetUrl, username, password);
+				restClient = ClientFactory.newRestClient(testPackage.getApplicationName(), storageService, targetUrl, username, password);
 				action.executeWithRandomDelay(webClient, restClient);
-//				webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
-//				webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
+				if (log.isDebugEnabled() && new Date().getTime() % 10 == 0) {
+					String screenshotPath = webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
+					webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
+					log.info("Sample screenshot (and html with same path): {{}}", screenshotPath);
+				}
+
 				final long timeTaken = action.getTimeTaken();
 				final String nodeId = action.getNodeId(webClient);
 				E4Measurement measurement = new E4Measurement(
@@ -199,12 +247,14 @@ public class TestRunnerService {
 						testpackageClass);
 				storageService.recordMeasurement(measurement);
 			} catch (Exception e) {
-				log.error("FAILED ACTION: "+action.getClass().getSimpleName(), e);
+				log.error("FAILED ACTION: {{}} with exception type {{}} and message {{}}",
+						action.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
 				E4Error e4error = new E4Error("ACTION_FAILED",
 						e.getClass().getName(),
 						virtualUser.getClass().getSimpleName(),
 						action.getClass().getSimpleName());
 				storageService.recordError(e4error);
+				numFailedActions += 1;
 //				webClient.takeScreenshot("failed-scenario");
 			} finally {
 				if (webClient != null) {

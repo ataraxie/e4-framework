@@ -6,6 +6,7 @@ import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.VirtualUser
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.rest.RestConfluence
 
 
 /**
@@ -17,6 +18,10 @@ import de.scandio.e4.worker.interfaces.WebClient
  * @author Felix Grund
  */
 class Editor : VirtualUser() {
+
+    override fun onInit(restClient: RestClient) {
+        (restClient as RestConfluence).fillCachesIfEmpty()
+    }
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
