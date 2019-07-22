@@ -7,7 +7,10 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RestConfluence extends RestAtlassian {
 
@@ -35,7 +38,7 @@ public class RestConfluence extends RestAtlassian {
 		}
 
 		if (ids == null) {
-			Long parentContentId = getPageIdUseCache(spaceKey, parentPageTitle);
+			Long parentContentId = getContentIdUseCache(spaceKey, parentPageTitle);
 			String restUrl = "rest/api/content/"+parentContentId+"/child/page";
 			log.info("[REST] obtaining child page ids for user {{}}, spaceKey {{}}, parentPage {{}}", this.username, spaceKey, parentPageTitle);
 			String responseText = sendGetRequestReturnBody(restUrl);
@@ -126,20 +129,28 @@ public class RestConfluence extends RestAtlassian {
 	}
 
 	public String createPage(String spaceKey, String pageTitle, String content, String parentPageTitle) {
+		return createContentEntity("page", spaceKey, pageTitle, content, parentPageTitle);
+	}
+
+	public String createBlogpost(String spaceKey, String title, String content) {
+		return createContentEntity("blogpost", spaceKey, title, content, null);
+	}
+
+	private String createContentEntity(String type, String spaceKey, String entityTitle, String content, String parentEntityTitle) {
 		content = StringEscapeUtils.escapeJson(content);
 		String bodyTemplate, body;
-		if (StringUtils.isNotBlank(parentPageTitle)) {
-			long parentPageId = getPageIdUseCache(spaceKey, parentPageTitle);
-			bodyTemplate = "{\"type\":\"page\",\"ancestors\":[{\"id\":%s}],\"title\":\"%s\",\"space\":{\"key\":\"%s\"},\"body\":{\"storage\":{\"value\":\"%s\",\"representation\":\"storage\"}}}";
-			body = String.format(bodyTemplate, parentPageId, pageTitle, spaceKey, content);
+		if (StringUtils.isNotBlank(parentEntityTitle)) {
+			long parentContentId = getContentIdUseCache(spaceKey, parentEntityTitle);
+			bodyTemplate = "{\"type\":\"%s\",\"ancestors\":[{\"id\":%s}],\"title\":\"%s\",\"space\":{\"key\":\"%s\"},\"body\":{\"storage\":{\"value\":\"%s\",\"representation\":\"storage\"}}}";
+			body = String.format(bodyTemplate, type, parentContentId, entityTitle, spaceKey, content);
 		} else {
-			bodyTemplate = "{\"type\":\"page\",\"title\":\"%s\",\"space\":{\"key\":\"%s\"},\"body\":{\"storage\":{\"value\":\"%s\",\"representation\":\"storage\"}}}";
-			body = String.format(bodyTemplate, pageTitle, spaceKey, content);
+			bodyTemplate = "{\"type\":\"%s\",\"title\":\"%s\",\"space\":{\"key\":\"%s\"},\"body\":{\"storage\":{\"value\":\"%s\",\"representation\":\"storage\"}}}";
+			body = String.format(bodyTemplate, type, entityTitle, spaceKey, content);
 		}
 		return sendPostRequest("rest/api/content/", body);
 	}
 
-	private Long getPageIdUseCache(String spaceKey, String pageTitle) {
+	private Long getContentIdUseCache(String spaceKey, String pageTitle) {
 		String cacheKey = spaceKey + ":" + pageTitle;
 		Long pageId = contentIds.get(cacheKey);
 		if (pageId == null) {
