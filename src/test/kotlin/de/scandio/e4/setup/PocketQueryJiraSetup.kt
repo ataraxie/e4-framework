@@ -1,7 +1,7 @@
 package de.scandio.e4.setup
 
 import de.scandio.e4.BaseSeleniumTest
-import de.scandio.e4.clients.WebJira
+import de.scandio.e4.clients.web.WebJira
 import de.scandio.e4.testpackages.pocketquery.PocketQuerySeleniumHelper
 import de.scandio.e4.testpackages.pocketquery.pqconf.PocketQueryJiraTestPackage
 import de.scandio.e4.testpackages.pocketquery.pqjira.PocketQueryJiraSeleniumHelper

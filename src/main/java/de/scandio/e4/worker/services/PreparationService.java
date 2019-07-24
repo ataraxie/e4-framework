@@ -68,7 +68,7 @@ public class PreparationService {
 			userCredentialsService.storeUsers(userCredentials);
             if (!setupScenarios.isEmpty()) {
 				WebClient webClient;
-            	if (!setupScenarios.allRestOnly()) {
+            	if (setupScenarios.allRestOnly()) {
 					webClient = new NoopWebClient();
 				} else {
 					webClient = ClientFactory.newChromeWebClient(testPackageInstance.getApplicationName(),

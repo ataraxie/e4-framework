@@ -3,13 +3,14 @@ package de.scandio.e4.testpackages.livelyblogs.actions
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
-import de.scandio.e4.worker.rest.RestConfluence
+import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.worker.util.RandomData
 import org.slf4j.LoggerFactory
 import java.util.*
 
 class SetupLivelyBlogPostsAction(
         val spaceKey: String,
+        val teaserImagePageTitle: String,
         val howMany: Int
 ) : Action() {
 
@@ -18,22 +19,52 @@ class SetupLivelyBlogPostsAction(
     protected var start: Long = 0
     protected var end: Long = 0
 
-    private var numBlogpostsCreated = 0
+    private val contentIds = arrayListOf<Long>()
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val restConfluence = restClient as RestConfluence
         this.start = Date().time
-        repeat(howMany) {
-            val title = "Lively Blog Setup Blogpost ${Date().time}"
-            val content = "<h1>This is a great blog post</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
-            restConfluence.createBlogpost(spaceKey, title, content)
-            numBlogpostsCreated += 1
-            log.info("Created blogpost. Now created: {{}}", numBlogpostsCreated)
+        repeat(howMany) { blogpostNumber ->
+            var title = "Setup Blogpost #$blogpostNumber (${Date().time})"
+            var content = "<h1>This is a great blog post</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
+            if (rnd("1", "2", "3") == "3") { // 1/3 of cases
+                content += randomTeaserImageContent()
+                title += " (teaser)"
+            }
+
+            val contentId = restConfluence.createBlogpost(spaceKey, title, content)
+            contentIds.add(contentId)
         }
+
+        for (contentId in contentIds) {
+            val labels = arrayListOf<String>()
+            if (rnd("1", "2", "3", "4", "5") == "5") { // 1/5 of cases
+                labels.add("important")
+            }
+            if (rnd("1", "2") == "2") { // 1/3 of cases
+                val howManyLabels = Random().nextInt(5) + 1
+                repeat(howManyLabels) { labelNumber ->
+                    labels.add("label${labelNumber+1}")
+                }
+            }
+
+            if (labels.isNotEmpty()) {
+                restConfluence.addLabelsToContentEntity(contentId, labels)
+            }
+        }
+
         this.end = Date().time
     }
 
     override fun getTimeTaken(): Long {
         return end - start
     }
+
+    fun randomTeaserImageContent(): String {
+        return """
+<p><ac:image ac:class="teaser" ac:thumbnail="true" ac:height="250"><ri:attachment ri:filename="random-image-${rnd("0,1,2,3,4,5,6,7,8,9".split(","))}.jpg"><ri:page ri:content-title="$teaserImagePageTitle" /></ri:attachment></ac:image></p>
+        """.trimIndent().trimLines()
+    }
+
+    fun String.trimLines() = replace("\n", "")
 }

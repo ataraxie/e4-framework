@@ -26,9 +26,6 @@ open class BranchCreator : VirtualUser() {
 
     protected var virtualUserStartTime: Long = 0
 
-    override fun onInit(restClient: RestClient) {
-    }
-
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(CreateBranchAction("PB"))

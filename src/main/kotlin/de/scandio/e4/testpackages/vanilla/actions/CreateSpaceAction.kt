@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
-import de.scandio.e4.clients.WebConfluence
-import de.scandio.e4.worker.rest.RestConfluence
+import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient

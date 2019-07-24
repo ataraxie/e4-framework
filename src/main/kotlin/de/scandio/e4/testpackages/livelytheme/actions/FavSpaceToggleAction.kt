@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.livelytheme.actions
 
-import de.scandio.e4.clients.WebConfluence
-import de.scandio.e4.worker.rest.RestConfluence
+import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -37,7 +37,7 @@ open class FavSpaceToggleAction : Action() {
         val webConfluence = webClient as WebConfluence
         val restConfluence = restClient as RestConfluence
         val dom = webConfluence.dom
-        val randomPageId = restConfluence.randomContentId
+        val randomPageId = restConfluence.getRandomContentId()
         webConfluence.login()
         webConfluence.goToPage(randomPageId)
         this.start = Date().time

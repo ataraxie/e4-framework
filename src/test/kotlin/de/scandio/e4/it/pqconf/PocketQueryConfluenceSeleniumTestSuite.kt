@@ -2,7 +2,7 @@ package de.scandio.e4.it.pqconf
 
 import de.scandio.e4.BaseSeleniumTest
 import de.scandio.e4.E4TestEnv
-import de.scandio.e4.clients.WebConfluence
+import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.testpackages.pocketquery.PocketQueryConfTestPackage
 import de.scandio.e4.testpackages.pocketquery.pqconf.PocketQueryConfluenceSeleniumHelper
 import org.junit.After

@@ -1,16 +1,15 @@
 package de.scandio.e4.worker.factories;
 
-import de.scandio.e4.clients.WebConfluence;
-import de.scandio.e4.clients.WebJira;
+import de.scandio.e4.clients.web.WebConfluence;
+import de.scandio.e4.clients.web.WebJira;
 import de.scandio.e4.worker.client.ApplicationName;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.WebClient;
-import de.scandio.e4.worker.rest.RestConfluence;
-import de.scandio.e4.worker.rest.RestJira;
+import de.scandio.e4.clients.rest.RestConfluence;
+import de.scandio.e4.clients.rest.RestJira;
 import de.scandio.e4.worker.services.StorageService;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;

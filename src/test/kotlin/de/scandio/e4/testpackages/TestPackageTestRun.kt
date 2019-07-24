@@ -5,12 +5,9 @@ import ch.qos.logback.classic.LoggerContext
 import de.scandio.e4.E4TestEnv
 import de.scandio.e4.worker.client.NoopWebClient
 import de.scandio.e4.worker.collections.ActionCollection
-import de.scandio.e4.worker.factories.ClientFactory
 import de.scandio.e4.worker.interfaces.Action
-import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.WebClient
-import de.scandio.e4.worker.rest.RestConfluence
 import de.scandio.e4.worker.util.Util
 import org.openqa.selenium.Dimension
 import org.slf4j.LoggerFactory
@@ -29,23 +26,25 @@ abstract class TestPackageTestRun {
     init {
         this.util = Util()
         setLogLevel("org.apache", Level.ERROR)
-        setLogLevel("org.openqa.selenium.phantomjs.PhantomJSDriverService", Level.ERROR)
     }
 
     protected fun setLogLevel(packagePath: String, level: Level) {
         loggerContext.getLogger(packagePath).level = level
     }
 
-    protected fun executeTestPackage(testPackage: TestPackage) {
+    protected fun executeTestPackage(testPackage: TestPackage, howOften: Int = 1) {
         log.info("==============================================================")
         log.info("START executing ${testPackage.virtualUsers.size} virtual users")
 
-        for (virtualUserClass in testPackage.virtualUsers) {
-            val virtualUser = virtualUserClass.newInstance()
-            log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
-            val measurement = executeActions(virtualUser.actions)
-            log.info("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
+        repeat(howOften) {
+            for (virtualUserClass in testPackage.virtualUsers) {
+                val virtualUser = virtualUserClass.newInstance()
+                log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
+                val measurement = executeActions(virtualUser.actions)
+                log.info("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
+            }
         }
+
         log.info("DONE executing ${testPackage.virtualUsers.size} virtual users")
         log.info("==============================================================")
     }
@@ -62,7 +61,6 @@ abstract class TestPackageTestRun {
         var webClient: WebClient = NoopWebClient()
         if (!action.isRestOnly()) {
             webClient = E4TestEnv.newAdminTestWebClient()
-            webClient.webDriver.manage().window().size = Dimension(2000, 1500)
         }
         val restConfluence = E4TestEnv.newAdminTestRestClient()
         log.info("Executing action ${action.javaClass.simpleName}")

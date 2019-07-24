@@ -1,8 +1,6 @@
 package de.scandio.e4.testpackages.pocketquery
 
-import de.scandio.e4.clients.WebConfluence
 import de.scandio.e4.helpers.DomHelper
-import de.scandio.e4.testpackages.pocketquery.pqconf.PocketQueryConfluenceSeleniumHelper
 import de.scandio.e4.worker.interfaces.WebClient
 import org.openqa.selenium.JavascriptExecutor
 import java.util.*

@@ -1,4 +1,4 @@
-package de.scandio.e4.clients
+package de.scandio.e4.clients.web
 
 import org.openqa.selenium.WebDriver
 import java.net.URI

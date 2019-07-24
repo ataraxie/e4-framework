@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
-import de.scandio.e4.clients.WebConfluence
-import de.scandio.e4.worker.rest.RestConfluence
+import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -11,7 +11,8 @@ import java.util.*
 
 open class ViewRandomContent(
         val spaceKey: String? = null,
-        val parentPageTitle: String? = null
+        val parentPageTitle: String? = null,
+        val loadedSelector: String = "#main-content"
 ) : Action() {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -27,7 +28,7 @@ open class ViewRandomContent(
         val randomContentId = restConfluence.getRandomContentId(spaceKey, parentPageTitle)
         webConfluence.login()
         this.start = Date().time
-        webConfluence.goToPage(randomContentId)
+        webConfluence.goToPage(randomContentId, loadedSelector)
         this.end = Date().time
     }
 

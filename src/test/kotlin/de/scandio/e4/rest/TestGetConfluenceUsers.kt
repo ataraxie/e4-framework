@@ -1,7 +1,7 @@
 package de.scandio.e4.rest
 
 import de.scandio.e4.E4TestEnv
-import de.scandio.e4.worker.rest.RestConfluence
+import de.scandio.e4.clients.rest.RestConfluence
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

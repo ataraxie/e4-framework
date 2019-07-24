@@ -17,9 +17,6 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 class Searcher : VirtualUser() {
 
-    override fun onInit(restClient: RestClient) {
-    }
-
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(SearchLoremIpsumAction())

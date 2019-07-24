@@ -2,7 +2,7 @@ package de.scandio.e4.it.pqjira
 
 import de.scandio.e4.BaseSeleniumTest
 import de.scandio.e4.E4TestEnv
-import de.scandio.e4.clients.WebJira
+import de.scandio.e4.clients.web.WebJira
 import de.scandio.e4.testpackages.pocketquery.pqjira.PocketQueryJiraSeleniumHelper
 import org.junit.After
 import org.junit.Test
