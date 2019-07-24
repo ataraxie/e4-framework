@@ -16,5 +16,5 @@ else
         -e E4_OUTPUT_DIR="$E4_DIR/out/$1" \
         -e E4_INPUT_DIR="$E4_DIR/in" \
         -e E4_APP_LICENSE="$E4_APP_LICENSE" \
-        fgrund/e4worker:0.2
+        fgrund/e4worker:0.3
 fi
