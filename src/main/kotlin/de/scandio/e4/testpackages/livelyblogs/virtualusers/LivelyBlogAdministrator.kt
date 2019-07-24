@@ -6,10 +6,6 @@ import de.scandio.e4.worker.interfaces.VirtualUser
 
 class LivelyBlogAdministrator : VirtualUser() {
 
-    override fun onInit(initialRestClient: RestClient) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun getActions(): ActionCollection {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

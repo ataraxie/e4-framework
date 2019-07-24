@@ -1,14 +1,13 @@
-package de.scandio.e4.testpackages.livelytheme
+package de.scandio.e4.testpackages.livelyblogs
 
 import de.scandio.e4.E4TestEnv
 import de.scandio.e4.testpackages.TestPackageTestRun
-import de.scandio.e4.testpackages.livelyblogs.LivelyBlogTestPackage
 import org.junit.Before
 import org.junit.Test
 
 class LivelyBlogTestRun : TestPackageTestRun() {
 
-    private val TEST_PACKAGE = LivelyBlogTestPackage()
+    private val TEST_PACKAGE = LivelyBlogsTestPackage()
 
     @Before
     fun before() {
@@ -20,7 +19,7 @@ class LivelyBlogTestRun : TestPackageTestRun() {
         if (E4TestEnv.PREPARATION_RUN) {
             executeTestPackagePrepare(TEST_PACKAGE)
         } else {
-//            executeTestPackage(TEST_PACKAGE)
+            executeTestPackage(TEST_PACKAGE)
 
             // Run a single action for testing:
 //            executeAction(CreatePageAction("LT", "macros", "<p>macro pages</p>", false))

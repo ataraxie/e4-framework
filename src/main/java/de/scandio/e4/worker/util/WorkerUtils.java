@@ -1,9 +1,6 @@
 package de.scandio.e4.worker.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class WorkerUtils {
 
@@ -25,4 +22,9 @@ public class WorkerUtils {
 	public static <T> T getRandomItem(List<T> items) {
 		return getRandomItems(items, 1).get(0);
 	}
+
+	public static String getRandomItem(String... items) {
+		return getRandomItems(Arrays.asList(items), 1).get(0);
+	}
+
 }

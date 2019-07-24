@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.vanillaro.actions
 
 import de.scandio.e4.helpers.DomHelper
-import de.scandio.e4.clients.WebConfluence
+import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.testpackages.vanilla.actions.SearchAction
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient

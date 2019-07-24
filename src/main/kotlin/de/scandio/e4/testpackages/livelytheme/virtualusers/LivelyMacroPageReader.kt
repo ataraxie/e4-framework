@@ -27,10 +27,6 @@ import de.scandio.e4.worker.interfaces.VirtualUser
  * @author Felix Grund
  */
 open class LivelyMacroPageReader : VirtualUser() {
-
-    override fun onInit(restClient: RestClient) {
-    }
-
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewRandomContent("LT", "macros"))

@@ -68,11 +68,11 @@ class DomHelper(
     }
 
     fun awaitElementInsivible(selector: String, duration: Long = this.defaultDuration) {
-        wait(ExpectedConditions.invisibilityOf(findElement(selector)), duration)
+        wait(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(selector)), duration)
     }
 
     fun awaitElementVisible(selector: String, duration: Long = this.defaultDuration) {
-        wait(ExpectedConditions.visibilityOf(findElement(selector)), duration)
+        wait(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(selector)), duration)
     }
 
     fun awaitElementPresent(selector: String, duration: Long = this.defaultDuration) {
@@ -218,5 +218,9 @@ class DomHelper(
         driver.switchTo().frame("wysiwygTextarea_ifr")
         executeScript("$('$containerSelector').html('$html');")
         driver.switchTo().parentFrame()
+    }
+
+    fun setFile(inputSelector: String, absolutePath: String) {
+        findElement(inputSelector).sendKeys(absolutePath)
     }
 }

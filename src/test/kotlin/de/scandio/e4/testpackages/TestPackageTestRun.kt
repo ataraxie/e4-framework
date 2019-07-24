@@ -5,12 +5,9 @@ import ch.qos.logback.classic.LoggerContext
 import de.scandio.e4.E4TestEnv
 import de.scandio.e4.worker.client.NoopWebClient
 import de.scandio.e4.worker.collections.ActionCollection
-import de.scandio.e4.worker.factories.ClientFactory
 import de.scandio.e4.worker.interfaces.Action
-import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.WebClient
-import de.scandio.e4.worker.rest.RestConfluence
 import de.scandio.e4.worker.util.Util
 import org.openqa.selenium.Dimension
 import org.slf4j.LoggerFactory
@@ -29,7 +26,6 @@ abstract class TestPackageTestRun {
     init {
         this.util = Util()
         setLogLevel("org.apache", Level.ERROR)
-        setLogLevel("org.openqa.selenium.phantomjs.PhantomJSDriverService", Level.ERROR)
     }
 
     protected fun setLogLevel(packagePath: String, level: Level) {
@@ -62,7 +58,6 @@ abstract class TestPackageTestRun {
         var webClient: WebClient = NoopWebClient()
         if (!action.isRestOnly()) {
             webClient = E4TestEnv.newAdminTestWebClient()
-            webClient.webDriver.manage().window().size = Dimension(2000, 1500)
         }
         val restConfluence = E4TestEnv.newAdminTestRestClient()
         log.info("Executing action ${action.javaClass.simpleName}")

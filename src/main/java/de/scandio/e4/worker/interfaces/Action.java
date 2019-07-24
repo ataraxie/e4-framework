@@ -1,9 +1,13 @@
 package de.scandio.e4.worker.interfaces;
 
+import de.scandio.e4.worker.util.WorkerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public abstract class Action {
@@ -31,4 +35,12 @@ public abstract class Action {
 	public String getNodeId(@NotNull WebClient webClient) {
 		return webClient.getNodeId();
 	}
+
+	protected String rnd(String... values) {
+		return rnd(Arrays.asList(values));
+	}
+	protected String rnd(List<String> values) {
+		return WorkerUtils.getRandomItem(values);
+	}
+
 }

@@ -27,6 +27,6 @@ public abstract class VirtualUser {
 		this.impersonatedUser = impersonatedUser;
 	}
 
-	public abstract void onInit(RestClient initialRestClient);
+	public void onInit(RestClient initialRestClient) {}
 
 }

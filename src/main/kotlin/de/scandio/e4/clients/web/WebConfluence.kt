@@ -1,19 +1,11 @@
-package de.scandio.e4.clients
+package de.scandio.e4.clients.web
 
-import de.scandio.e4.helpers.DomHelper
-import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.RandomData
-import de.scandio.e4.worker.util.WorkerUtils
-import org.apache.commons.io.FileUtils
 import org.openqa.selenium.*
 import org.openqa.selenium.interactions.Actions
-import org.slf4j.LoggerFactory
-import java.io.File
-import java.lang.Exception
 import java.net.URI
 import java.net.URLEncoder
 import java.util.*
-import kotlin.collections.HashMap
 
 class WebConfluence(
         driver: WebDriver,
@@ -66,9 +58,9 @@ class WebConfluence(
         dom.awaitElementPresent(".space-logo[data-key=\"$spaceKey\"]")
     }
 
-    fun goToPage(pageId: Long) {
+    fun goToPage(pageId: Long, loadedSelector: String = "#main-content") {
         navigateTo("pages/viewpage.action?pageId=$pageId")
-        dom.awaitElementPresent("#main-content")
+        dom.awaitElementPresent(loadedSelector)
     }
 
 
@@ -99,7 +91,7 @@ class WebConfluence(
     }
 
     fun openMacroBrowser(macroId: String, macroSearchTerm: String) {
-        log.debug("Trying to insert macro {{}}", macroId)
+        log.debug("Inserting macro {{}}", macroId)
         driver.switchTo().frame("wysiwygTextarea_ifr")
         debugScreen("openMacroBrowser-0")
         dom.click("#tinymce")
@@ -114,6 +106,14 @@ class WebConfluence(
         debugScreen("openMacroBrowser-4")
     }
 
+    fun openInsertImageDialog() {
+        driver.switchTo().frame("wysiwygTextarea_ifr")
+        dom.click("#tinymce")
+        driver.switchTo().parentFrame()
+        dom.click("#confluence-insert-files")
+        dom.awaitSeconds(2)
+    }
+
     fun saveMacroBrowser() {
         dom.click("#macro-details-page button.ok", 5)
         debugScreen("saveMacroBrowser-1")
@@ -124,14 +124,19 @@ class WebConfluence(
     fun insertMacro(macroId: String, macroSearchTerm: String, macroParameters: Map<String, String> = emptyMap()) {
         openMacroBrowser(macroId, macroSearchTerm)
         debugScreen("after-openMacroBrowser")
-        if (!macroParameters.isEmpty()) {
+        if (macroParameters.isNotEmpty()) {
             for ((paramKey, paramValue) in macroParameters) {
                 val selector = "#macro-browser-dialog #macro-param-$paramKey"
                 val elem = dom.findElement(selector)
-                if ("select".equals(elem.tagName)) {
+                if ("select" == elem.tagName) {
                     dom.setSelectedOption(selector, paramValue)
-                } else {
-                    dom.insertText(selector, paramValue)
+                } else if (elem.getAttribute("type") == "checkbox") {
+                    if (elem.isSelected && paramValue == "false" || !elem.isSelected && paramValue == "true") {
+                        dom.click(elem)
+                    }
+                }
+                else {
+                    dom.insertText(selector, paramValue, true)
                 }
             }
         }
@@ -329,6 +334,31 @@ class WebConfluence(
 
     fun clearEditorContent() {
         dom.insertTextTinyMce("")
+    }
+
+    fun setSelect2Option(selector: String, value: String) {
+        dom.executeScript("$('$selector').val('$value').trigger('change')")
+        dom.awaitMilliseconds(50)
+    }
+
+    fun insertRandomImageFromPage(attachmentPageTitle: String) {
+        log.debug("Inserting random image from page {{}}", attachmentPageTitle)
+        openInsertImageDialog()
+        debugScreen("insertRandomImageFromPage-1")
+        dom.click("#insert-image-dialog .page-menu-item:nth-child(3)")
+        dom.insertText("#search-image-form .search-image-text", attachmentPageTitle)
+        debugScreen("insertRandomImageFromPage-2")
+        dom.click("#search-image-form .search-button")
+        dom.awaitElementVisible("#searched-images .attached-file")
+        debugScreen("insertRandomImageFromPage-3")
+        val allImages = dom.findElements("#searched-images .attached-file")
+        val randIndex = Random().nextInt(allImages.size - 1)
+        dom.click(allImages[randIndex])
+        debugScreen("insertRandomImageFromPage-4")
+        dom.click("#insert-image-dialog button.insert")
+        dom.click(".lively-blog-set-teaser")
+        dom.awaitMilliseconds(50)
+        debugScreen("insertRandomImageFromPage-5")
     }
 
 }

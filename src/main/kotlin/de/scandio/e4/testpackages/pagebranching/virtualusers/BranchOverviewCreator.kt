@@ -28,9 +28,6 @@ import java.util.*
  */
 class BranchOverviewCreator : VirtualUser() {
 
-    override fun onInit(restClient: RestClient) {
-    }
-
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         val virtualUserStartTime = Date().time
