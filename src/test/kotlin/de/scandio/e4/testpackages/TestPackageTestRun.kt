@@ -32,16 +32,19 @@ abstract class TestPackageTestRun {
         loggerContext.getLogger(packagePath).level = level
     }
 
-    protected fun executeTestPackage(testPackage: TestPackage) {
+    protected fun executeTestPackage(testPackage: TestPackage, howOften: Int = 1) {
         log.info("==============================================================")
         log.info("START executing ${testPackage.virtualUsers.size} virtual users")
 
-        for (virtualUserClass in testPackage.virtualUsers) {
-            val virtualUser = virtualUserClass.newInstance()
-            log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
-            val measurement = executeActions(virtualUser.actions)
-            log.info("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
+        repeat(howOften) {
+            for (virtualUserClass in testPackage.virtualUsers) {
+                val virtualUser = virtualUserClass.newInstance()
+                log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
+                val measurement = executeActions(virtualUser.actions)
+                log.info("[MEASURE] Total time taken for VirtualUser ${virtualUser.javaClass.simpleName}: ${measurement.totalTimeTaken} (Total actions run: ${measurement.numActionsRun} - Actions excluded from measurement: ${measurement.numExcludedActions})")
+            }
         }
+
         log.info("DONE executing ${testPackage.virtualUsers.size} virtual users")
         log.info("==============================================================")
     }

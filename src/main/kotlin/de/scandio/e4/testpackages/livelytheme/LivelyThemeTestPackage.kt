@@ -42,7 +42,7 @@ import de.scandio.e4.worker.interfaces.TestPackage
  */
 class LivelyThemeTestPackage: TestPackage {
 
-    fun getSystemSetupActions(): ActionCollection {
+    override fun getSetupActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(InstallPluginAction("lively-theme", "3.1.1"))
         actions.add(SetThemeAction("lively-theme"))
@@ -50,11 +50,6 @@ class LivelyThemeTestPackage: TestPackage {
         actions.add(CreateSpaceAction("LT", "Lively Theme", true))
         actions.add(CreatePageAction("LT", "macros", "<p>macro pages</p>", true))
         actions.add(SetupLivelyThemeMacroPages("LT", "macros", 100, MACRO_PAGES))
-        return actions
-    }
-
-    override fun getSetupActions(): ActionCollection {
-        val actions = ActionCollection()
         return actions
     }
 
@@ -77,7 +72,7 @@ class LivelyThemeTestPackage: TestPackage {
         return virtualUsers
     }
 
-    val LICENSE = System.getenv("E4_LICENSE_LIVELY_THEME")
+    val LICENSE = System.getenv("E4_LIVELY_THEME_LICENSE")
 
     val PLUGIN_KEY = "de.scandio.confluence.plugins.lively-theme"
 
@@ -89,12 +84,6 @@ class LivelyThemeTestPackage: TestPackage {
             "lively-list" to "<ac:structured-macro ac:name=\"lively-list\" ac:schema-version=\"1\"><ac:parameter ac:name=\"type\">recentlyViewedSpaces</ac:parameter></ac:structured-macro>",
             "lively-margin" to "<ac:structured-macro ac:name=\"lively-margin\" ac:schema-version=\"1\"><ac:parameter ac:name=\"margin\">100px</ac:parameter><ac:rich-text-body><p>Test</p></ac:rich-text-body></ac:structured-macro>"
     )
-
-    val DASHBOARD_CONTENT = """
-<ac:layout><ac:layout-section ac:type="two_equal"><ac:layout-cell>
-<p><ac:structured-macro ac:name="lively-dashboard-element" ac:schema-version="2" ac:macro-id="729b6b5c-efec-4b94-8a14-794ff8d78399"><ac:parameter ac:name="element">all-updates</ac:parameter></ac:structured-macro></p></ac:layout-cell><ac:layout-cell>
-<p><ac:structured-macro ac:name="lively-dashboard-element" ac:schema-version="2" ac:macro-id="1c5397c8-5466-453a-a820-38ccfebabd28"><ac:parameter ac:name="element">welcome-message</ac:parameter></ac:structured-macro></p></ac:layout-cell></ac:layout-section></ac:layout>
-    """.trimIndent()
 
     override fun getApplicationName(): ApplicationName {
         return ApplicationName.confluence

@@ -10,7 +10,7 @@ class LivelyBlogPageToBlogpostConvertor : VirtualUser() {
 
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
-        actions.add(ConvertRandomPageToBlogPost())
+        actions.add(ConvertRandomPageToBlogPost("LB"))
         return actions
     }
 

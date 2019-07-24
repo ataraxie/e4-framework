@@ -8,7 +8,9 @@ import de.scandio.e4.worker.interfaces.WebClient
 import org.slf4j.LoggerFactory
 import java.util.*
 
-open class ConvertRandomPageToBlogPost : Action() {
+open class ConvertRandomPageToBlogPost(
+        val spaceKey: String
+) : Action() {
 
     protected var start: Long = 0
     protected var end: Long = 0
@@ -18,7 +20,7 @@ open class ConvertRandomPageToBlogPost : Action() {
         val dom = webConfluence.dom
         val restConfluence = restClient as RestConfluence
         webConfluence.login()
-        val randomPageId = restConfluence.getRandomContentId()
+        val randomPageId = restConfluence.getRandomContentId(spaceKey)
         this.start = Date().time
         webConfluence.goToPage(randomPageId)
         dom.click("#action-menu-link")
