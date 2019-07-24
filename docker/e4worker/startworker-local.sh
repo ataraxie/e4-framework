@@ -1,7 +1,6 @@
 #!/bin/bash
 
 E4_DIR="/tmp/e4"
-E4_APP_LICENSE="$E4_APP_LICENSE"
 
 if [ "$#" -ne 2 ]; then
     echo "Usage: e4run WORKER_PORT TARGET_SYSTEM_IP"
