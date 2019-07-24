@@ -39,7 +39,7 @@ import de.scandio.e4.worker.interfaces.TestPackage
  */
 class LivelyBlogsTestPackage: TestPackage {
 
-    val LICENSE = System.getenv("E4_LIVELY_BLOGS_LICENSE")
+    val LICENSE = System.getenv("E4_APP_LICENSE")
     val PLUGIN_KEY = "de.scandio.confluence.plugins.lively-blog"
 
     override fun getSetupActions(): ActionCollection {

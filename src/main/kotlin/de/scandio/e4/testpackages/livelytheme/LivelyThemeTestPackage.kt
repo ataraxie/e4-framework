@@ -44,7 +44,7 @@ class LivelyThemeTestPackage: TestPackage {
 
     override fun getSetupActions(): ActionCollection {
         val actions = ActionCollection()
-        actions.add(InstallPluginAction("lively-theme", "3.1.1"))
+        actions.add(InstallPluginAction("lively-theme", "3.1.1", LICENSE, PLUGIN_KEY))
         actions.add(SetThemeAction("lively-theme"))
         actions.add(ClearThemeSettingsAction())
         actions.add(CreateSpaceAction("LT", "Lively Theme", true))
@@ -72,7 +72,7 @@ class LivelyThemeTestPackage: TestPackage {
         return virtualUsers
     }
 
-    val LICENSE = System.getenv("E4_LIVELY_THEME_LICENSE")
+    val LICENSE = System.getenv("E4_APP_LICENSE")
 
     val PLUGIN_KEY = "de.scandio.confluence.plugins.lively-theme"
 
