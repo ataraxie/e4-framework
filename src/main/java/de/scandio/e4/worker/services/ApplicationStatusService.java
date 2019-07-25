@@ -7,6 +7,8 @@ import de.scandio.e4.dto.TestsStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Level;
+
 @Service
 public class ApplicationStatusService {
 	@Value("${output.dir:outputs}")
@@ -53,4 +55,5 @@ public class ApplicationStatusService {
 	public String getInputDir() {
 		return inputDir;
 	}
+
 }

@@ -45,7 +45,7 @@ open class UploadAllImages (
             dom.setFile("#file_0", image.absolutePath)
             dom.click("#edit")
             dom.awaitElementPresent(".filename[title='${image.name}']")
-            webConfluence.takeScreenshot("attachment-${image.name}")
+            webConfluence.debugScreen("attachment-${image.name}")
         }
 
         this.end = Date().time

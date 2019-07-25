@@ -37,8 +37,7 @@ class SearchBlogpostOverview(
         Actions(dom.driver).sendKeys(label).perform()
         dom.click(".select2-result:nth-child(1)")
         dom.click("#lbp-filter-submit")
-        // TODO: this might be flaky due to polling interval!
-        dom.awaitElementVisible(".blog-posts-container .spinner-container")
+        dom.awaitMilliseconds(50)
         dom.awaitElementVisible(".blog-posts-container .lively-blog-posts")
 
         log.info("Search for label {{}}", label)

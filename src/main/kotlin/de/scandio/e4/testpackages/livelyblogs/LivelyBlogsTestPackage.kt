@@ -39,12 +39,9 @@ import de.scandio.e4.worker.interfaces.TestPackage
  */
 class LivelyBlogsTestPackage: TestPackage {
 
-    val LICENSE = System.getenv("E4_APP_LICENSE")
-    val PLUGIN_KEY = "de.scandio.confluence.plugins.lively-blog"
-
     override fun getSetupActions(): ActionCollection {
         val actions = ActionCollection()
-        actions.add(InstallPluginAction("lively-blog", "3.7.0", LICENSE, PLUGIN_KEY))
+//        actions.add(InstallPluginAction("lively-blog", "3.7.0", LICENSE, PLUGIN_KEY))
         actions.add(CreateSpaceAction("LB", "Lively Blog", true))
         actions.add(CreateMultiplePagesActionRest("LB", "Lively Blog Home", 100))
         actions.add(SetupSetSpaceForFeaturedPosts())

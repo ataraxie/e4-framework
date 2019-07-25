@@ -28,7 +28,7 @@ public class TestRunnerService {
 	private final StorageService storageService;
 	private final UserCredentialsService userCredentialsService;
 
-	// TODO: Make thread-safe
+	// TODO: Make thread-safe (?)
 	private static int numFinishedThreads = 0;
 	private static int numFailedActions = 0;
 	private static int numActionsExecuted = 0;
@@ -136,7 +136,7 @@ public class TestRunnerService {
 
 		virtualUser.setImpersonatedUser(userCredentials);
 
-		log.info("Creating virtual user {{}} with actual user {{}}", virtualUserClass.getSimpleName(), userCredentials.getUsername());
+		log.debug("Creating virtual user {{}} with actual user {{}}", virtualUserClass.getSimpleName(), userCredentials.getUsername());
 
 
 		RestClient initialRestClient = ClientFactory.newRestClient(
@@ -209,7 +209,7 @@ public class TestRunnerService {
 	// TODO: as obvious, too many params
 	private void runActions(TestPackage testPackage, VirtualUser virtualUser, long durationInSeconds, String targetUrl) throws Exception {
 		ActionCollection actions = virtualUser.getActions();
-		log.info("Running {{}} actions for virtual user", actions.size());
+		log.debug("Running {{}} actions for virtual user", actions.size());
 		String username = virtualUser.getImpersonatedUser().getUsername();
 		String password = virtualUser.getImpersonatedUser().getPassword();
 		for (Action action : actions) {
@@ -230,7 +230,7 @@ public class TestRunnerService {
 						applicationStatusService.getOutputDir(), username, password);
 				restClient = ClientFactory.newRestClient(testPackage.getApplicationName(), storageService, targetUrl, username, password);
 				action.executeWithRandomDelay(webClient, restClient);
-				if (log.isDebugEnabled() && new Date().getTime() % 10 == 0) {
+				if (new Date().getTime() % 10 == 0) {
 					String screenshotPath = webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
 					webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
 					log.info("Sample screenshot (and html with same path): {{}}", screenshotPath);
@@ -248,14 +248,18 @@ public class TestRunnerService {
 				storageService.recordMeasurement(measurement);
 			} catch (Exception e) {
 				log.error("FAILED ACTION: {{}} with exception type {{}} and message {{}}",
-						action.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
+						action.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage(), e);
 				E4Error e4error = new E4Error("ACTION_FAILED",
 						e.getClass().getName(),
 						virtualUser.getClass().getSimpleName(),
 						action.getClass().getSimpleName());
 				storageService.recordError(e4error);
 				numFailedActions += 1;
-//				webClient.takeScreenshot("failed-scenario");
+				if (webClient != null) {
+					webClient.takeScreenshot("failed-action");
+					webClient.dumpHtml("failed-action");
+				}
+
 			} finally {
 				if (webClient != null) {
 					webClient.quit();

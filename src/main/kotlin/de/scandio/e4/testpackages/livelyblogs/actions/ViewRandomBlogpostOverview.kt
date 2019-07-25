@@ -28,8 +28,7 @@ class ViewRandomBlogpostOverview: Action() {
         val randomItem = allItems[randomIndex]
         log.info("Navigating on item {{}}", randomItem.getAttribute("data-filter"))
         dom.click(randomItem)
-        // TODO: this might be flaky due to polling interval!
-        dom.awaitElementVisible(".blog-posts-container .spinner-container")
+        dom.awaitMilliseconds(50)
         dom.awaitElementVisible(".blog-posts-container .lively-blog-posts")
         this.end = Date().time
     }
