@@ -17,9 +17,10 @@ class LivelyBlogTestRun : TestPackageTestRun() {
     @Test
     fun runTest() {
         if (E4TestEnv.PREPARATION_RUN) {
-            executeTestPackagePrepare(TEST_PACKAGE)
+            executeActions(TEST_PACKAGE.getSystemSetupActions())
+//            executeTestPackagePrepare(TEST_PACKAGE)
         } else {
-            executeTestPackage(TEST_PACKAGE, 1)
+//            executeTestPackage(TEST_PACKAGE, 1)
 
             // Run a single action for testing:
 //            executeAction(CreatePageAction("LT", "macros", "<p>macro pages</p>", false))

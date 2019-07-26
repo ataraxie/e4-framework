@@ -14,6 +14,7 @@ docker cp $(docker ps -qf "name=confluence-cluster-6153-node1"):/confluence-home
 docker cp $(docker ps -qf "name=confluence-cluster-6153-node1"):/confluence-shared-home/confluence.cfg.xml $1/confluence-shared-home/
 docker cp $(docker ps -qf "name=confluence-cluster-6153-node1"):/confluence-shared-home/attachments $1/confluence-shared-home/
 docker cp $(docker ps -qf "name=confluence-cluster-6153-node1"):/confluence-shared-home/config $1/confluence-shared-home/
+docker cp $(docker ps -qf "name=confluence-cluster-6153-node1"):/confluence-shared-home/index-snapshots $1/confluence-shared-home/
 
 docker exec $(docker ps -qf "name=confluence-cluster-6153-db") pg_dump -U confluence -Fc confluence > $1/confluencedb.tar.gz
 

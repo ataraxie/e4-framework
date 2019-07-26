@@ -39,7 +39,7 @@ import de.scandio.e4.worker.interfaces.TestPackage
  */
 class LivelyBlogsTestPackage: TestPackage {
 
-    override fun getSetupActions(): ActionCollection {
+    fun getSystemSetupActions(): ActionCollection {
         val actions = ActionCollection()
 //        actions.add(InstallPluginAction("lively-blog", "3.7.0", LICENSE, PLUGIN_KEY))
         actions.add(CreateSpaceAction("LB", "Lively Blog", true))
@@ -50,6 +50,20 @@ class LivelyBlogsTestPackage: TestPackage {
         actions.add(CreatePageAction("LB", "macros", "<p>macro pages</p>", true))
         actions.add(SetupLivelyBlogMacroPagesAction("LB", "macros", 50))
         actions.add(SetupLivelyBlogPostsAction("LB", "Lively Blog Home", 100))
+        return actions
+    }
+
+    override fun getSetupActions(): ActionCollection {
+        val actions = ActionCollection()
+//        actions.add(InstallPluginAction("lively-blog", "3.7.0", LICENSE, PLUGIN_KEY))
+//        actions.add(CreateSpaceAction("LB", "Lively Blog", true))
+//        actions.add(CreateMultiplePagesActionRest("LB", "Lively Blog Home", 100))
+//        actions.add(SetupSetSpaceForFeaturedPosts())
+//        actions.add(SetupLivelyBlogCategories())
+//        actions.add(UploadAllImages("LB", "Lively Blog Home", "random-image.*\\.jpg"))
+//        actions.add(CreatePageAction("LB", "macros", "<p>macro pages</p>", true))
+//        actions.add(SetupLivelyBlogMacroPagesAction("LB", "macros", 50))
+//        actions.add(SetupLivelyBlogPostsAction("LB", "Lively Blog Home", 100))
         return actions
     }
 
