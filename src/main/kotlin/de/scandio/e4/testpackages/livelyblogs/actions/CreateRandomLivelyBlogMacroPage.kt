@@ -7,6 +7,24 @@ import de.scandio.e4.worker.interfaces.WebClient
 import org.slf4j.LoggerFactory
 import java.util.*
 
+/**
+ * === CreateRandomLivelyBlogMacroPage ===
+ *
+ * Lively Blogs CreateRandomLivelyBlogMacroPage action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ * - Space with $spaceKey exists
+ *
+ * Procedure (SELENIUM):
+ * - Create a page in space $spaceKey containing the Lively Blog Posts macro with
+ *   random macro parameters in the page content
+ *
+ * Result:
+ * - Page with Lively Blog Posts macro was created
+ *
+ * @author Felix Grund
+ */
 open class CreateRandomLivelyBlogMacroPage (
         val spaceKey: String
 ) : Action() {

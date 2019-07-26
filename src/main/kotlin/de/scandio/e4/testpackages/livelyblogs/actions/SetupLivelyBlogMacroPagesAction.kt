@@ -7,7 +7,24 @@ import de.scandio.e4.worker.interfaces.WebClient
 import org.slf4j.LoggerFactory
 import java.util.*
 
-
+/**
+ * === SetupLivelyBlogMacroPagesAction ===
+ *
+ * Lively Blogs SetupLivelyBlogMacroPagesAction action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ * - Space $spaceKey exists
+ * - Page $parentPageTitle exists in $spaceKey
+ *
+ * Procedure (REST):
+ * - Creates $howMany pages with Lively Blog Posts macro and random macro parameters under $parentPageTitle
+ *
+ * Result:
+ * - $howMany pages with Lively Blog Posts macro were created
+ *
+ * @author Felix Grund
+ */
 open class SetupLivelyBlogMacroPagesAction (
         val spaceKey: String,
         val parentPageTitle: String = "",

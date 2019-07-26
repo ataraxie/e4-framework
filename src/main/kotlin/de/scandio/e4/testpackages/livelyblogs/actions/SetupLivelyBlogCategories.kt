@@ -9,6 +9,22 @@ import de.scandio.e4.worker.util.RandomData
 import org.slf4j.LoggerFactory
 import java.util.*
 
+/**
+ * === SetupLivelyBlogCategories ===
+ *
+ * Lively Blogs SetupLivelyBlogCategories action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ *
+ * Procedure (SELENIUM):
+ * - Admin goes to Lively Blog Posts Categories page and creates category{1,5} and label{1,5}
+ *
+ * Result:
+ * - Categories category{1,5} and Labels label{1,5} are added in Lively Blogs categories administration
+ *
+ * @author Felix Grund
+ */
 class SetupLivelyBlogCategories: Action() {
 
     protected var start: Long = 0

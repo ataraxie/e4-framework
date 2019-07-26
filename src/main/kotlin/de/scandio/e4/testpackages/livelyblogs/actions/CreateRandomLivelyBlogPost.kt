@@ -10,7 +10,24 @@ import org.openqa.selenium.interactions.Actions
 import org.slf4j.LoggerFactory
 import java.util.*
 
-
+/**
+ * === CreateRandomLivelyBlogPost ===
+ *
+ * Lively Blogs CreateRandomLivelyBlogPost action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ * - Space with $spaceKey exists
+ *
+ * Procedure (SELENIUM):
+ * - Create a blogpost in space $spaceKey with a 1/3 chance having
+ *   an image from $attachmentPageTitle as teaser image
+ *
+ * Result:
+ * - Blog post was created
+ *
+ * @author Felix Grund
+ */
 open class CreateRandomLivelyBlogPost (
         val spaceKey: String,
         val attachmentPageTitle: String

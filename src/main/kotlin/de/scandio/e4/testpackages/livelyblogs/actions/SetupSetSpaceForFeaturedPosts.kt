@@ -9,6 +9,22 @@ import de.scandio.e4.worker.util.RandomData
 import org.slf4j.LoggerFactory
 import java.util.*
 
+/**
+ * === SetupSetSpaceForFeaturedPosts ===
+ *
+ * Lively Blogs SetupSetSpaceForFeaturedPosts action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ *
+ * Procedure (SELENIUM):
+ * - Go to Lively Blog settings in Confluence admin and set space with key "LB" as space for featured posts
+ *
+ * Result:
+ * - Space with key "LB" is space for featured blog posts
+ *
+ * @author Felix Grund
+ */
 class SetupSetSpaceForFeaturedPosts: Action() {
 
     protected var start: Long = 0

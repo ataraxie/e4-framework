@@ -10,7 +10,26 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
-
+/**
+ * === UploadAllImages ===
+ *
+ * Lively Blogs UploadAllImages action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ * - Space $spaceKey exists
+ * - Page $pageTitle exists in space $spaceKey
+ *
+ * Procedure (SELENIUM):
+ * - Check if there are images with names "random-image-{1,9}" in E4 INPUT DIR
+ * - If NOT: copy images from /images in the e4.jar to E4 INPUT DIR
+ * - Upload 9 images with names "random-image-{1,9}" to page $pageTitle in space $spaceKey
+ *
+ * Result:
+ * - Images with names "random-image-{1,9}" are attached to page $pageTitle in space $spaceKey
+ *
+ * @author Felix Grund
+ */
 open class UploadAllImages (
         val spaceKey: String,
         val pageTitle: String,

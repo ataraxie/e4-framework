@@ -19,19 +19,35 @@ import de.scandio.e4.worker.interfaces.TestPackage
  *
  * Assumptions:
  * - Running Confluence
+ * - App Lively blogs is installed
  *
  * Setup:
- * - Install Lively Blogs app (SELENIUM)
- * - Create space with key "LB" and name "Lively Blogs" (REST)
- * - Create page with title "macros" in space "LB" (REST)
- * - Create 100 child pages of "macros" page in space "LT" (containing random Lively Theme macros) (REST)
+ * - Create space with key "LB" and name "Lively Blog" (REST)
+ * - Create 100 simple child pages of "Lively Blog" (REST)
+ * - Set space key "LB" for featured blog posts in Lively Blogs administration (SELENIUM)
+ * - Add 5 colors, categories "category{1,5}", and labels "label{1,5}" in Lively Blogs category administration
+ * - Upload all images with names "random-images-*.jpg" from E4_INPUT_DIR to page "Lively Blog Home"
+ *   of space with key "LB"
+ * --- If images are not present in E4_INPUT_DIR, copy the images from $classpath/images
+ * - Create a page with title "macros" in space with key "LB"
+ * - Create 50 child pages of "macros" page with Lively Blog Posts macro and
+ *   random macro parameters in page content
+ * - Create 100 blog posts in space with key "LB"
+ * --- With a chance of 20%, add label "important" to blog post (marking post as prioritized)
+ * --- With a chance of 33%, add an image from "Lively Blog Home" to the blog post content and
+ *     set it as teaser image
+ * --- With a chance of 50%, add one or more labels "label{1,5}" to the blogpost (marking post as categorized)
  *
  * Virtual Users:
- * - LivelyMacroPageReader (weight 0.2): reads random pages with Lively Theme macros
- * - LivelyMacroPageCreator (weight 0.04): creates random pages with Lively Theme macros
- * - LivelyThemeAdmin (weight 0.02): sets random custom theme elements in Lively Theme global settings
- * - LivelySpaceToggler (weight 0.04): toggles space favorites
- * - LivelyPageToggler 0.04 (weight ): toggles page favorites
+ * - LivelyBlogNavigator (weight 0.1): views the Blogs overview and navigates all the
+ *     available tabs ("All", "Featured", category-specific).
+ * - LivelyBlogSearcher (weight 0.04): searches for blogposts with the Lively Blog search
+ * - LivelyBlogMacroPageCreator (weight 0.04): creates pages with the Lively Blog macro with
+ *     randomized parameters
+ * - LivelyBlogMacroPageReader (weight 0.08): reads pages with the lively-blog-posts
+ *     macro (pages are created during setup)
+ * - LivelyBlogPostCreator (weight 0.04): creates blogposts and randomly adds teaser images and labels
+ * - LivelyBlogPageToBlogpostConvertor (weight 0.04): converts pages to blogposts
  *
  * Sum of weight is 0.34 which leaves 0.66 for vanilla virtual users.
  *
@@ -39,9 +55,8 @@ import de.scandio.e4.worker.interfaces.TestPackage
  */
 class LivelyBlogsTestPackage: TestPackage {
 
-    fun getSystemSetupActions(): ActionCollection {
+    override fun getSetupActions(): ActionCollection {
         val actions = ActionCollection()
-//        actions.add(InstallPluginAction("lively-blog", "3.7.0", LICENSE, PLUGIN_KEY))
         actions.add(CreateSpaceAction("LB", "Lively Blog", true))
         actions.add(CreateMultiplePagesActionRest("LB", "Lively Blog Home", 100))
         actions.add(SetupSetSpaceForFeaturedPosts())
@@ -50,20 +65,6 @@ class LivelyBlogsTestPackage: TestPackage {
         actions.add(CreatePageAction("LB", "macros", "<p>macro pages</p>", true))
         actions.add(SetupLivelyBlogMacroPagesAction("LB", "macros", 50))
         actions.add(SetupLivelyBlogPostsAction("LB", "Lively Blog Home", 100))
-        return actions
-    }
-
-    override fun getSetupActions(): ActionCollection {
-        val actions = ActionCollection()
-//        actions.add(InstallPluginAction("lively-blog", "3.7.0", LICENSE, PLUGIN_KEY))
-//        actions.add(CreateSpaceAction("LB", "Lively Blog", true))
-//        actions.add(CreateMultiplePagesActionRest("LB", "Lively Blog Home", 100))
-//        actions.add(SetupSetSpaceForFeaturedPosts())
-//        actions.add(SetupLivelyBlogCategories())
-//        actions.add(UploadAllImages("LB", "Lively Blog Home", "random-image.*\\.jpg"))
-//        actions.add(CreatePageAction("LB", "macros", "<p>macro pages</p>", true))
-//        actions.add(SetupLivelyBlogMacroPagesAction("LB", "macros", 50))
-//        actions.add(SetupLivelyBlogPostsAction("LB", "Lively Blog Home", 100))
         return actions
     }
 

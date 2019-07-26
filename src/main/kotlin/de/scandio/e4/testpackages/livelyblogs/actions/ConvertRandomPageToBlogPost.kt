@@ -8,6 +8,23 @@ import de.scandio.e4.worker.interfaces.WebClient
 import org.slf4j.LoggerFactory
 import java.util.*
 
+/**
+ * === ConvertRandomPageToBlogPost ===
+ *
+ * Lively Blogs ConvertRandomPageToBlogPost action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ * - Space with $spaceKey exists
+ *
+ * Procedure (SELENIUM):
+ * - Take a random page and convert it to a blog post via page menu (without trashing page)
+ *
+ * Result:
+ * - Random page has been converted to a blog post
+ *
+ * @author Felix Grund
+ */
 open class ConvertRandomPageToBlogPost(
         val spaceKey: String
 ) : Action() {
@@ -25,9 +42,6 @@ open class ConvertRandomPageToBlogPost(
         webConfluence.goToPage(randomPageId)
         dom.click("#action-menu-link")
         dom.click(".lively-blog-publish-as-blog-post-link")
-        if (rnd("1", "2") == "2") {
-            dom.click("#lively-blog-publish-as-blog-post-dialog input.checkbox[name='trashPage']")
-        }
         dom.click("#lively-blog-publish-as-blog-post-dialog button.submit")
         dom.awaitElementPresent("body.view-blog-post #main-content")
         this.end = Date().time

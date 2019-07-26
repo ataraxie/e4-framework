@@ -230,7 +230,7 @@ public class TestRunnerService {
 						applicationStatusService.getOutputDir(), username, password);
 				restClient = ClientFactory.newRestClient(testPackage.getApplicationName(), storageService, targetUrl, username, password);
 				action.executeWithRandomDelay(webClient, restClient);
-				if (new Date().getTime() % 10 == 0) {
+				if (log.isDebugEnabled() && new Date().getTime() % 10 == 0) {
 					String screenshotPath = webClient.takeScreenshot("afteraction-" + action.getClass().getSimpleName());
 					webClient.dumpHtml("afteraction-" + action.getClass().getSimpleName());
 					log.info("Sample screenshot (and html with same path): {{}}", screenshotPath);
@@ -248,17 +248,17 @@ public class TestRunnerService {
 				storageService.recordMeasurement(measurement);
 			} catch (Exception e) {
 				log.error("FAILED ACTION: {{}} with exception type {{}} and message {{}}",
-						action.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage(), e);
+						action.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
 				E4Error e4error = new E4Error("ACTION_FAILED",
 						e.getClass().getName(),
 						virtualUser.getClass().getSimpleName(),
 						action.getClass().getSimpleName());
 				storageService.recordError(e4error);
 				numFailedActions += 1;
-				if (webClient != null) {
-					webClient.takeScreenshot("failed-action");
-					webClient.dumpHtml("failed-action");
-				}
+//				if (webClient != null) {
+//					webClient.takeScreenshot("failed-action");
+//					webClient.dumpHtml("failed-action");
+//				}
 
 			} finally {
 				if (webClient != null) {

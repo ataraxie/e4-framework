@@ -11,6 +11,24 @@ import org.openqa.selenium.interactions.Actions
 import org.slf4j.LoggerFactory
 import java.util.*
 
+/**
+ * === SearchBlogpostOverview ===
+ *
+ * Lively Blogs SearchBlogpostOverview action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ * - Space with $spaceKey and $spaceName exists
+ * - Blog posts with labels "label{1,5}" exiist
+ *
+ * Procedure (SELENIUM):
+ * - Searches the Lively Blog overview page for blogposts in $spaceKey with a random label "label{1,5}"
+ *
+ * Result:
+ * - Blog posts are shown according to criteria
+ *
+ * @author Felix Grund
+ */
 class SearchBlogpostOverview(
         val spaceKey: String,
         val spaceName: String

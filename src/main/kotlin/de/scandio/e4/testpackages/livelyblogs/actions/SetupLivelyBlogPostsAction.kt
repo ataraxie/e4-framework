@@ -8,6 +8,30 @@ import de.scandio.e4.worker.util.RandomData
 import org.slf4j.LoggerFactory
 import java.util.*
 
+/**
+ * === SetupLivelyBlogPostsAction ===
+ *
+ * Lively Blogs SetupLivelyBlogPostsAction action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ * - Space $spaceKey exists
+ * - Page $teaserImagePageTitle exists in $spaceKey
+ *
+ * Procedure (REST):
+ * - Creates $howMany blog posts in space $spaceKey taking a random
+ *   teaser image from $teaserImagePageTitle with a 33% change
+ * - Add "important" labels with a chance of 20% for each post
+ * - Add random labels "label{1,5}" with a chance of 50% for each post
+ *
+ * Result:
+ * - $howMany blog posts were created
+ * - 33% will have a teaser image
+ * - 20% will have a "important" label
+ * - 50% will have one or more labels "label{1,5}"
+ *
+ * @author Felix Grund
+ */
 class SetupLivelyBlogPostsAction(
         val spaceKey: String,
         val teaserImagePageTitle: String,

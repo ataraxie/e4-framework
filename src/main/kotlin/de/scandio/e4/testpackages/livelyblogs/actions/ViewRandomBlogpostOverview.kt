@@ -9,6 +9,24 @@ import de.scandio.e4.worker.util.RandomData
 import org.slf4j.LoggerFactory
 import java.util.*
 
+/**
+ * === ViewRandomBlogpostOverview ===
+ *
+ * Lively Blogs ViewRandomBlogpostOverview action.
+ *
+ * Assumptions:
+ * - Lively Blogs app installed
+ *
+ * Procedure (SELENIUM):
+ * - Check if there are images with names "random-image-{1,9}" in E4 INPUT DIR
+ * - If NOT: copy images from /images in the e4.jar to E4 INPUT DIR
+ * - Upload 9 images with names "random-image-{1,9}" to page $pageTitle in space $spaceKey
+ *
+ * Result:
+ * - Images with names "random-image-{1,9}" are attached to page $pageTitle in space $spaceKey
+ *
+ * @author Felix Grund
+ */
 class ViewRandomBlogpostOverview: Action() {
 
     private var start: Long = 0
