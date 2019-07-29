@@ -188,7 +188,7 @@ function get_running_node_count {
 }
 
 function get_running_node_name_array {
-    local instance_names_string_newlines=$(docker ps --format '{{.Names}}' --filter "name=${E4_APP_VERSION}-cluster-${E4_APP_VERSION_DOTFREE}-node")
+    local instance_names_string_newlines=$(docker ps --format '{{.Names}}' --filter "name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node")
     local instance_names_string_oneline=$(echo $instance_names_string_newlines | tr "\n" " ")
     local ret_value=$instance_names_string_oneline
 
@@ -361,12 +361,6 @@ then
     echo ""
     exit 1
 fi
-
-####################################################################################
-#
-# CLUSTER LOGIC
-#
-####################################################################################
 
 if [ "$ACTION" == "create" ]
 then
