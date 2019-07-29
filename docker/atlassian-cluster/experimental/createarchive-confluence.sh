@@ -21,3 +21,5 @@ docker exec $(docker ps -qf "name=confluence-cluster-6153-db") pg_dump -U conflu
 tar cf $1.tar.gz $1
 
 rm -r $1
+
+aws s3 cp $1.tar.gz s3://e4prov/

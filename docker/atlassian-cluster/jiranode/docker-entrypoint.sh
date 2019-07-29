@@ -30,6 +30,8 @@ then
     if [[ -d /e4prov/$E4_PROV_KEY ]];
       then
       echo ">>> docker-entrypoint: provisioning home dir for $E4_PROV_KEY"
+      rm -rf /jira-home/*
+      rm -rf /jira-shared-home/*
       cp -r /e4prov/$E4_PROV_KEY/jira-home/* /jira-home/
       cp -r /e4prov/$E4_PROV_KEY/jira-shared-home/* /jira-shared-home/
     else

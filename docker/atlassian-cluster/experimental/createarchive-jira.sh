@@ -20,3 +20,5 @@ docker exec $(docker ps -qf "name=jira-cluster-830-db") pg_dump -U jira -Fc jira
 tar cf $1.tar.gz $1
 
 rm -r $1
+
+aws s3 cp $1.tar.gz s3://e4prov/
