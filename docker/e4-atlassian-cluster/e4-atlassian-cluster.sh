@@ -39,7 +39,7 @@ wait_for_logs_to_contain() {
         break
       else
         echo -n "."
-        sleep 3
+        sleep 1
       fi
     done
 }
@@ -111,6 +111,7 @@ function start_instance_node {
         --env E4_PROV_KEY=$E4_PROV_KEY \
         --env E4_PROV_DIR=$E4_PROV_DIR \
         --env E4_NODE_HEAP=$E4_NODE_HEAP \
+        --env E4_APP_VERSION=$E4_APP_VERSION \
         -v ${E4_APP_NAME}-shared-home-${E4_APP_VERSION_DOTFREE}:/${E4_APP_NAME}-shared-home \
         -p "500$1:500$1" \
         -p "433$1:433$1" \
@@ -272,7 +273,7 @@ case $key in
     -v|--version)
     E4_APP_VERSION="$2"
     E4_APP_VERSION_DOTFREE=${E4_APP_VERSION//\./}
-    E4_LB_PUBLIC_PORT=$(expr "2${E4_APP_VERSION_DOTFREE}")
+    E4_LB_PUBLIC_PORT=$(expr "$([ "$E4_APP_NAME" == "jira" ] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
     shift
     ;;
     -k|--provkey)
@@ -425,8 +426,11 @@ then
     done
     echo ""
 
-    echo ">>> Wait for last node (node $SCALE) to be fully started"
-    wait_for_logs_to_contain "node$SCALE" "Server startup in"
+    if [[ "$SCALE" != "1" ]];
+    then
+        echo ">>> Wait for last node (node $SCALE) to be fully started"
+        wait_for_logs_to_contain "node$SCALE" "Server startup in"
+    fi
 
     print_cluster_ready_info
     echo ""

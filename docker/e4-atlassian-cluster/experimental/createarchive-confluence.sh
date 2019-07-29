@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ -z "$1" ]; then
-  echo "Usage: createarchive.sh NAME"
+  echo "Usage: createarchive-confluence.sh NAME"
   exit 0
 fi
 mkdir $1
