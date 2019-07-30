@@ -16,12 +16,10 @@ echo "+++++++++++++++++++++++++++++++++++++++++++++"
 #
 # PATCH SETENV.SH
 #
-cat /jira/atlassian-jira-software-latest-standalone/bin/setenv.sh
 echo ">>> Patching setenv.sh"
 sed -i -e "s/export CATALINA_OPTS/CATALINA_OPTS=\"-Datlassian.webresource.disable.minification=true -Dupm.pac.disable=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5006 \${CATALINA_OPTS}\"\nexport CATALINA_OPTS/g" /jira/atlassian-jira-software-latest-standalone/bin/setenv.sh
 sed -i -e "s/JVM_MINIMUM_MEMORY=\"384m\"/JVM_MINIMUM_MEMORY=\"${E4_NODE_HEAP}m\"/g" /jira/atlassian-jira-software-latest-standalone/bin/setenv.sh
 sed -i -e "s/JVM_MAXIMUM_MEMORY=\"2048m\"/JVM_MAXIMUM_MEMORY=\"${E4_NODE_HEAP}m\"/g" /jira/atlassian-jira-software-latest-standalone/bin/setenv.sh
-cat /jira/atlassian-jira-software-latest-standalone/bin/setenv.sh
 
 # RESTORE HOME DIR
 if [[ "${NODE_NUMBER}" = "1" ]]
