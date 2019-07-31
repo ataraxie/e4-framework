@@ -17,7 +17,6 @@ class LivelyBlogTestRun : TestPackageTestRun() {
     @Test
     fun runTest() {
         if (E4TestEnv.PREPARATION_RUN) {
-            executeActions(TEST_PACKAGE.getSystemSetupActions())
 //            executeTestPackagePrepare(TEST_PACKAGE)
         } else {
 //            executeTestPackage(TEST_PACKAGE, 1)
