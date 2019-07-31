@@ -1,47 +1,8 @@
 #!/bin/bash
 
-####################################################################################
-# MIT License
-# Copyright (c) 2017 Bernhard Grünewaldt
-# See https://github.com/codeclou/docker-atlassian-confluence-data-center/blob/master/LICENSE
-####################################################################################
-
 set -e
 
-
-####################################################################################
-#
-# VERSION
-#
-####################################################################################
-# keep in sync with 'manage-confluence-cluster-6.15.3-version.txt'
-MANAGEMENT_SCRIPT_VERSION=3
-
-
-####################################################################################
-#
-# CONFIG
-#
-####################################################################################
-
-# BEGIN: EDIT -- now dynamic with --version flag
-#CONFLUENCE_VERSION="6.15.3"
-#CONFLUENCE_VERSION_DOT_FREE="6153"
-#CONFLUENCE_LB_PUBLIC_PORT=$(expr "2${CONFLUENCE_VERSION_DOT_FREE}")
-
-if [[ ("$ACTION" == "create" || "$ACTION" == "update") && ! $E4_PROV_DIR ]]
-then
-    echo -e $C_RED">>> config error ........: environment variable E4_PROV_DIR must be set to a directory for provisioning"$C_RST
-    EXIT=1
-fi
-# END: EDIT
 POSTGRESQL_VERSION="9.6"
-
-####################################################################################
-#
-# COLORS
-#
-####################################################################################
 
 export CLICOLOR=1
 C_RED='\x1B[31m'
@@ -50,15 +11,6 @@ C_GRN='\x1B[32m'
 C_MGN='\x1B[35m'
 C_RST='\x1B[39m'
 
-####################################################################################
-#
-# FUNCTIONS
-#
-####################################################################################
-
-# Used to be able to use pass-by-reference in bash
-#
-#
 return_by_reference() {
     if unset -v "$1"; then
         eval $1=\"\$2\"
@@ -80,33 +32,24 @@ contains() {
 
 wait_for_logs_to_contain() {
     while : ; do
-      log_content=$(docker logs $(docker ps -qf "name=confluence-cluster-6153-$1") 2>&1)
+      log_content=$(docker logs $(docker ps -qf "name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-$1") 2>&1)
       if contains "$log_content" "$2"
       then
         echo ""
         break
       else
         echo -n "."
-        sleep 3
+        sleep 1
       fi
     done
 }
 
-# Returns 1 if the container is running and 0 if not
-#
-# @usage `_is_named_container_running 'foo' $result` passed variable `result` contains return value
-#
-# @param $1 {string} name or name-chunk of container
-# @param $2 {int} return value passByReference
 function _is_named_container_running {
     local ret_value=$(docker ps --format '{{.ID}}' --filter "name=${1}" | wc -l | awk '{print $1}')
 
     local "$2" && return_by_reference $2 $ret_value
 }
 
-# Kill and remove an existing named container
-#
-# @param $1 {string} the container name or part of it
 function _kill_and_remove_named_instance_if_exists {
     container_name=$1
     # KILL
@@ -121,64 +64,61 @@ function _kill_and_remove_named_instance_if_exists {
     fi
 }
 
-
-# Kill the loadbalancer instance
-#
-#
 function kill_instance_loadbalancer {
-    _kill_and_remove_named_instance_if_exists confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-lb
+    _kill_and_remove_named_instance_if_exists ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb
 }
 
-
 function start_instance_database {
-    echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-db."
+    echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db."
     docker run \
         --rm \
         --cpu-shares=512 \
         --sysctl kernel.shmmax=100663296 \
-        --name confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-db \
-        --net=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE} \
-        --net-alias=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-db \
-        --env POSTGRES_PASSWORD=confluence \
-        --env POSTGRES_USER=confluence \
+        --name ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db \
+        --net=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE} \
+        --net-alias=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db \
+        --env POSTGRES_PASSWORD=${E4_APP_NAME} \
+        --env POSTGRES_USER=${E4_APP_NAME} \
         --env E4_PROV_KEY=$E4_PROV_KEY \
+        --env E4_APP_NAME=$E4_APP_NAME \
         -v $(pwd)/postgres:/docker-entrypoint-initdb.d \
         -v $E4_PROV_DIR:/e4prov \
         -d postgres:${POSTGRESQL_VERSION} -c max_connections=350 -c shared_buffers=2GB -c effective_cache_size=8GB -c checkpoint_timeout=5min -c wal_level=minimal -c autovacuum=off
 }
 
 function start_instance_loadbalancer {
-    echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-lb."
+    echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb."
     docker run \
         --rm \
-        --name confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-lb \
-        --net=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE} \
-        --net-alias=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-lb \
+        --name ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb \
+        --net=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE} \
+        --net-alias=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb \
         --env NODES=${1} \
         -v $(pwd)/loadbalancer:/e4work \
         --entrypoint /e4work/docker-entrypoint.sh \
-        -p $CONFLUENCE_LB_PUBLIC_PORT:$CONFLUENCE_LB_PUBLIC_PORT \
-        -d codeclou/docker-atlassian-confluence-data-center:loadbalancer-${CONFLUENCE_VERSION}
+        -p $E4_LB_PUBLIC_PORT:$E4_LB_PUBLIC_PORT \
+        -d codeclou/docker-atlassian-${E4_APP_NAME}-data-center:loadbalancer-${E4_APP_VERSION}
 }
 
-function start_instance_confluencenode {
-    echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node${1}."
+function start_instance_node {
+    echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node${1}."
     docker run \
         --rm \
-        --name confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node${1} \
-        --net=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE} \
-        --net-alias=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node${1} \
+        --name ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node${1} \
+        --net=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE} \
+        --net-alias=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node${1} \
         --env NODE_NUMBER=${1} \
         --env E4_PROV_KEY=$E4_PROV_KEY \
         --env E4_PROV_DIR=$E4_PROV_DIR \
         --env E4_NODE_HEAP=$E4_NODE_HEAP \
-        -v confluence-shared-home-${CONFLUENCE_VERSION_DOT_FREE}:/confluence-shared-home \
+        --env E4_APP_VERSION=$E4_APP_VERSION \
+        -v ${E4_APP_NAME}-shared-home-${E4_APP_VERSION_DOTFREE}:/${E4_APP_NAME}-shared-home \
         -p "500$1:500$1" \
         -p "433$1:433$1" \
-        -v $(pwd)/confluencenode:/e4work \
+        -v $(pwd)/${E4_APP_NAME}node:/e4work \
         -v $E4_PROV_DIR:/e4prov \
         --entrypoint /e4work/docker-entrypoint.sh \
-        -d codeclou/docker-atlassian-confluence-data-center:confluencenode-${CONFLUENCE_VERSION}
+        -d codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
 }
 
 function download_synchrony {
@@ -187,7 +127,7 @@ function download_synchrony {
     aws s3 cp s3://e4prov/synchrony-standalone.jar $E4_PROV_DIR/
 }
 
-function download_confluence {
+function download_app {
     echo ">>> Attempting to download: aws s3 cp s3://e4prov/$E4_PROV_KEY.tar.gz $E4_PROV_DIR/"
     if aws s3 ls "s3://e4prov" | grep "$E4_PROV_KEY.tar.gz" > /dev/null
     then
@@ -197,7 +137,11 @@ function download_confluence {
         echo ">>> Output file: $E4_PROV_DIR/$E4_PROV_KEY.tar.gz"
         echo ">>> Extracting archive"
         tar xf $E4_PROV_DIR/$E4_PROV_KEY.tar.gz -C $E4_PROV_DIR
-        cp $E4_PROV_DIR/synchrony-standalone.jar $E4_PROV_DIR/$E4_PROV_KEY/synchrony-standalone.jar
+
+        if [ "$E4_APP_NAME" = "confluence" ]; then
+          cp $E4_PROV_DIR/synchrony-standalone.jar $E4_PROV_DIR/$E4_PROV_KEY/synchrony-standalone.jar
+        fi
+
         rm $E4_PROV_DIR/$E4_PROV_KEY.tar.gz
     else
         echo ">> WARN ........: Provision file not found. Starting empty."
@@ -205,25 +149,16 @@ function download_confluence {
     fi
 }
 
-# Kill the database instance
-#
-#
 function kill_instance_database {
-    _kill_and_remove_named_instance_if_exists confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-db
+    _kill_and_remove_named_instance_if_exists ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db
 }
 
-# Kill a confluencenode instance
-#
-# @param $1 {int} node ID
-function kill_instance_confluencenode {
-    _kill_and_remove_named_instance_if_exists confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node${1}
+function kill_instance_node {
+    _kill_and_remove_named_instance_if_exists ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node${1}
 }
 
-# Cleans the confluence shared-home
-#
-#
-function clean_confluencenode_shared_home {
-    local volume_name=confluence-shared-home-${CONFLUENCE_VERSION_DOT_FREE}
+function clean_node_shared_home {
+    local volume_name=${E4_APP_NAME}-shared-home-${E4_APP_VERSION_DOTFREE}
     shared_home_exists=$(docker volume ls --filter "name=${volume_name}" --format '{{.Name}}' | wc -l | awk '{print $1}')
     if (( shared_home_exists == 1 )) # arithmetic brackets ... woohoo
     then
@@ -234,11 +169,8 @@ function clean_confluencenode_shared_home {
     docker volume create ${volume_name}
 }
 
-# Creates a network for cluster
-#
-#
 function create_network {
-    local network_name=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}
+    local network_name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}
     network_exists=$(docker network ls --filter "name=${network_name}" --format '{{.Name}}' | wc -l | awk '{print $1}')
     if (( network_exists == 1 )) # arithmetic brackets ... woohoo
     then
@@ -249,64 +181,44 @@ function create_network {
     fi
 }
 
-# Returns the count of running confluencenode instances
-#
-# @usage
-#     result=-1
-#     get_running_confluencenode_count result
-#
-# @param $1 {int} return value passByReference
-function get_running_confluencenode_count {
+function get_running_node_count {
     local ret_value=-1
-    _is_named_container_running "confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node" ret_value
+    _is_named_container_running "${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node" ret_value
 
     local "$1" && return_by_reference $1 $ret_value
 }
 
-# Returns an array of docker image names of running confluencenode instances
-#
-# @usage
-#     result=""
-#     get_running_confluencenode_name_array result
-#
-# @param $1 {string} return value passByReference in form of "node1 node2 node"
-function get_running_confluencenode_name_array {
-    local instance_names_string_newlines=$(docker ps --format '{{.Names}}' --filter "name=confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node")
+function get_running_node_name_array {
+    local instance_names_string_newlines=$(docker ps --format '{{.Names}}' --filter "name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node")
     local instance_names_string_oneline=$(echo $instance_names_string_newlines | tr "\n" " ")
     local ret_value=$instance_names_string_oneline
 
     local "$1" && return_by_reference $1 "$ret_value"
 }
 
-# Kills and removes all confluence-cluster-node* instances if present
-#
-#
-function kill_all_running_confluencenodes {
+function kill_all_running_nodes {
     # NOTE: We must get all names to kill them, since e.g. node1,node4,node5 could be running
     #       so we cannot just use a dumb counter starting from 1!
-    local running_confluencenode_count=0
-    get_running_confluencenode_count running_confluencenode_count
-    if (( running_confluencenode_count > 0 )) # arithmetic brackets ... woohoo
+    local running_node_count=0
+    get_running_node_count running_node_count
+    if (( running_node_count > 0 )) # arithmetic brackets ... woohoo
     then
-        echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_GRN} Killing${C_RST}   - Killing all running confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node* instances."
+        echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_GRN} Killing${C_RST}   - Killing all running ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* instances."
         local running_instance_names=""
-        get_running_confluencenode_name_array running_instance_names
+        get_running_node_name_array running_instance_names
         local running_instance_names_array=($running_instance_names)
         for running_instance_name in "${running_instance_names_array[@]}"
         do
            _kill_and_remove_named_instance_if_exists ${running_instance_name}
         done
     else
-        echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_MGN} Skipping${C_RST}  - No running confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node* instances present."
+        echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_MGN} Skipping${C_RST}  - No running ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* instances present."
     fi
 }
 
-# Removes all images with confluence-cluster-node* name
-#
-#
-function remove_all_dangling_confluencenodes {
-    echo -e $C_CYN">> docker rm images ...:${C_RST}${C_GRN} Removing${C_RST}  - Removing dangling confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node* images."
-    local dangling_ids=$(docker images | grep confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-node | awk '{ print $3 }')
+function remove_all_dangling_nodes {
+    echo -e $C_CYN">> docker rm images ...:${C_RST}${C_GRN} Removing${C_RST}  - Removing dangling ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* images."
+    local dangling_ids=$(docker images | grep ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node | awk '{ print $3 }')
     for dangling_id in $dangling_ids
     do
         docker rm $dangling_id
@@ -319,10 +231,10 @@ function remove_all_dangling_confluencenodes {
 #
 function print_cluster_ready_info {
     echo -e $C_CYN">> ----------------------------------------------------------------------------------------------------"$C_RST
-    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} Ready${C_RST}     - Wait for Confluence nodes to startup, might take some minutes."
-    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} http://confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-lb:${CONFLUENCE_LB_PUBLIC_PORT}${C_RST} "
+    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} Ready${C_RST}     - Wait for ${E4_APP_NAME} nodes to startup, might take some minutes."
+    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
     echo -e $C_CYN">> info ...............:${C_RST} Do not forget to:"
-    echo -e $C_CYN">> info ...............:${C_RST}   [1] put '127.0.0.1 confluence-cluster-${CONFLUENCE_VERSION_DOT_FREE}-lb' to /etc/hosts."
+    echo -e $C_CYN">> info ...............:${C_RST}   [1] put '127.0.0.1 ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb' to /etc/hosts."
     echo -e $C_CYN">> info ...............:${C_RST}   [2] enable IP Forwarding to support multicast."
     echo -e $C_CYN">> ----------------------------------------------------------------------------------------------------"$C_RST
 }
@@ -353,10 +265,15 @@ case $key in
     NODE_ID="$2"
     shift
     ;;
+    -n|--appname)
+    E4_APP_NAME="$2"
+    E4_APP_NAME_UCASE=$E4_APP_NAME
+    shift
+    ;;
     -v|--version)
-    CONFLUENCE_VERSION="$2"
-    CONFLUENCE_VERSION_DOT_FREE=${CONFLUENCE_VERSION//\./}
-    CONFLUENCE_LB_PUBLIC_PORT=$(expr "2${CONFLUENCE_VERSION_DOT_FREE}")
+    E4_APP_VERSION="$2"
+    E4_APP_VERSION_DOTFREE=${E4_APP_VERSION//\./}
+    E4_LB_PUBLIC_PORT=$(expr "$([ "$E4_APP_NAME" == "jira" ] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
     shift
     ;;
     -k|--provkey)
@@ -383,9 +300,8 @@ echo -e $C_MGN'   / /  / / /_/ / / / / /_/ / /_/ /  __/  / /___/ / /_/ (__  ) /_
 echo -e $C_MGN'  /_/  /_/\__,_/_/ /_/\__,_/\__, /\___/   \____/_/\__,_/____/\__/\___/_/     '$C_RST
 echo -e $C_MGN'                           /____/                                            '$C_RST
 echo ""
-echo -e $C_MGN'  Manage local Confluence® Data Center cluster during Plugin development with Docker'$C_RST
-echo -e $C_MGN'  https://github.com/codeclou/docker-atlassian-confluence-data-center/tree/master/6.15.3'$C_RST
-echo -e $C_MGN"  Confluence Version: ${CONFLUENCE_VERSION}"$C_RST
+echo -e $C_MGN'  Manage local Data Center cluster during Plugin development with Docker'$C_RST
+echo -e $C_MGN"  ${E4_APP_NAME_UCASE} Version: ${E4_APP_VERSION}"$C_RST
 echo -e $C_MGN"  PostgreSQL Version: ${POSTGRESQL_VERSION}"$C_RST
 echo -e $C_MGN'  ------'$C_RST
 echo ""
@@ -397,7 +313,14 @@ then
     echo -e $C_RED">> param error ........: Please specify action as parameter -a or --action"$C_RST
     EXIT=1
 else
-    if [[ ! $CONFLUENCE_VERSION ]]
+
+    if [[ ! $E4_APP_NAME ]]
+    then
+        echo -e $C_RED">> param error ........: Please specify version as parameter -n or --appname. E.g. --appname confluence"$C_RST
+        EXIT=1
+    fi
+
+    if [[ ! $E4_APP_VERSION ]]
     then
         echo -e $C_RED">> param error ........: Please specify version as parameter -v or --version. E.g. --version 6.15.3"$C_RST
         EXIT=1
@@ -405,7 +328,7 @@ else
 
     if [[ "$ACTION" == "create" && ! $E4_PROV_KEY ]]
     then
-        echo -e $C_RED">> param error ........: Please specify E4TestEnv provisioning key -k or --provkey. E.g. --provkey conf6153_large"$C_RST
+        echo -e $C_RED">> param error ........: Please specify provisioning key -k or --provkey. E.g. --provkey conf6153_large"$C_RST
         EXIT=1
     fi
 
@@ -440,29 +363,23 @@ then
     exit 1
 fi
 
-####################################################################################
-#
-# CLUSTER LOGIC
-#
-####################################################################################
-
 if [ "$ACTION" == "create" ]
 then
     echo -e $C_CYN">> action .............:${C_RST}${C_GRN} CREATE${C_RST}    - Creating new cluster and destroying existing if exists"$C_RST
     echo ""
 
     # BEGIN: edit
-    if [ ! -f $E4_PROV_DIR/synchrony-standalone.jar ];
+    if [[ "$E4_APP_NAME" = "confluence" && ! -f $E4_PROV_DIR/synchrony-standalone.jar ]];
     then
       download_synchrony
     fi
 
-    if [[ ! -d $E4_PROV_DIR/$E4_PROV_KEY/confluence-home ]];
+    if [[ ! -d $E4_PROV_DIR/$E4_PROV_KEY/${E4_APP_NAME}-home ]];
     then
-      echo ">> Download provisioning set for Confluence $CONFLUENCE_VERSION with key $E4_PROV_KEY"
-      download_confluence $E4_PROV_KEY
+      echo ">> Download provisioning set for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
+      download_app $E4_PROV_KEY
     else
-      echo ">> Provision resources found for Confluence $CONFLUENCE_VERSION with key $E4_PROV_KEY"
+      echo ">> Provision resources found for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
     fi
     # END: edit
 
@@ -475,13 +392,13 @@ then
     create_network
     echo ""
 
-    kill_all_running_confluencenodes
+    kill_all_running_nodes
     echo ""
 
-    remove_all_dangling_confluencenodes
+    remove_all_dangling_nodes
     echo ""
 
-    clean_confluencenode_shared_home
+    clean_node_shared_home
     echo ""
 
     kill_instance_database
@@ -498,8 +415,8 @@ then
 
     for (( node_id=1; node_id<=$SCALE; node_id++ ))
     do
-        kill_instance_confluencenode $node_id
-        start_instance_confluencenode $node_id
+        kill_instance_node $node_id
+        start_instance_node $node_id
         if [[ "${node_id}" = "1" ]];
         then
           echo ">>> Wait for node 1 to be fully started"
@@ -509,8 +426,11 @@ then
     done
     echo ""
 
-    echo ">>> Wait for last node (node $SCALE) to be fully started"
-    wait_for_logs_to_contain "node$SCALE" "Server startup in"
+    if [[ "$SCALE" != "1" ]];
+    then
+        echo ">>> Wait for last node (node $SCALE) to be fully started"
+        wait_for_logs_to_contain "node$SCALE" "Server startup in"
+    fi
 
     print_cluster_ready_info
     echo ""
@@ -521,7 +441,7 @@ then
     echo -e $C_CYN">> action .............:${C_RST}${C_GRN} DESTROY${C_RST}   - Shutting down cluster and destroying instances."$C_RST
     echo ""
 
-    kill_all_running_confluencenodes
+    kill_all_running_nodes
     echo ""
 
     kill_instance_database
@@ -542,16 +462,16 @@ then
     #pull_latest_images
     echo ""
 
-    running_confluencenode_count=0
-    get_running_confluencenode_count running_confluencenode_count
-    if (( running_confluencenode_count > 0 )) # arithmetic brackets ... woohoo
+    running_node_count=0
+    get_running_node_count running_node_count
+    if (( running_node_count > 0 )) # arithmetic brackets ... woohoo
     then
-        echo -e $C_CYN">> update .............:${C_RST}${C_GRN} OK${C_RST}        - currently ${running_confluencenode_count} Confluence nodes are running. Cluster should be scaled to ${SCALE} Confluence nodes."$C_RST
-        start_node_id=$(($running_confluencenode_count + 1))
+        echo -e $C_CYN">> update .............:${C_RST}${C_GRN} OK${C_RST}        - currently ${running_node_count} ${E4_APP_NAME_UCASE} nodes are running. Cluster should be scaled to ${SCALE} ${E4_APP_NAME_UCASE} nodes."$C_RST
+        start_node_id=$(($running_node_count + 1))
         for (( node_id=$start_node_id; node_id<=$SCALE; node_id++ ))
         do
-            kill_instance_confluencenode $node_id
-            start_instance_confluencenode $node_id
+            kill_instance_node $node_id
+            start_instance_node $node_id
             echo ""
         done
         echo ""
@@ -561,18 +481,18 @@ then
         start_instance_loadbalancer $SCALE
         echo ""
     else
-        echo -e $C_CYN">> update .............:${C_RST}${C_RED} FAIL${C_RST}      - currently 0 Confluence nodes are running. Try to create the cluster first."$C_RST
+        echo -e $C_CYN">> update .............:${C_RST}${C_RED} FAIL${C_RST}      - currently 0 ${E4_APP_NAME_UCASE} nodes are running. Try to create the cluster first."$C_RST
     fi
     echo ""
 fi
 
 if [ "$ACTION" == "restart-node" ]
 then
-    echo -e $C_CYN">> action .............:${C_RST}${C_GRN} RESTART-N${C_RST} - Restarting Confluence node ${NODE_ID}."$C_RST
+    echo -e $C_CYN">> action .............:${C_RST}${C_GRN} RESTART-N${C_RST} - Restarting ${E4_APP_NAME_UCASE} node ${NODE_ID}."$C_RST
     echo ""
 
-    kill_instance_confluencenode $NODE_ID
-    start_instance_confluencenode $NODE_ID
+    kill_instance_node $NODE_ID
+    start_instance_node $NODE_ID
     echo ""
 fi
 
@@ -585,10 +505,10 @@ then
     echo ""
 
 
-    running_confluencenode_count=0
-    get_running_confluencenode_count running_confluencenode_count
-    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} OK${C_RST}        - currently ${running_confluencenode_count} Confluence node(s) are running. Showing 'docker ps' for cluster:"$C_RST
+    running_node_count=0
+    get_running_node_count running_node_count
+    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} OK${C_RST}        - currently ${running_node_count} ${E4_APP_NAME_UCASE} node(s) are running. Showing 'docker ps' for cluster:"$C_RST
     echo ""
-    docker ps --format '{{.ID}}\t {{.Names}}\t {{.Ports}}' --filter "name=confluence-cluster-6153-*"
+    docker ps --format '{{.ID}}\t {{.Names}}\t {{.Ports}}' --filter "name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-*"
     echo ""
 fi
