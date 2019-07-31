@@ -27,9 +27,6 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 open class OriginPageReader : VirtualUser() {
 
-    override fun onInit(restClient: RestClient) {
-    }
-
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(ViewPageAction("PB", "PB Root Origin"))

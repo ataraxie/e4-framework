@@ -5,9 +5,9 @@
     "adminPassword": "admin"
   },
   "testPackage": "de.scandio.e4.testpackages.vanilla.VanillaTestPackage",
-  "numConcurrentUsers": 50,
+  "numConcurrentUsers": 250,
   "durationInSeconds": 600,
   "workers": [
-    "http://e4w-oregon:3000"
+    "http://e4w:3000"
   ]
 }

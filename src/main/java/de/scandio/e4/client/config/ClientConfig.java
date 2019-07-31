@@ -7,6 +7,7 @@ public class ClientConfig {
 	private int numConcurrentUsers;
 	private long durationInSeconds;
 	private String testPackage;
+	private String logLevel = "INFO";
 
 	private List<String> appsToInstall;
 	private List<String> workers;
@@ -76,6 +77,14 @@ public class ClientConfig {
 		this.workers = workers;
 	}
 
+	public String getLogLevel() {
+		return logLevel;
+	}
+
+	public void setLogLevel(String logLevel) {
+		this.logLevel = logLevel;
+	}
+
 	@Override
 	public String toString() {
 		return "ClientConfig {" +
@@ -83,6 +92,7 @@ public class ClientConfig {
 				",\n\tnumConcurrentUsers=" + numConcurrentUsers +
 				",\n\tdurationInSeconds=" + durationInSeconds +
 				",\n\ttestPackage='" + testPackage + '\'' +
+				",\n\tlogLevel=" + logLevel +
 				",\n\tappsToInstall=" + appsToInstall +
 				",\n\tworkers=" + workers +
 				"\n}";

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 E4_DIR="/tmp/e4"
+E4_APP_LICENSE="$E4_APP_LICENSE"
 
 if [ "$#" -ne 2 ]; then
     echo "Usage: e4run WORKER_PORT TARGET_SYSTEM_IP"
@@ -14,5 +15,6 @@ else
         -e E4_JAR_URL='https://e4prov.s3.eu-central-1.amazonaws.com/e4-LATEST.jar' \
         -e E4_OUTPUT_DIR="$E4_DIR/out/$1" \
         -e E4_INPUT_DIR="$E4_DIR/in" \
-        fgrund/e4worker:0.2
+        -e E4_APP_LICENSE="$E4_APP_LICENSE" \
+        fgrund/e4worker:0.3
 fi

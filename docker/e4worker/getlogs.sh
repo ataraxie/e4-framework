@@ -1,8 +1,9 @@
 #!/bin/bash
-ssh -t $1 'docker logs  $(docker ps -q)' > "confluence-log-$(date +%s).log"
-ssh -t awse4 'rm e4.log'
-ssh -t awse4 'docker cp $(docker ps -qf "name=confluence-cluster-6153-lb"):/var/www/logs/e4.log .'
-ssh -t awse4 'grep /rest e4.log > e4-rest.log'
-scp awse4:e4-rest.log "access-log-$(date +%s).log"
-scp e4w:/tmp/e4/out/$2/e4\*.sqlite e4.sqlite
-ssh -t e4w 'sudo rm /tmp/e4/out/$2/e4\*.sqlite'
+echo $3
+ssh -t $2 'docker logs  $(docker ps -q)' > "worker-log-$(date +%s).log"
+ssh -t $1 'rm e4.log'
+ssh -t $1 'docker cp $(docker ps -qf "name=confluence-cluster-6153-lb"):/var/www/logs/e4.log .'
+ssh -t $1 'grep /rest e4.log > e4-rest.log'
+scp $1:e4-rest.log "access-log-$(date +%s).log"
+scp $2:/tmp/e4/out/$3/e4\*.sqlite e4.sqlite
+ssh -t $2 "mv /tmp/e4/out/$3/*.sqlite /tmp/e4/out/"

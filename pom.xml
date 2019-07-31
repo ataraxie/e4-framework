@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>de.scandio</groupId>
 	<artifactId>e4</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>LATEST</version>
 	<name>e4</name>
 	<description>The enjoyable elastic experiment executor. Enjoy!</description>
 

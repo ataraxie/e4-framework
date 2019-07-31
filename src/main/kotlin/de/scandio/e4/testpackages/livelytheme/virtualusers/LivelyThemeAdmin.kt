@@ -32,9 +32,6 @@ import de.scandio.e4.worker.interfaces.WebClient
  */
 open class LivelyThemeAdmin : VirtualUser() {
 
-    override fun onInit(restClient: RestClient) {
-    }
-
     override fun getActions(): ActionCollection {
         val actions = ActionCollection()
         actions.add(SetRandomCustomElement("LT"))

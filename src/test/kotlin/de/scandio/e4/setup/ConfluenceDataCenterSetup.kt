@@ -2,7 +2,7 @@ package de.scandio.e4.setup
 
 import de.scandio.e4.BaseSeleniumTest
 import de.scandio.e4.E4TestEnv
-import de.scandio.e4.clients.WebConfluence
+import de.scandio.e4.clients.web.WebConfluence
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

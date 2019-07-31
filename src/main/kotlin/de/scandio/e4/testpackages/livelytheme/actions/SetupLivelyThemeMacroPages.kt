@@ -1,6 +1,6 @@
 package de.scandio.e4.testpackages.livelytheme.actions
 
-import de.scandio.e4.worker.rest.RestConfluence
+import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -45,7 +45,7 @@ open class SetupLivelyThemeMacroPages (
                 val randIndex = Random().nextInt(numMacros)
                 val macroId = macroPageContentMap.keys.toTypedArray()[randIndex]
                 val pageTitle = "Macro Page $macroId (${Date().time})"
-                val macroPageContent = macroPageContentMap[macroId]
+                val macroPageContent = macroPageContentMap[macroId]!!
                 restConfluence.createPage(spaceKey, pageTitle, macroPageContent, parentPageTitle)
             }
         } catch (e: Exception) {

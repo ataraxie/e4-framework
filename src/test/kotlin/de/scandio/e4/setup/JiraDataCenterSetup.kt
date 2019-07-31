@@ -1,7 +1,7 @@
 package de.scandio.e4.setup
 
 import de.scandio.e4.BaseSeleniumTest
-import de.scandio.e4.clients.WebJira
+import de.scandio.e4.clients.web.WebJira
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 @Service
 public class PreparationService {
@@ -38,6 +39,8 @@ public class PreparationService {
     }
 
     public void prepare(int workerIndex, WorkerConfig config) throws Exception {
+		// TODO: Log level from config
+
         if (applicationStatusService.getTestsStatus().equals(TestsStatus.RUNNING)) {
             throw new Exception("Can not prepare while tests are running!");
         }
@@ -68,7 +71,7 @@ public class PreparationService {
 			userCredentialsService.storeUsers(userCredentials);
             if (!setupScenarios.isEmpty()) {
 				WebClient webClient;
-            	if (!setupScenarios.allRestOnly()) {
+            	if (setupScenarios.allRestOnly()) {
 					webClient = new NoopWebClient();
 				} else {
 					webClient = ClientFactory.newChromeWebClient(testPackageInstance.getApplicationName(),
@@ -81,7 +84,7 @@ public class PreparationService {
 							log.info("Executing action {{}}", action.getClass().getSimpleName());
 							action.execute(webClient, restClient);
 						} catch (Exception e) {
-							log.error("Failed executing action {{}}", action.getClass().getSimpleName());
+							log.error("Failed executing action {{}}", action.getClass().getSimpleName(), e);
 							if (!action.isRestOnly()) {
 								webClient.takeScreenshot("failed-action");
 								webClient.dumpHtml("failed-action");

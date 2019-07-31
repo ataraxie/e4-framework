@@ -1,11 +1,9 @@
 package de.scandio.e4.testpackages.vanilla.actions
 
-import de.scandio.e4.helpers.DomHelper
-import de.scandio.e4.clients.WebConfluence
+import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.WebClient
-import java.net.URLEncoder
 import java.util.*
 
 /**

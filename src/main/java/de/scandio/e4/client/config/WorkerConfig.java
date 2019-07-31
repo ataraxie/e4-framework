@@ -9,6 +9,7 @@ public class WorkerConfig {
 	private int numConcurrentUsers;
 	private int numWorkers;
 	private long durationInSeconds;
+	private String logLevel;
 
 
 	public String getTarget() {
@@ -75,6 +76,14 @@ public class WorkerConfig {
 		this.durationInSeconds = durationInSeconds;
 	}
 
+	public String getLogLevel() {
+		return logLevel;
+	}
+
+	public void setLogLevel(String logLevel) {
+		this.logLevel = logLevel;
+	}
+
 	public static WorkerConfig from(ClientConfig clientConfig) {
 		final WorkerConfig workerConfig = new WorkerConfig();
 
@@ -87,6 +96,7 @@ public class WorkerConfig {
 		workerConfig.setNumConcurrentUsers(clientConfig.getNumConcurrentUsers());
 		workerConfig.setNumWorkers(clientConfig.getWorkers().size());
 		workerConfig.setTestPackage(clientConfig.getTestPackage());
+		workerConfig.setLogLevel(clientConfig.getLogLevel());
 
 		return workerConfig;
 	}

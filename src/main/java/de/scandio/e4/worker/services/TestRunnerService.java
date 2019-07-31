@@ -28,7 +28,7 @@ public class TestRunnerService {
 	private final StorageService storageService;
 	private final UserCredentialsService userCredentialsService;
 
-	// TODO: Make thread-safe
+	// TODO: Make thread-safe (?)
 	private static int numFinishedThreads = 0;
 	private static int numFailedActions = 0;
 	private static int numActionsExecuted = 0;
@@ -136,7 +136,7 @@ public class TestRunnerService {
 
 		virtualUser.setImpersonatedUser(userCredentials);
 
-		log.info("Creating virtual user {{}} with actual user {{}}", virtualUserClass.getSimpleName(), userCredentials.getUsername());
+		log.debug("Creating virtual user {{}} with actual user {{}}", virtualUserClass.getSimpleName(), userCredentials.getUsername());
 
 
 		RestClient initialRestClient = ClientFactory.newRestClient(
@@ -209,7 +209,7 @@ public class TestRunnerService {
 	// TODO: as obvious, too many params
 	private void runActions(TestPackage testPackage, VirtualUser virtualUser, long durationInSeconds, String targetUrl) throws Exception {
 		ActionCollection actions = virtualUser.getActions();
-		log.info("Running {{}} actions for virtual user", actions.size());
+		log.debug("Running {{}} actions for virtual user", actions.size());
 		String username = virtualUser.getImpersonatedUser().getUsername();
 		String password = virtualUser.getImpersonatedUser().getPassword();
 		for (Action action : actions) {
@@ -255,7 +255,11 @@ public class TestRunnerService {
 						action.getClass().getSimpleName());
 				storageService.recordError(e4error);
 				numFailedActions += 1;
-//				webClient.takeScreenshot("failed-scenario");
+//				if (webClient != null) {
+//					webClient.takeScreenshot("failed-action");
+//					webClient.dumpHtml("failed-action");
+//				}
+
 			} finally {
 				if (webClient != null) {
 					webClient.quit();
