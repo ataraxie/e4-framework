@@ -4,18 +4,36 @@ E4 is intended for performance and scale testing web applications with arbitrari
 
 ## Disclaimer
 
-This project is work in progress; as is the documentation. We promise it will grow. While E4 is applicable for any web application, it is currently being used and designed as performance testing framework for Atlassian's data center products. This documentation is currently still specific to Atlassian applications, and, for now, particularly Confluence. This will change in the future.
+This project is work in progress; as is the documentation. 
+While E4 is applicable for any web application, it is currently being used and designed as performance testing framework for Atlassian's data center products. 
+This documentation is currently still specific to Atlassian applications. 
+This will change in the future.
 
-**Everything in this documentation may be short-lived because E4 is under active development.**
+## How it works
 
-<img src="doc/e4-tech.png" width="500">
-<img src="doc/e4-map.png" width="800">
+<img src="doc/e4-map.png" width="600" style="border: 1px solid #ccc; padding: 5px;">
+
+E4 is intended for developers who want to test their web application under load.
+The developer implements a _test package_ for her web application that defines how the application is tested with REST and Selenium interactions.
+The test package is then executed with a number of concurrent _virtual users_ that are distributed among a configured number of _worker nodes_.
+The number of virtual users that are created are defined by the number of configured concurrent users for a test run and the _weight_ specified for each virtual users in the test package.
+For example, three virtual users "Creator", "Reader", "Searcher" with weights 0.2, 0.5, 0.3 respectively in the test package, and 100 concurrent users are configured, there will be 20 Creators, 50 Readers and 30 Searchers. Each worker node is a Docker container that executes a fragment of these virtual users (or all if only one worker node is configured).
+
+E4 Workers have REST endpoints and are orchestrated by an E4 client application that is controlled by the developer.
+This application is configured with a JSON file specifying the number of concurrent users to simulate, how long to simulate them, and onto which worker nodes to distribute them.
+
+Each virtual user are assigned a number of _actions_.
+These are executed in a loop that only ends when the test duration (specified by the developer) ends.
+
+We think it is most intuitive to see an example worker log output to get a better picture how this works. [Here](doc/sample-worker-log.zip) you can find the (compressed) logs for a test run simulating a "Vanilla" test package for a Atlassian Confluence (Data Center) application.
+
+The result of each worker when the test duration ends is an SQLite database file containing measurements for all actions performed.
 
 ## Test Packages
 
 ### What is a test package?
 
-A test package is a bunch of Kotlin source files that define how an app can be properly tested. The intention is that the test package is independent from any structural components and focuses on the tasks that are required to test the app.
+A test package is a bunch of Kotlin source files that define how an app can be properly tested. The intention is that the test package is independent from any structural components and focuses on the tasks that are required to test the application.
 
 ### Components of a test package
 
