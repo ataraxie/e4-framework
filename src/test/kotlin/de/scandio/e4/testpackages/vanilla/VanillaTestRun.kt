@@ -8,25 +8,24 @@ import org.junit.Test
 
 class VanillaTestRun : TestPackageTestRun() {
 
-    private val TEST_PACKAGE = VanillaTestPackage()
-
     @Before
     fun before() {
-        //noop currently
+        // noop currently
     }
 
     @Test
     fun runTest() {
+        val testPackage = VanillaTestPackage()
         if (E4TestEnv.PREPARATION_RUN) {
-            executeTestPackagePrepare(TEST_PACKAGE)
+            executeTestPackagePrepare(testPackage)
         } else {
-//                executeTestPackage(TEST_PACKAGE)
+            executeTestPackage(testPackage)
 
             // Run a single action for testing:
-             executeAction(ViewDashboardAction())
+            // executeAction(ViewDashboardAction())
 
-            // Run single virtual user for testing:
-            // executeActions(BranchCreator().actions)
+            // Run all actions of a single virtual user for testing:
+            // executeActions(Reader().actions)
         }
     }
 

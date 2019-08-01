@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public class E4TestEnv {
 
 	public static final ApplicationName APPLICATION_NAME = ApplicationName.valueOf(getenv("E4_APPLICATION_NAME", "confluence"));
-	public static final String APPLICATION_BASE_URL = resolveBaseUrl("E4_APPLICATION_BASE_URL", "http://localhost:8090/");
+	public static final String APPLICATION_BASE_URL = resolveBaseUrl("E4_APPLICATION_BASE_URL", "http://confluence-cluster-6153-lb:26153/");
 	public static final String OUT_DIR = getenv("E4_OUT_DIR", "./target/out");
 	public static final String IN_DIR = getenv("E4_IN_DIR", "./target/in");
 	public static final String USER_NAME = getenv("E4_USER_NAME", "admin");
