@@ -1,7 +1,8 @@
-package de.scandio.e4
+package de.scandio.e4.adhoc
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
+import de.scandio.e4.E4TestEnv
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.TestPackage
@@ -16,32 +17,23 @@ import org.slf4j.LoggerFactory
 
 abstract class BaseSeleniumTest {
 
+    val DEFAULT_DURATION = 30L //seconds
+    val DEFAULT_DIMENSION = Dimension(2000, 1500)
+
     private val log = LoggerFactory.getLogger(javaClass)
 
     protected var webClient: WebClient? = null
     protected var restClient: RestClient? = null
 
-    protected var driver: WebDriver
-    protected var util: Util
-    protected var dom: DomHelper
+    protected var driver: WebDriver? = null
+    protected var util: Util? = null
+    protected var dom: DomHelper? = null
 
     protected var screenshotCount = 0
     protected var dumpCount = 0
 
     init {
-        WebDriverManager.chromedriver().setup()
-        val chromeOptions = ChromeOptions()
-        chromeOptions.addArguments("--headless")
-
-        this.driver = ChromeDriver(chromeOptions)
-        this.driver.manage().window().size = Dimension(2000, 1500)
-        this.util = Util()
-        this.dom = DomHelper(driver, 40, 40)
-        this.dom.defaultDuration = 40
-        this.dom.defaultWaitTillPresent = 40
-        this.dom.outDir = E4TestEnv.OUT_DIR
-        this.dom.screenshotBeforeClick = true
-        this.dom.screenshotBeforeInsert = true
+        newWebDriver()
 
         val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         loggerContext.getLogger("org.apache").level = Level.WARN
@@ -50,21 +42,7 @@ abstract class BaseSeleniumTest {
     }
 
     open fun refreshWebClient(login: Boolean = false, authenticate: Boolean = false) {
-//        webClient().quit()
-
-        WebDriverManager.chromedriver().setup()
-        val chromeOptions = ChromeOptions()
-        chromeOptions.addArguments("--headless")
-        this.driver = ChromeDriver(chromeOptions)
-        this.driver.manage().window().setSize(Dimension(1680, 1050))
-        this.util = Util()
-        this.dom = DomHelper(driver, 60, 60)
-        this.dom.defaultDuration = 120
-        this.dom.defaultWaitTillPresent = 120
-        this.dom.outDir = E4TestEnv.OUT_DIR
-        this.dom.screenshotBeforeClick = true
-        this.dom.screenshotBeforeInsert = true
-
+        newWebDriver()
         setNewClients()
 
         if (login) {
@@ -74,6 +52,24 @@ abstract class BaseSeleniumTest {
         if (authenticate) {
             webClient().authenticateAdmin()
         }
+    }
+
+    fun newWebDriver() {
+        WebDriverManager.chromedriver().setup()
+
+        val chromeOptions = ChromeOptions()
+        chromeOptions.addArguments("--headless")
+        this.driver = ChromeDriver(chromeOptions)
+        (this.driver as ChromeDriver).manage().window().size = DEFAULT_DIMENSION
+        this.util = Util()
+
+        this.dom = DomHelper(driver as ChromeDriver, DEFAULT_DURATION, DEFAULT_DURATION)
+        val dom = this.dom!!
+        dom.defaultDuration = DEFAULT_DURATION
+        dom.defaultWaitTillPresent = DEFAULT_DURATION
+        dom.outDir = E4TestEnv.OUT_DIR
+        dom.screenshotBeforeClick = true
+        dom.screenshotBeforeInsert = true
     }
 
     fun setNewClients() {
@@ -91,6 +87,10 @@ abstract class BaseSeleniumTest {
         this.dumpCount += 1
         val path = webClient().dumpHtml("$dumpCount-selenium-test.html")
         println(path)
+    }
+
+    open fun quit() {
+        webClient().quit()
     }
 
     fun webClient() : WebClient {
@@ -114,5 +114,7 @@ abstract class BaseSeleniumTest {
             }
         }
     }
+
+    fun String.trimLines() = replace("\n", "")
 
 }
