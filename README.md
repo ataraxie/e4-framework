@@ -210,7 +210,9 @@ In general the requirements are:
 On the server, we started our test environment with our script `./docker/atlassian-cluster/e4-atlassian-cluster.sh` (again, this is based on [codeclou](https://github.com/codeclou)'s amazing software).
 A cluster with 1 node, a heap space of 4096MB, and a ready-made small dataset is started with this command:
 ```
-
+./e4-atlassian-cluster.sh --action create --scale 1 --appname confluence --version 6.15.3 --provkey conf6153_small --nodeheap 4096
 ```
 
+The parametersa are as follows:
 
+* `action`

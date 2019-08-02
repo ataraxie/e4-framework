@@ -18,8 +18,6 @@ return_by_reference() {
 }
 
 contains() {
-    #echo "checking for string $2 in..."
-    #echo $1
     string="$1"
     substring="$2"
     if test "${string#*$substring}" != "$string"
@@ -225,22 +223,13 @@ function remove_all_dangling_nodes {
     done
 }
 
-
-# Prints info
-#
-#
 function print_cluster_ready_info {
-    echo -e $C_CYN">> ----------------------------------------------------------------------------------------------------"$C_RST
-    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} Ready${C_RST} - You can now access ${E4_APP_NAME} through your browser."
-    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
-    echo -e $C_CYN">> ----------------------------------------------------------------------------------------------------"$C_RST
+    echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
+    echo -e $C_CYN">> info ....:${C_RST}${C_GRN} Ready${C_RST} - You can now access ${E4_APP_NAME} through your browser."
+    echo -e $C_CYN">> info ....:${C_RST}${C_GRN} http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
+    echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
 }
 
-####################################################################################
-#
-# PARAMETERS AND BANNER
-#
-####################################################################################
 
 while [[ $# > 1 ]]
 do
@@ -297,7 +286,7 @@ echo -e $C_MGN'   / /  / / /_/ / / / / /_/ / /_/ /  __/  / /___/ / /_/ (__  ) /_
 echo -e $C_MGN'  /_/  /_/\__,_/_/ /_/\__,_/\__, /\___/   \____/_/\__,_/____/\__/\___/_/     '$C_RST
 echo -e $C_MGN'                           /____/                                            '$C_RST
 echo ""
-echo -e $C_MGN'  Manage local Data Center cluster during Plugin development with Docker'$C_RST
+echo -e $C_MGN'  Manage local data center cluster with Docker'$C_RST
 echo -e $C_MGN"  ${E4_APP_NAME_UCASE} Version: ${E4_APP_VERSION}"$C_RST
 echo -e $C_MGN"  PostgreSQL Version: ${POSTGRESQL_VERSION}"$C_RST
 echo -e $C_MGN'  ------'$C_RST
@@ -365,7 +354,6 @@ then
     echo -e $C_CYN">> action .............:${C_RST}${C_GRN} CREATE${C_RST}    - Creating new cluster and destroying existing if exists"$C_RST
     echo ""
 
-    # BEGIN: edit
     if [[ "$E4_APP_NAME" = "confluence" && ! -f $E4_PROV_DIR/synchrony-standalone.jar ]];
     then
       download_synchrony
@@ -378,13 +366,6 @@ then
     else
       echo ">> Provision resources found for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
     fi
-    # END: edit
-
-    #update_check
-    echo ""
-
-    #pull_latest_images
-    echo ""
 
     create_network
     echo ""
@@ -453,12 +434,6 @@ then
     echo -e $C_CYN">> action .............:${C_RST}${C_GRN} UPDATE${C_RST}    - Update running cluster."$C_RST
     echo ""
 
-    #update_check
-    echo ""
-
-    #pull_latest_images
-    echo ""
-
     running_node_count=0
     get_running_node_count running_node_count
     if (( running_node_count > 0 )) # arithmetic brackets ... woohoo
@@ -497,10 +472,6 @@ if [ "$ACTION" == "info" ]
 then
     echo -e $C_CYN">> action .............:${C_RST}${C_GRN} INFO${C_RST}      - Cluster information."$C_RST
     echo ""
-
-    #update_check
-    echo ""
-
 
     running_node_count=0
     get_running_node_count running_node_count
