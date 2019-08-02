@@ -208,7 +208,7 @@ In general the requirements are:
 1. Environment variable `E4_PROV_DIR` set to some directory that E4 will use for provisioning resources
 
 On the server, we started our test environment with our script `./docker/atlassian-cluster/e4-atlassian-cluster.sh` (again, this is based on [codeclou](https://github.com/codeclou)'s amazing software).
-A cluster with 1 node is started with this command:
+A cluster with 1 node, a heap space of 4096MB, and a ready-made small dataset is started with this command:
 ```
 
 ```

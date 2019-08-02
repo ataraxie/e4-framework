@@ -231,11 +231,8 @@ function remove_all_dangling_nodes {
 #
 function print_cluster_ready_info {
     echo -e $C_CYN">> ----------------------------------------------------------------------------------------------------"$C_RST
-    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} Ready${C_RST}     - Wait for ${E4_APP_NAME} nodes to startup, might take some minutes."
+    echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} Ready${C_RST} - You can now access ${E4_APP_NAME} through your browser."
     echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
-    echo -e $C_CYN">> info ...............:${C_RST} Do not forget to:"
-    echo -e $C_CYN">> info ...............:${C_RST}   [1] put '127.0.0.1 ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb' to /etc/hosts."
-    echo -e $C_CYN">> info ...............:${C_RST}   [2] enable IP Forwarding to support multicast."
     echo -e $C_CYN">> ----------------------------------------------------------------------------------------------------"$C_RST
 }
 
