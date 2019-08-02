@@ -47,12 +47,13 @@ You will need to:
 
 For each of the points above there is a section in this documentation below:
 
-1. See section "How to implement a test package?" (XXX)
-1. See section "How do I start a test instance?" (XXX). We provide a Docker tool suite to start a test Confluence instance based on a _large dataset_ as defined by Atlassian. The same is in progress for Jira.
-1. See section "How to start a worker and run a test package?" (XXX)
-1. See section "How to collect and process data?" (XXX)
+1. See section [How do I implement a test package?](#heading1)
+1. See section [How do I start a test instance?](#heading1). We provide a Docker tool suite to start a test Confluence instance based on a _large dataset_ as defined by Atlassian. The same is in progress for Jira.
+1. See section [How do I start workers and run a test package?](#heading3)
+1. See section [How do I collect and process data?](#heading4)
 
-## How to implement a test package?
+<a name="heading1"></a>
+## How do I implement a test package?
 
 ### What is a test package?
 
@@ -124,7 +125,7 @@ It looks like this for the `VanillaTestPackage`:
 
 The output then looks like this:
 
-XXX
+<img src="doc/linked/ide-test-output.png" width="600" style="border: 1px solid #ccc; padding: 5px;">
 
 #### Run the vanilla Confluence example yourself
 
@@ -173,6 +174,7 @@ While we think this is both simple and does the job of performing different acti
 For example, you could think of 3 virtual users `ConfluenceSimpleUser`, `ConfluencePowerUser`, `ConfluenceAdministrator`, that all execute an overlapping set of actions.
 In that case there would be only three rows but many more columns in the matrix above.
 
+<a name="heading2"></a>
 ## How do I start a test instance?
 
 First off: __it's up to you and it's intended!__
@@ -207,12 +209,68 @@ In general the requirements are:
 1. Docker user setup: `sudo usermod -a -G docker ubuntu`
 1. Environment variable `E4_PROV_DIR` set to some directory that E4 will use for provisioning resources
 
+#### Start data center application
+
 On the server, we started our test environment with our script `./docker/atlassian-cluster/e4-atlassian-cluster.sh` (again, this is based on [codeclou](https://github.com/codeclou)'s amazing software).
 A cluster with 1 node, a heap space of 4096MB, and a ready-made small dataset is started with this command:
+
 ```
-./e4-atlassian-cluster.sh --action create --scale 1 --appname confluence --version 6.15.3 --provkey conf6153_small --nodeheap 4096
+./e4-atlassian-cluster.sh --action create \
+    --scale 1 \
+    --appname confluence \
+    --version 6.15.3 \
+    --provkey conf6153_small \
+    --nodeheap 4096
 ```
 
-The parametersa are as follows:
+The script will print a message when it's done and tell you the URL where Confluence is accessible.
+It will all be ready for you after you map the host name in the URL to the IP address of your server in `/etc/hosts`.
 
-* `action`
+The parameters of the script are as follows:
+
+* `action`: what to do? values:
+  * `create`: create the cluster (requires `scale`,  `appname`, `version`, `provkey`, `nodeheap` parameters)
+  * `destroy`: destroy the cluster (requires `appname`, `version` parameters)
+  * `update`: add nodes to the cluster (requires `appname`, `version`, `scale` parameters)
+* `scale` (any number): how many nodes to start?
+* `appname`: what application to start? currently supported: `confluence|jira`
+* `version`: version of the application (e.g. `6.15.3` for Confluence 6.15.3)
+* `provkey`: key of the dataset to provision the instance with on startup. If this is not provided the started application will start with the setup wizard. Currently available:
+  * `conf6153` - empty Confluence 6.15.3 with setup completed
+  * `conf6153_small` - Confluence 6.15.3 with a small dataset
+  * `conf6153_large` - Confluence 6.15.3 with a large dataset
+  * `jira830` - empty Jira 8.3.0 with setup completed
+* `nodeheap`: heap space to use for each node in MB. This will be set as both `-Xmx` and `-Xms` startup parameters.
+
+#### Stop data center application
+
+For the start command used above, the stop command would be:
+
+```
+./e4-atlassian-cluster.sh --action destroy \
+    --appname confluence \
+    --version 6.15.3
+```
+
+#### Scale application nodes dynamically
+
+You can add application nodes with the `update` action using the `scale` parameter.
+For example, the following command will add 3 nodes to the cluster:
+
+```
+./e4-atlassian-cluster.sh --action destroy \
+    --appname confluence \
+    --version 6.15.3 \
+    --scale 4
+```
+
+<a name="heading3"></a>
+## How do I start workers and run a test package?
+
+tbd.
+
+<a name="heading4"></a>
+## How do I collect and process data?
+
+tbd.
+

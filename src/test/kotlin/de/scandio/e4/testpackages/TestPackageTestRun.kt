@@ -83,7 +83,7 @@ abstract class TestPackageTestRun {
         var numActionsRun = 0
         for (action in actions) {
             var webClient: WebClient
-            if (actions.allRestOnly()) {
+            if (action.isRestOnly) {
                 webClient = NoopWebClient()
             } else {
                 webClient = E4TestEnv.newAdminTestWebClient()
