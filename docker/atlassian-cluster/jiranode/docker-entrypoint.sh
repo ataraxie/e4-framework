@@ -41,7 +41,7 @@ fi
 echo ">>> Create jira-config.properties with websudo disabled"
 touch /jira-home/jira-config.properties
 echo "jira.websudo.is.disabled = true" >> /jira-home/jira-config.properties
-
+echo "jira.index.issue.threads = 40" >> /jira-home/jira-config.properties
 
 #
 # GENERATE CLUSTER CONF
