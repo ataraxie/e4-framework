@@ -25,13 +25,13 @@ Therefore, we designed E4 with the following goals in mind:
 E4 is intended for developers who want to test their web application under load.
 The developer implements a _test package_ for her web application that defines how the application is tested with REST and Selenium interactions.
 The test package is then executed with a number of concurrent _virtual users_ that are distributed among a configured number of _worker nodes_.
-The number of virtual users that are created are defined by the number of configured concurrent users for a test run and the _weight_ specified for each virtual users in the test package.
-For example, three virtual users "Creator", "Reader", "Searcher" with weights 0.2, 0.5, 0.3 respectively in the test package, and 100 concurrent users are configured, there will be 20 Creators, 50 Readers and 30 Searchers. Each worker node is a Docker container that executes a fragment of these virtual users (or all if only one worker node is configured).
+The number of virtual users that are created is defined by the number of configured concurrent users for a test run and the _weight_ specified for each virtual user in the test package.
+For example, if there are three virtual users "Creator", "Reader", "Searcher" with weights 0.2, 0.5, 0.3 respectively in the test package, and 100 concurrent users are configured, there will be 20 Creators, 50 Readers and 30 Searchers. Each worker node is a Docker container that executes a fragment of these virtual users (or all if only one worker node is configured).
 
 E4 Workers have REST endpoints and are orchestrated by an E4 client application that is controlled by the developer.
 This application is configured with a JSON file specifying the number of concurrent users to simulate, how long to simulate them, and onto which worker nodes to distribute them. 
-Each virtual user are assigned a number of _actions_.
-These are executed in a loop that only ends when the test duration (specified by the developer) ends. 
+Each virtual user is assigned a number of _actions_.
+These are executed in a loop that only terminates when the test duration (specified by the developer) ends. 
 The result of each worker when the test duration ends is an SQLite database file containing measurements for all actions performed.
 
 We think it is most intuitive to see an example worker log output to get a better picture how this works. [Here](doc/sample-worker-log.zip) you can find the (compressed) logs for a test run simulating a "Vanilla" test package for a Atlassian Confluence (Data Center) application.
@@ -47,10 +47,10 @@ You will need to:
 
 For each of the points above there is a section in this documentation below:
 
-1. See section [How do I implement a test package?](#heading1)
-1. See section [How do I start a test instance?](#heading1). We provide a Docker tool suite to start a test Confluence instance based on a _large dataset_ as defined by Atlassian. The same is in progress for Jira.
-1. See section [How do I start workers and run a test package?](#heading3)
-1. See section [How do I collect and process data?](#heading4)
+1. [How do I implement a test package?](#heading1)
+1. [How do I start a test instance?](#heading1)  (We provide a Docker tool suite to start a test Confluence/Jira instance based on a _large dataset_ as defined by Atlassian.)
+1. [How do I start workers and run a test package?](#heading3)
+1. [How do I collect and process data?](#heading4)
 
 <a name="heading1"></a>
 ## How do I implement a test package?
@@ -61,7 +61,7 @@ A test package is a bunch of Kotlin source files that define how an app can be p
 
 ### Components of a test package
 
-Each test package has a set of components that have certain purposes. All sources for a test package live in `de.scandio.e4.testpackages` in `src/main/kotlin/` and `src/test/kotlin/`.
+Each test package has a set of components that have certain purposes. All sources for a test package live in `de.scandio.e4.testpackages` in `src/main/kotlin/testpackages/<testpackage_name>`.
 
 #### TestPackage declarator
 
@@ -81,7 +81,8 @@ Classes in the sub-package `actions` that define actions invoked by virtual user
 
 #### Developing a test package
 
-During development of a test package, it makes most sense to forget about the rather complex test architecture of E4. Just assume two things:
+During development of a test package, it makes most sense to forget about the rather complex test architecture of E4. 
+Just assume two things:
 
 * You have a simple test instance of your application running (this doesn't need to have a particularly large dataset)
 * You have one admin user in the application that is used for running all virtual users
@@ -159,7 +160,7 @@ This will mean that `weight * 150` instances of each virtual user will be create
 While a virtual user in E4 can execute arbitrarily many actions, each virtual user in this test package executes only one action.
 These actions are called in a loop, which means that in this example a virtual user will always execute the same actions.
 
-The `virtual users vs. actions` will therefore have 6 columns (virtual users) and only one row (actions).
+A `virtual users vs. actions` matrix will therefore have 6 lines (virtual users) and only one column (actions).
 
 <table style="text-align: left">
 	<tr><th>Commentor</th><td>AddRandomCommentAction</td></tr>
@@ -193,9 +194,7 @@ But it worked for us this way.
 
 ### How to start a Confluence Data Center test system
 
-You need some server with enough resources to run all parts of the cluster (i.e. all application nodes, database, load balancer).
-
-For a `small dataset`, 50/150/250 concurrent users, and 1/2/4 nodes, we used an `t2.2xlarge` (8 CPUs, 32 GB RAM, 20 GB storage) AWS EC2 instance. 
+You need some server with enough resources to run all parts of the cluster (i.e. all application nodes, database, load balancer). For a `small dataset`, 50/150/250 concurrent users, and 1/2/4 nodes, we used an `t2.2xlarge` (8 CPUs, 32 GB RAM, 20 GB storage) AWS EC2 instance. 
 For a `large dataset`, and the same configurations, we used a `c5n.9xlarge` (36 CPUs, 96 GB RAM, 50 GB storage) instance.
 In general, we have observed that demand of resources increases strongly with the size of the dataset.
 
@@ -211,7 +210,7 @@ In general the requirements are:
 
 #### Start data center application
 
-On the server, we started our test environment with our script `./docker/atlassian-cluster/e4-atlassian-cluster.sh` (again, this is based on [codeclou](https://github.com/codeclou)'s amazing software).
+On the server, we started our test environment with our script `./docker/atlassian-cluster/e4-atlassian-cluster.sh` (again, this is based on [codeclou](https://github.com/codeclou)'s amazing scripts).
 A cluster with 1 node, a heap space of 4096MB, and a ready-made small dataset is started with this command:
 
 ```
