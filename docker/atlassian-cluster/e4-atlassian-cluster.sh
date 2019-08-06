@@ -139,13 +139,19 @@ function start_instance_node {
         -v $(pwd)/${E4_APP_NAME}node:/e4work \
         -v $E4_PROV_DIR:/e4prov \
         --entrypoint /e4work/docker-entrypoint.sh \
-        -d codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
+        -it codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
 }
 
 function download_synchrony {
     echo ">>> Download synchrony jar"
     mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
     aws s3 cp s3://e4prov/synchrony-standalone.jar $E4_PROV_DIR/
+}
+
+function download_mysql_connector {
+    echo ">>> Download mysql connector"
+    mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
+    aws s3 cp s3://e4prov/mysql-connector.jar $E4_PROV_DIR/
 }
 
 function download_app {
@@ -380,6 +386,11 @@ then
     if [[ "$E4_APP_NAME" = "confluence" && ! -f $E4_PROV_DIR/synchrony-standalone.jar ]];
     then
       download_synchrony
+    fi
+
+    if [[ "$E4_APP_NAME" = "jira" && ! -f $E4_PROV_DIR/mysql-connector.jar ]];
+    then
+      download_mysql_connector
     fi
 
     if [[ ! -d $E4_PROV_DIR/$E4_PROV_KEY/${E4_APP_NAME}-home ]];

@@ -21,6 +21,8 @@ sed -i -e "s/export CATALINA_OPTS/CATALINA_OPTS=\"-Datlassian.webresource.disabl
 sed -i -e "s/-Xms\${JVM_MINIMUM_MEMORY}/-Xms${E4_NODE_HEAP}m/g" /jira/atlassian-jira-software-latest-standalone/bin/setenv.sh
 sed -i -e "s/-Xmx\${JVM_MAXIMUM_MEMORY}/-Xmx${E4_NODE_HEAP}m/g" /jira/atlassian-jira-software-latest-standalone/bin/setenv.sh
 
+cp /e4prov/mysql-connector.jar /jira/atlassian-jira-software-latest-standalone/atlassian-jira/WEB-INF/lib
+
 # RESTORE HOME DIR
 if [[ "${NODE_NUMBER}" = "1" ]]
 then
@@ -30,8 +32,8 @@ then
     if [[ -d /e4prov/$E4_PROV_KEY ]];
       then
       echo ">>> docker-entrypoint: provisioning home dir for $E4_PROV_KEY"
-      cp -r /e4prov/$E4_PROV_KEY/jira-home/* /jira-home/
-      cp -r /e4prov/$E4_PROV_KEY/jira-shared-home/* /jira-shared-home/
+      cp -r /e4prov/$E4_PROV_KEY/jira-home/* /jira-home/ 2>/dev/null || :
+      cp -r /e4prov/$E4_PROV_KEY/jira-shared-home/* /jira-shared-home/ 2>/dev/null || :
     else
       echo ">>> No provision dir found. Starting from scratch."
     fi
