@@ -15,7 +15,7 @@ docker cp $(docker ps -qf "name=jira-cluster-$2-node1"):/jira-home/plugins $1/ji
 docker cp $(docker ps -qf "name=jira-cluster-$2-node1"):/jira-shared-home/data $1/jira-shared-home/
 docker cp $(docker ps -qf "name=jira-cluster-$2-node1"):/jira-shared-home/plugins $1/jira-shared-home/
 
-docker exec $(docker ps -qf "name=jira-cluster-$2-db") pg_dump -U jira -Fc jira > $1/jiradb.tar.gz
+docker exec $(docker ps -qf "name=jira-cluster-$2-db") mysqldump jira > $1/jiradb.sql
 
 tar cf $1.tar.gz $1
 
