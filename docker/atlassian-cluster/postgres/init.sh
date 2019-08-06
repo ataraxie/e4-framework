@@ -14,3 +14,4 @@ else
 fi
 
 echo ">>> E4 postgres-init DONE"
+echo "E4_DB_INIT_DONE"

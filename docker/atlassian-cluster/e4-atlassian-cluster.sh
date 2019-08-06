@@ -84,6 +84,29 @@ function start_instance_database {
         -d postgres:${POSTGRESQL_VERSION} -c max_connections=350 -c shared_buffers=2GB -c effective_cache_size=8GB -c checkpoint_timeout=5min -c wal_level=minimal -c autovacuum=off
 }
 
+function start_instance_database_mysql {
+    echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db."
+    docker run \
+        --rm \
+        --name ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db \
+        --net=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE} \
+        --net-alias=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db \
+        --env MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+        --env MYSQL_PASSWORD=${E4_APP_NAME} \
+        --env MYSQL_USER=${E4_APP_NAME} \
+        --env MYSQL_DATABASE=${E4_APP_NAME} \
+        --env E4_PROV_KEY=$E4_PROV_KEY \
+        --env E4_APP_NAME=$E4_APP_NAME \
+        -v $(pwd)/mysql:/docker-entrypoint-initdb.d \
+        -v $E4_PROV_DIR:/e4prov \
+        -d mysql:5.6 \
+        --transaction-isolation=READ-COMMITTED \
+        --max-allowed-packet=512M \
+        --default-storage-engine=INNODB \
+        --character-set-server=utf8mb4 \
+        --innodb-log-file-size=500M
+}
+
 function start_instance_loadbalancer {
     echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb."
     docker run \
@@ -380,7 +403,7 @@ then
     echo ""
 
     kill_instance_database
-    start_instance_database
+    start_instance_database_mysql
     echo ""
 
     kill_instance_loadbalancer
@@ -388,7 +411,7 @@ then
     echo ""
 
     echo ">>> Wait for database init to complete"
-    wait_for_logs_to_contain "db" "E4 postgres-init DONE"
+    wait_for_logs_to_contain "db" "E4_DB_INIT_DONE"
     sleep 5
 
     for (( node_id=1; node_id<=$SCALE; node_id++ ))
