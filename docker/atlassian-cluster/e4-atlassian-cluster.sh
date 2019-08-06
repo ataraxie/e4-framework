@@ -3,6 +3,7 @@
 set -e
 
 POSTGRESQL_VERSION="9.6"
+MYSQL_VERSION="5.6"
 
 export CLICOLOR=1
 C_RED='\x1B[31m'
@@ -99,7 +100,7 @@ function start_instance_database_mysql {
 		--env E4_APP_NAME=$E4_APP_NAME \
 		-v $(pwd)/mysql:/docker-entrypoint-initdb.d \
 		-v $E4_PROV_DIR:/e4prov \
-		-d mysql:5.6 \
+		-d mysql:${MYSQL_VERSION} \
 		--transaction-isolation=READ-COMMITTED \
 		--max-allowed-packet=512M \
 		--default-storage-engine=INNODB \
