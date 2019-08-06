@@ -139,7 +139,7 @@ function start_instance_node {
 		-v $(pwd)/${E4_APP_NAME}node:/e4work \
 		-v $E4_PROV_DIR:/e4prov \
 		--entrypoint /e4work/docker-entrypoint.sh \
-		-it codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
+		-d codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
 }
 
 function download_synchrony {
@@ -289,6 +289,11 @@ case $key in
 	E4_APP_VERSION="$2"
 	E4_APP_VERSION_DOTFREE=${E4_APP_VERSION//\./}
 	E4_LB_PUBLIC_PORT=$(expr "$([ "$E4_APP_NAME" == "jira" ] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
+    if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE" -lt "800" ]];
+	then
+        E4_LB_PUBLIC_PORT="60${E4_APP_VERSION_DOTFREE}"
+	fi
+
 	shift
 	;;
 	-k|--provkey)
@@ -414,7 +419,7 @@ then
 	echo ""
 
 	kill_instance_database
-	if [[ "$E4_APP_NAME" = "jira" && ! -f $E4_PROV_DIR/mysql-connector.jar ]];
+	if [[ "$E4_APP_NAME" = "jira" ]];
 	then
 	  start_instance_database_mysql
 	else
