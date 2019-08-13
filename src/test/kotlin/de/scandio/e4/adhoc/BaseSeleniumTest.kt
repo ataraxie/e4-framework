@@ -27,14 +27,11 @@ abstract class BaseSeleniumTest {
 
     protected var driver: WebDriver? = null
     protected var util: Util? = null
-    protected var dom: DomHelper? = null
 
     protected var screenshotCount = 0
     protected var dumpCount = 0
 
     init {
-        newWebDriver()
-
         val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         loggerContext.getLogger("org.apache").level = Level.WARN
 
@@ -42,7 +39,6 @@ abstract class BaseSeleniumTest {
     }
 
     open fun refreshWebClient(login: Boolean = false, authenticate: Boolean = false) {
-        newWebDriver()
         setNewClients()
 
         if (login) {
@@ -52,24 +48,6 @@ abstract class BaseSeleniumTest {
         if (authenticate) {
             webClient().authenticateAdmin()
         }
-    }
-
-    fun newWebDriver() {
-        WebDriverManager.chromedriver().setup()
-
-        val chromeOptions = ChromeOptions()
-        chromeOptions.addArguments("--headless")
-        this.driver = ChromeDriver(chromeOptions)
-        (this.driver as ChromeDriver).manage().window().size = DEFAULT_DIMENSION
-        this.util = Util()
-
-        this.dom = DomHelper(driver as ChromeDriver, DEFAULT_DURATION, DEFAULT_DURATION)
-        val dom = this.dom!!
-        dom.defaultDuration = DEFAULT_DURATION
-        dom.defaultWaitTillPresent = DEFAULT_DURATION
-        dom.outDir = E4TestEnv.OUT_DIR
-        dom.screenshotBeforeClick = true
-        dom.screenshotBeforeInsert = true
     }
 
     fun setNewClients() {

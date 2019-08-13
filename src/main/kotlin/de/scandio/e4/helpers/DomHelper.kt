@@ -16,7 +16,7 @@ import java.time.Duration
 
 class DomHelper(
         val driver: WebDriver,
-        var defaultDuration: Long = 40,
+        var defaultDuration: Long = 30,
         var defaultWaitTillPresent: Long = 10,
         var screenshotBeforeClick: Boolean = false,
         var screenshotBeforeInsert: Boolean = false,
@@ -76,7 +76,7 @@ class DomHelper(
     }
 
     fun awaitElementPresent(selector: String, duration: Long = this.defaultDuration) {
-        log.debug("Waiting for element {{}} to be present for {{}} seconds", duration, selector)
+        log.debug("Waiting for element {{}} to be present for {{}} seconds", selector, duration)
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
@@ -98,8 +98,8 @@ class DomHelper(
         wait(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(By.cssSelector(selector))), duration)
     }
 
-    fun awaitHasText(selector: String, text: String) {
-        wait(ExpectedConditions.textToBePresentInElement(findElement(selector), text))
+    fun awaitHasText(selector: String, text: String, duration: Long = this.defaultDuration) {
+        wait(ExpectedConditions.textToBePresentInElement(findElement(selector), text), duration)
     }
 
     fun awaitHasValue(selector: String, value: String) {
