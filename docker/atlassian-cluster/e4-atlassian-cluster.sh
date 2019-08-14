@@ -140,7 +140,7 @@ function start_instance_node {
 		-v $(pwd)/${E4_APP_NAME}node:/e4work \
 		-v $E4_PROV_DIR:/e4prov \
 		--entrypoint /e4work/docker-entrypoint.sh \
-		-it codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
+		-d codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
 }
 
 function download_synchrony {
