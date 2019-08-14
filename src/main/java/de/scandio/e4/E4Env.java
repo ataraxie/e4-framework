@@ -6,7 +6,7 @@ import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.WebClient;
 import org.apache.commons.lang3.StringUtils;
 
-public class E4TestEnv {
+public class E4Env {
 
 	public static final ApplicationName APPLICATION_NAME = ApplicationName.valueOf(getenv("E4_APPLICATION_NAME", "confluence"));
 	public static final String APPLICATION_BASE_URL = resolveBaseUrl("E4_APPLICATION_BASE_URL", "http://confluence-cluster-6153-lb:26153/");
@@ -22,29 +22,19 @@ public class E4TestEnv {
 	public static final String APP_VERSION = getenv("E4_APP_VERSION", "");
 	public static final String APP_LICENSE = getenv("E4_APP_LICENSE", "");
 
+	public static final boolean ENABLE_DUMPING = "true".equals(getenv("E4_ENABLE_DUMPING", "false"));
+
 	public static String resolveBaseUrl(String varName, String defaultValue) {
 		String url = getenv(varName, defaultValue);
 		return url.endsWith("/") ? url : url + "/";
 	}
 
-	public static String getenv(String envVarKey, boolean required, String defaultValue) throws IllegalArgumentException {
+	public static String getenv(String envVarKey, String defaultValue) throws IllegalArgumentException {
 		String envVarValue = System.getenv(envVarKey);
 		if (StringUtils.isBlank(envVarValue)) {
-			if (required) {
-				throw new IllegalArgumentException("Environment variable needs to be set: " + envVarKey);
-			} else {
-				envVarValue = defaultValue;
-			}
+			envVarValue = defaultValue;
 		}
 		return envVarValue;
-	}
-
-	public static String getenv(String envVarKey, String defaultValue) {
-		return getenv(envVarKey, false, defaultValue);
-	}
-
-	public static String getenv(String envVarKey) {
-		return getenv(envVarKey, false, null);
 	}
 
 	public static WebClient newAdminTestWebClient() throws Exception {
@@ -53,7 +43,7 @@ public class E4TestEnv {
 	}
 
 	public static RestClient newAdminTestRestClient() {
-		return ClientFactory.newRestClient(APPLICATION_NAME, null,APPLICATION_BASE_URL,
+		return ClientFactory.newRestClient(APPLICATION_NAME, null, APPLICATION_BASE_URL,
 				USER_NAME, USER_PASSWORD);
 	}
 }

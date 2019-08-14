@@ -2,17 +2,13 @@ package de.scandio.e4.adhoc
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
-import de.scandio.e4.E4TestEnv
-import de.scandio.e4.helpers.DomHelper
+import de.scandio.e4.E4Env
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.Util
-import io.github.bonigarcia.wdm.WebDriverManager
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
 import org.slf4j.LoggerFactory
 
 abstract class BaseSeleniumTest {
@@ -51,8 +47,8 @@ abstract class BaseSeleniumTest {
     }
 
     fun setNewClients() {
-        this.webClient = E4TestEnv.newAdminTestWebClient()
-        this.restClient = E4TestEnv.newAdminTestRestClient()
+        this.webClient = E4Env.newAdminTestWebClient()
+        this.restClient = E4Env.newAdminTestRestClient()
     }
 
     open fun shot() {

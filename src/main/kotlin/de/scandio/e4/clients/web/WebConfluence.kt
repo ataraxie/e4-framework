@@ -361,4 +361,16 @@ class WebConfluence(
         debugScreen("insertRandomImageFromPage-5")
     }
 
+    fun enterReadOnlyMode() {
+        navigateTo("admin/maintenance/edit.action")
+        dom.click("#readOnlyModeEnabled:not(:checked)")
+        dom.click("#confirm")
+    }
+
+    fun exitReadOnlyMode() {
+        navigateTo("admin/maintenance/edit.action")
+        dom.click("#readOnlyModeEnabled:checked")
+        dom.click("#confirm")
+    }
+
 }

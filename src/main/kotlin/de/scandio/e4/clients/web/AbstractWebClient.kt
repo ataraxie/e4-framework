@@ -1,5 +1,6 @@
 package de.scandio.e4.clients.web
 
+import de.scandio.e4.E4Env
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.worker.factories.ClientFactory
 import de.scandio.e4.worker.interfaces.WebClient
@@ -47,6 +48,12 @@ abstract class AbstractWebClient(
         this.driver.quit()
     }
 
+    fun debugScreen(snapshotName: String) {
+        if (E4Env.ENABLE_DUMPING) {
+            takeScreenshot(snapshotName)
+            dumpHtml(snapshotName)
+        }
+    }
 
     override fun takeScreenshot(screenshotName: String): String {
         var dest = ""

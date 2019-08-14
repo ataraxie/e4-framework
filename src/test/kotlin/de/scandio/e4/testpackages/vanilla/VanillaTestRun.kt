@@ -1,8 +1,7 @@
 package de.scandio.e4.testpackages.vanilla
 
-import de.scandio.e4.E4TestEnv
+import de.scandio.e4.E4Env
 import de.scandio.e4.testpackages.TestPackageTestRun
-import de.scandio.e4.testpackages.vanilla.actions.*
 import org.junit.Before
 import org.junit.Test
 
@@ -16,7 +15,7 @@ class VanillaTestRun : TestPackageTestRun() {
     @Test
     fun runTest() {
         val testPackage = VanillaTestPackage()
-        if (E4TestEnv.PREPARATION_RUN) {
+        if (E4Env.PREPARATION_RUN) {
             executeTestPackagePrepare(testPackage)
         } else {
             executeTestPackage(testPackage)

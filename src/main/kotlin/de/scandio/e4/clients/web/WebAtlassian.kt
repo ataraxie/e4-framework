@@ -1,5 +1,6 @@
 package de.scandio.e4.clients.web
 
+import de.scandio.e4.E4Env
 import org.openqa.selenium.*
 import java.lang.Exception
 import java.net.URI
@@ -64,13 +65,6 @@ abstract class WebAtlassian(
             dom.awaitSeconds(5) // TODO
             dom.click("$rowSelector .submit-license")
             dom.awaitSeconds(5) // TODO
-        }
-    }
-
-    fun debugScreen(snapshotName: String) {
-        if (log.isDebugEnabled) {
-            takeScreenshot(snapshotName)
-            dumpHtml(snapshotName)
         }
     }
 
