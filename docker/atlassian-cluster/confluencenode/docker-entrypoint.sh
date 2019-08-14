@@ -5,7 +5,7 @@ set -e
 umask u+rxw,g+rwx,o-rwx
 
 # BEGIN: EDIT
-# Given by --env: $E4_PROV_KEY, $E4_APP_VERSION, $E4_NODE_HEAP
+# Given by --env: $NODE_NUMBER, $E4_PROV_KEY, $E4_APP_VERSION, $E4_NODE_HEAP, $E4_APP_NAME
 E4_APP_VERSION_DOT_FREE=${E4_APP_VERSION//\./}
 # END: EDIT
 
@@ -46,9 +46,13 @@ export SYNCHRONY_URL="http://confluence-cluster-${E4_APP_VERSION_DOT_FREE}-lb:2$
 #
 NODE_ID="node${NODE_NUMBER}"
 sed -i -e "s/export CATALINA_OPTS/#replaced/g" /confluence/atlassian-confluence-latest/bin/setenv.sh
-echo -e "CATALINA_OPTS=\"-Dconfluence.cluster.node.name=${NODE_ID} \${CATALINA_OPTS}\"\n" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
-echo -e "CATALINA_OPTS=\"-Dsynchrony.service.url=http://confluence-cluster-${E4_APP_VERSION_DOT_FREE}-lb:${E4_APP_VERSION_DOT_FREE}/synchrony/v1 \${CATALINA_OPTS}\"\n" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
+echo -e "CATALINA_OPTS=\"-Dconfluence.cluster.node.name=${NODE_ID} \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
+echo -e "CATALINA_OPTS=\"-Dsynchrony.service.url=http://confluence-cluster-${E4_APP_VERSION_DOT_FREE}-lb:${E4_APP_VERSION_DOT_FREE}/synchrony/v1 \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
+echo -e "CATALINA_OPTS=\"-Datlassian.webresource.disable.minification=true \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
+echo -e "CATALINA_OPTS=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=500$NODE_NUMBER \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
+echo -e "CATALINA_OPTS=\"-Dupm.pac.disable=true \${CATALINA_OPTS}\" " >> /confluence/atlassian-confluence-latest/bin/setenv.sh
 echo -e "\nexport CATALINA_OPTS" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
+cat /confluence/atlassian-confluence-latest/bin/setenv.sh
 
 # BEGIN: edit
 echo "Node will start with a heap space of $E4_NODE_HEAP MB"
@@ -63,6 +67,11 @@ sed -i -e "s/port=\"8090\"/port=\"8090\" proxyName=\"${LB_NAME}\" proxyPort=\"${
 
 # BEGIN: EDIT
 sed -i -e "s/connectionTimeout=\"20000\"/connectionTimeout=\"30000\"/g" /confluence/atlassian-confluence-latest/conf/server.xml
+
+# Insert JNDI datasource (PQ testing)
+sed -i -e "s/<Manager pathname=\"\"\/>/<Resource name=\"jdbc\/confluence\" auth=\"Container\" type=\"javax.sql.DataSource\" username=\"confluence\" password=\"confluence\" driverClassName=\"org.postgresql.Driver\" url=\"jdbc:postgresql:\/\/confluence-cluster-$E4_APP_VERSION_DOT_FREE-db:5432\/confluence\" defaultTransactionIsolation=\"READ_COMMITTED\" validationQuery=\"Select 1\"\/><Manager pathname=\"\"\/>/g" /confluence/atlassian-confluence-latest/conf/server.xml
+
+# If you want to change maxThreads
 #sed -i -e "s/maxThreads=\"48\"/maxThreads=\"48\"/g" /confluence/atlassian-confluence-latest/conf/server.xml
 # END: EDIT
 
