@@ -293,7 +293,7 @@ case $key in
     if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE" -lt "800" ]];
 	then
         E4_LB_PUBLIC_PORT="60${E4_APP_VERSION_DOTFREE}"
-    elif [[ "$E4_APP_NAME" = "confluence" && "$E4_APP_VERSION_DOTFREE" -lt "680" ]];
+    elif [[ "$E4_APP_NAME" = "confluence" && "$E4_APP_VERSION_DOTFREE" -lt "6100" ]];
     then
         E4_LB_PUBLIC_PORT="50${E4_APP_VERSION_DOTFREE}"
 	fi
