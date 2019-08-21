@@ -184,6 +184,12 @@ class WebConfluence(
         publishPage(pageTitle, pageContentHtml)
     }
 
+    fun goToCreatePage(spaceKey: String, pageTitle: String) {
+        navigateTo("pages/createpage.action?spaceKey=$spaceKey")
+        dom.awaitElementPresent("#wysiwyg")
+        setPageTitleInEditor(pageTitle)
+    }
+
     fun setPageTitleInEditor(pageTitle: String) {
         dom.click("#content-title-div")
         dom.insertText("#content-title", pageTitle)
@@ -298,7 +304,8 @@ class WebConfluence(
     }
 
     fun insertMacroBody(macroId: String, htmlBody: String) {
-        dom.insertHtmlInEditor(".wysiwyg-macro[data-macro-name='$macroId']", htmlBody)
+        val macroBodySelector = ".wysiwyg-macro[data-macro-name=\"$macroId\"] .wysiwyg-macro-body"
+        dom.executeScript("$('#wysiwygTextarea_ifr').contents().find('$macroBodySelector').html('$htmlBody')")
     }
 
     fun actionBuilder(): Actions {

@@ -8,8 +8,14 @@ import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.Util
 import org.openqa.selenium.Dimension
+import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebDriver
 import org.slf4j.LoggerFactory
+import java.awt.Color
+import java.util.regex.Pattern
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 abstract class BaseSeleniumTest {
 
@@ -86,6 +92,46 @@ abstract class BaseSeleniumTest {
                 dump()
                 shot()
             }
+        }
+    }
+
+    protected fun assertNoElement(selector: String) {
+        assertFailsWith<NoSuchElementException>{webClient().domHelper.findElement(selector)}
+    }
+
+    protected fun assertOneElement(selector: String) {
+        assertEquals(webClient().domHelper.findElements(selector).size, 1)
+    }
+
+    protected fun assertNumElements(num: Int, selector: String) {
+        assertEquals(num, webClient().domHelper.findElements(selector).size)
+    }
+
+    protected fun assertHasContent(selector: String, content: String) {
+        assertTrue(webClient().domHelper.findElement(selector).text.contains(content))
+    }
+
+    protected fun assertHasStyles(selector: String, styles: Map<String, String>) {
+        val elem = webClient().domHelper.findElement(selector)
+        for ((cssKey, cssValue) in styles) {
+            assertTrue(elem.getCssValue(cssKey).contains(cssValue))
+        }
+    }
+
+    protected fun assertAttributeContains(selector: String, attrName: String, attrValue: String) {
+        val elem = webClient().domHelper.findElement(selector)
+        assertTrue(elem.getAttribute(attrName).contains(attrValue))
+    }
+
+    protected fun assertBackgroundColor(selector: String, hexColor: String) {
+        val elem = webClient().domHelper.findElement(selector)
+        val background = elem.getCssValue("background")
+        if (background.contains("rgb(")) {
+            val color = Color.decode(hexColor)
+            val regex = Regex(".*rgb\\(${color.red},\\s?${color.green},\\s?${color.blue}\\).*")
+            assertTrue(background.matches(regex))
+        } else {
+            assertEquals(hexColor, background)
         }
     }
 

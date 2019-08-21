@@ -111,7 +111,7 @@ abstract class AbstractWebClient(
         return targetFiles
     }
 
-    fun getDomHelper(): DomHelper {
+    override fun getDomHelper(): DomHelper {
         return this.dom
     }
 

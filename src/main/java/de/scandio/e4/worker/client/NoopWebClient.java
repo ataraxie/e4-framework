@@ -1,11 +1,17 @@
 package de.scandio.e4.worker.client;
 
+import de.scandio.e4.helpers.DomHelper;
 import de.scandio.e4.worker.interfaces.WebClient;
 import org.openqa.selenium.WebDriver;
 
 public class NoopWebClient implements WebClient {
 	@Override
 	public WebDriver getWebDriver() {
+		return null;
+	}
+
+	@Override
+	public DomHelper getDomHelper() {
 		return null;
 	}
 

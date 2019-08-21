@@ -57,9 +57,13 @@ class DomHelper(
         select.selectByValue(value)
     }
 
-    fun executeScript(script: String): Any? {
+    fun executeScript(script: String, container: WebElement? = null): Any? {
         val js = driver as JavascriptExecutor
-        return js.executeScript(script)
+        return if (container == null) {
+            js.executeScript(script)
+        } else {
+            js.executeScript(script, container)
+        }
     }
 
     fun insertTextCodeMirror(value: String) {
@@ -108,6 +112,11 @@ class DomHelper(
 
     fun awaitSelected(selector: String) {
         wait(ExpectedConditions.elementToBeSelected(By.cssSelector(selector)))
+    }
+
+    fun isScrollbarVisible(selector: String): Boolean {
+        val elem = findElement(selector)
+        return executeScript("return arguments[0].scrollHeight > arguments[0].offsetHeight;", elem) as Boolean
     }
 
     fun insertText(selector: String, text: String, clearText: Boolean = false) {
@@ -216,7 +225,7 @@ class DomHelper(
 
     fun insertHtmlInEditor(containerSelector: String, html: String) {
         driver.switchTo().frame("wysiwygTextarea_ifr")
-        executeScript("$('$containerSelector').html('$html');")
+        executeScript("document.querySelectorAll('$containerSelector').innerHTML = 'TEST';")
         driver.switchTo().parentFrame()
     }
 
