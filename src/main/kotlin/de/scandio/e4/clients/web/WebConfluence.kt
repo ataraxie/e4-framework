@@ -121,25 +121,27 @@ class WebConfluence(
         dom.awaitMilliseconds(50)
     }
 
+    fun setMacroParameters(macroParameters: Map<String, String> = emptyMap()) {
+        for ((paramKey, paramValue) in macroParameters) {
+            val selector = "#macro-browser-dialog #macro-param-$paramKey"
+            val elem = dom.findElement(selector)
+            if ("select" == elem.tagName) {
+                dom.setSelectedOption(selector, paramValue)
+            } else if (elem.getAttribute("type") == "checkbox") {
+                if (elem.isSelected && paramValue == "false" || !elem.isSelected && paramValue == "true") {
+                    dom.click(elem)
+                }
+            }
+            else {
+                dom.insertText(selector, paramValue, true)
+            }
+        }
+    }
+
     fun insertMacro(macroId: String, macroSearchTerm: String, macroParameters: Map<String, String> = emptyMap()) {
         openMacroBrowser(macroId, macroSearchTerm)
         debugScreen("after-openMacroBrowser")
-        if (macroParameters.isNotEmpty()) {
-            for ((paramKey, paramValue) in macroParameters) {
-                val selector = "#macro-browser-dialog #macro-param-$paramKey"
-                val elem = dom.findElement(selector)
-                if ("select" == elem.tagName) {
-                    dom.setSelectedOption(selector, paramValue)
-                } else if (elem.getAttribute("type") == "checkbox") {
-                    if (elem.isSelected && paramValue == "false" || !elem.isSelected && paramValue == "true") {
-                        dom.click(elem)
-                    }
-                }
-                else {
-                    dom.insertText(selector, paramValue, true)
-                }
-            }
-        }
+        setMacroParameters(macroParameters)
         debugScreen("after-setParams")
         saveMacroBrowser()
     }

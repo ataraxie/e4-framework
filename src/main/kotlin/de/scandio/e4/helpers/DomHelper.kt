@@ -119,6 +119,16 @@ class DomHelper(
         return executeScript("return arguments[0].scrollHeight > arguments[0].offsetHeight;", elem) as Boolean
     }
 
+    fun scrollToBottom(selector: String) {
+        val elem = findElement(selector)
+        executeScript("arguments[0].scrollTo(0, arguments[0].scrollHeight)", elem)
+    }
+
+    fun scrollToTop(selector: String) {
+        val elem = findElement(selector)
+        executeScript("arguments[0].scrollTo(0, 0)", elem)
+    }
+
     fun insertText(selector: String, text: String, clearText: Boolean = false) {
         if (this.screenshotBeforeInsert) {
             this.util.takeScreenshot(driver, "$outDir/insert-$selector.png")

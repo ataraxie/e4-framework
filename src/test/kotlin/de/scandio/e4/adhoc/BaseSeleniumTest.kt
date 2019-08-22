@@ -5,6 +5,7 @@ import ch.qos.logback.classic.LoggerContext
 import de.scandio.e4.E4Env
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.TestPackage
+import de.scandio.e4.worker.interfaces.VirtualUser
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.Util
 import org.openqa.selenium.Dimension
@@ -49,6 +50,18 @@ abstract class BaseSeleniumTest {
 
         if (authenticate) {
             webClient().authenticateAdmin()
+        }
+    }
+
+    open fun executePrepare(testPackage: TestPackage) {
+        for (action in testPackage.setupActions) {
+            action.execute(webClient(), restClient())
+        }
+    }
+
+    open fun executeVirtualUser(virtualUser: VirtualUser) {
+        for (action in virtualUser.actions) {
+            action.execute(webClient(), restClient())
         }
     }
 
