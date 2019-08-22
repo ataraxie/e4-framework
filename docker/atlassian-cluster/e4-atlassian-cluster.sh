@@ -283,7 +283,7 @@ case $key in
 	;;
 	-n|--appname)
 	E4_APP_NAME="$2"
-	E4_APP_NAME_UCASE=$E4_APP_NAME
+	E4_APP_NAME_UCASE="$(echo "$E4_APP_NAME" | awk '{print toupper(substr($0,0,1))tolower(substr($0,2))}')"
 	shift
 	;;
 	-v|--version)
