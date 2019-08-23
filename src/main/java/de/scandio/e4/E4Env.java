@@ -18,7 +18,7 @@ public class E4Env {
 	public static final String APPLICATION_VERSION_DOT_FREE = APPLICATION_VERSION.replace(".", "");
 
 	public static final String APPLICATION_LICENSE = getenv("E4_APPLICATION_LICENSE", "");
-	public static final boolean PREPARATION_RUN = "true".equals(getenv("E4_PREPARATION_RUM", "false"));
+	public static final boolean PREPARATION_RUN = "true".equals(getenv("E4_PREPARATION_RUN", "false"));
 	public static final String APP_VERSION = getenv("E4_APP_VERSION", "");
 	public static final String APP_LICENSE = getenv("E4_APP_LICENSE", "");
 

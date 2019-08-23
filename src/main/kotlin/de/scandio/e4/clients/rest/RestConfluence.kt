@@ -233,4 +233,8 @@ class RestConfluence(
         sendPostRequest("rest/api/content/$contentId/label", body)
     }
 
+    fun spaceExists(spaceKey: String): Boolean {
+        return sendGetRequestReturnStatus("rest/api/space?spaceKey=$spaceKey") == 200;
+    }
+
 }

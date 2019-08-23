@@ -23,6 +23,8 @@
         <webdrivermanager.version>3.6.0</webdrivermanager.version>
 		<sqlite.version>3.27.2.1</sqlite.version>
 		<mockito.version>1.10.19</mockito.version>
+		<junit.platform.version>1.5.1</junit.platform.version>
+		<junit.jupiter.version>5.5.1</junit.jupiter.version>
 	</properties>
 
 	<dependencies>
@@ -32,8 +34,16 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-runner</artifactId>
+			<version>${junit.platform.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 
