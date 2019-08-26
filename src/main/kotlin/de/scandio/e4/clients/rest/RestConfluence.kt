@@ -234,7 +234,13 @@ class RestConfluence(
     }
 
     fun spaceExists(spaceKey: String): Boolean {
-        return sendGetRequestReturnStatus("rest/api/space?spaceKey=$spaceKey") == 200;
+        return try {
+            val response = sendGetRequestReturnResponse("rest/api/space?spaceKey=$spaceKey")
+            response.statusCodeValue == 200 && !response.body.contains("\"results\":[]")
+        } catch (e: Exception) {
+            log.warn("Error sending get request for spaceExists")
+            false
+        }
     }
 
 }
