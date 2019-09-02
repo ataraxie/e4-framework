@@ -10,6 +10,7 @@ sudo usermod -a -G docker ubuntu
 mkdir /home/ubuntu/e4prov
 echo "export E4_PROV_DIR=/home/ubuntu/e4prov" >> /home/ubuntu/.bashrc
 
-sudo apt-get install awscli
+echo "Done. If you want to use AWS, run 'sudo apt-get install awscli && aws configure'"
 
-aws configure
+#sudo apt-get install awscli
+#aws configure
