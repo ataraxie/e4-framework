@@ -8,12 +8,12 @@ import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.VirtualUser
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.Util
+import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebDriver
 import org.slf4j.LoggerFactory
 import java.awt.Color
-import java.util.regex.Pattern
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
