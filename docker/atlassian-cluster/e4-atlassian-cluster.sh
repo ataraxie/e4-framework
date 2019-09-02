@@ -23,23 +23,23 @@ contains() {
 	substring="$2"
 	if test "${string#*$substring}" != "$string"
 	then
-		return 0    # $substring is in $string
+		return 0		# $substring is in $string
 	else
-		return 1    # $substring is not in $string
+		return 1		# $substring is not in $string
 	fi
 }
 
 wait_for_logs_to_contain() {
 	while : ; do
-	  log_content=$(docker logs $(docker ps -qf "name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-$1") 2>&1)
-	  if contains "$log_content" "$2"
-	  then
+		log_content=$(docker logs $(docker ps -qf "name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-$1") 2>&1)
+		if contains "$log_content" "$2"
+		then
 		echo ""
 		break
-	  else
+		else
 		echo -n "."
 		sleep 1
-	  fi
+		fi
 	done
 }
 
@@ -56,10 +56,10 @@ function _kill_and_remove_named_instance_if_exists {
 	_is_named_container_running ${container_name} named_container_running_result
 	if (( named_container_running_result == 1 )) # arithmetic brackets ... woohoo
 	then
-		echo -e $C_CYN">> docker kill ........:${C_RST}${C_GRN} Killing${C_RST}   - Named container ${container_name} is running."
+		echo -e $C_CYN">> docker kill ........:${C_RST}${C_GRN} Killing${C_RST}	 - Named container ${container_name} is running."
 		docker kill ${container_name}
 	else
-		echo -e $C_CYN">> docker kill ........:${C_RST}${C_MGN} Skipping${C_RST}  - Named container ${container_name} is not running."
+		echo -e $C_CYN">> docker kill ........:${C_RST}${C_MGN} Skipping${C_RST}	- Named container ${container_name} is not running."
 	fi
 }
 
@@ -68,7 +68,7 @@ function kill_instance_loadbalancer {
 }
 
 function start_instance_database {
-	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db."
+	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}	- Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db."
 	docker run \
 		--rm \
 		--cpu-shares=512 \
@@ -86,7 +86,7 @@ function start_instance_database {
 }
 
 function start_instance_database_mysql {
-	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db."
+	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}	- Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db."
 	docker run \
 		--rm \
 		--name ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db \
@@ -109,7 +109,7 @@ function start_instance_database_mysql {
 }
 
 function start_instance_loadbalancer {
-	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb."
+	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}	- Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb."
 	docker run \
 		--rm \
 		--name ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb \
@@ -123,7 +123,7 @@ function start_instance_loadbalancer {
 }
 
 function start_instance_node {
-	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}  - Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node${1}."
+	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}	- Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node${1}."
 	docker run \
 		--rm \
 		--name ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node${1} \
@@ -167,7 +167,7 @@ function download_app {
 		tar xf $E4_PROV_DIR/$E4_PROV_KEY.tar.gz -C $E4_PROV_DIR
 
 		if [ "$E4_APP_NAME" = "confluence" ]; then
-		  cp $E4_PROV_DIR/synchrony-standalone.jar $E4_PROV_DIR/$E4_PROV_KEY/synchrony-standalone.jar
+			cp $E4_PROV_DIR/synchrony-standalone.jar $E4_PROV_DIR/$E4_PROV_KEY/synchrony-standalone.jar
 		fi
 
 		rm $E4_PROV_DIR/$E4_PROV_KEY.tar.gz
@@ -202,10 +202,10 @@ function clean_node_shared_home {
 	shared_home_exists=$(docker volume ls --filter "name=${volume_name}" --format '{{.Name}}' | wc -l | awk '{print $1}')
 	if (( shared_home_exists == 1 )) # arithmetic brackets ... woohoo
 	then
-		echo -e $C_CYN">> clean shared home ..:${C_RST}${C_GRN} Deleting${C_RST}  - Deleting existing volume ${volume_name}"
+		echo -e $C_CYN">> clean shared home ..:${C_RST}${C_GRN} Deleting${C_RST}	- Deleting existing volume ${volume_name}"
 		docker volume rm --force ${volume_name}
 	fi
-	echo -e $C_CYN">> clean shared home ..:${C_RST}${C_GRN} Creating${C_RST}  - Creating volume ${volume_name}"
+	echo -e $C_CYN">> clean shared home ..:${C_RST}${C_GRN} Creating${C_RST}	- Creating volume ${volume_name}"
 	docker volume create ${volume_name}
 }
 
@@ -214,9 +214,9 @@ function create_network {
 	network_exists=$(docker network ls --filter "name=${network_name}" --format '{{.Name}}' | wc -l | awk '{print $1}')
 	if (( network_exists == 1 )) # arithmetic brackets ... woohoo
 	then
-		echo -e $C_CYN">> docker network .....:${C_RST}${C_MGN} Skipping${C_RST}  - Network ${network_name} exists already."
+		echo -e $C_CYN">> docker network .....:${C_RST}${C_MGN} Skipping${C_RST}	- Network ${network_name} exists already."
 	else
-		echo -e $C_CYN">> docker network .....:${C_RST}${C_GRN} Creating${C_RST}  - Creating network ${network_name}."
+		echo -e $C_CYN">> docker network .....:${C_RST}${C_GRN} Creating${C_RST}	- Creating network ${network_name}."
 		docker network create ${network_name}
 	fi
 }
@@ -238,26 +238,26 @@ function get_running_node_name_array {
 
 function kill_all_running_nodes {
 	# NOTE: We must get all names to kill them, since e.g. node1,node4,node5 could be running
-	#       so we cannot just use a dumb counter starting from 1!
+	#			 so we cannot just use a dumb counter starting from 1!
 	local running_node_count=0
 	get_running_node_count running_node_count
 	if (( running_node_count > 0 )) # arithmetic brackets ... woohoo
 	then
-		echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_GRN} Killing${C_RST}   - Killing all running ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* instances."
+		echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_GRN} Killing${C_RST}	 - Killing all running ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* instances."
 		local running_instance_names=""
 		get_running_node_name_array running_instance_names
 		local running_instance_names_array=($running_instance_names)
 		for running_instance_name in "${running_instance_names_array[@]}"
 		do
-		   _kill_and_remove_named_instance_if_exists ${running_instance_name}
+			 _kill_and_remove_named_instance_if_exists ${running_instance_name}
 		done
 	else
-		echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_MGN} Skipping${C_RST}  - No running ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* instances present."
+		echo -e $C_CYN">> docker kill nodes ..:${C_RST}${C_MGN} Skipping${C_RST}	- No running ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* instances present."
 	fi
 }
 
 function remove_all_dangling_nodes {
-	echo -e $C_CYN">> docker rm images ...:${C_RST}${C_GRN} Removing${C_RST}  - Removing dangling ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* images."
+	echo -e $C_CYN">> docker rm images ...:${C_RST}${C_GRN} Removing${C_RST}	- Removing dangling ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node* images."
 	local dangling_ids=$(docker images | grep ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-node | awk '{ print $3 }')
 	for dangling_id in $dangling_ids
 	do
@@ -303,12 +303,12 @@ case $key in
 	E4_APP_VERSION="$2"
 	E4_APP_VERSION_DOTFREE=${E4_APP_VERSION//\./}
 	E4_LB_PUBLIC_PORT=$(expr "$([ "$E4_APP_NAME" == "jira" ] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
-    if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE" -lt "800" ]];
+		if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE" -lt "800" ]];
 	then
-        E4_LB_PUBLIC_PORT="60${E4_APP_VERSION_DOTFREE}"
-    elif [[ "$E4_APP_NAME" = "confluence" && "$E4_APP_VERSION_DOTFREE" -lt "6100" ]];
-    then
-        E4_LB_PUBLIC_PORT="50${E4_APP_VERSION_DOTFREE}"
+				E4_LB_PUBLIC_PORT="60${E4_APP_VERSION_DOTFREE}"
+		elif [[ "$E4_APP_NAME" = "confluence" && "$E4_APP_VERSION_DOTFREE" -lt "6100" ]];
+		then
+				E4_LB_PUBLIC_PORT="50${E4_APP_VERSION_DOTFREE}"
 	fi
 
 	shift
@@ -322,7 +322,7 @@ case $key in
 	shift
 	;;
 	*)
-	   # unknown option
+		 # unknown option
 	;;
 esac
 shift
@@ -330,16 +330,16 @@ done
 
 
 echo ""
-echo -e $C_MGN'      __  ___                                ________           __           '$C_RST
-echo -e $C_MGN'     /  |/  /___ _____  ____ _____ ____     / ____/ /_  _______/ /____  _____'$C_RST
-echo -e $C_MGN'    / /|_/ / __ `/ __ \/ __ `/ __ `/ _ \   / /   / / / / / ___/ __/ _ \/ ___/'$C_RST
-echo -e $C_MGN'   / /  / / /_/ / / / / /_/ / /_/ /  __/  / /___/ / /_/ (__  ) /_/  __/ /    '$C_RST
-echo -e $C_MGN'  /_/  /_/\__,_/_/ /_/\__,_/\__, /\___/   \____/_/\__,_/____/\__/\___/_/     '$C_RST
-echo -e $C_MGN'                           /____/                                            '$C_RST
+echo -e $C_MGN'			__	___																________					 __					 '$C_RST
+echo -e $C_MGN'		 /	|/	/___ _____	____ _____ ____		 / ____/ /_	_______/ /____	_____'$C_RST
+echo -e $C_MGN'		/ /|_/ / __ `/ __ \/ __ `/ __ `/ _ \	 / /	 / / / / / ___/ __/ _ \/ ___/'$C_RST
+echo -e $C_MGN'	 / /	/ / /_/ / / / / /_/ / /_/ /	__/	/ /___/ / /_/ (__	) /_/	__/ /		'$C_RST
+echo -e $C_MGN'	/_/	/_/\__,_/_/ /_/\__,_/\__, /\___/	 \____/_/\__,_/____/\__/\___/_/		 '$C_RST
+echo -e $C_MGN'													 /____/																						'$C_RST
 echo ""
-echo -e $C_MGN'  Manage local data center cluster with Docker'$C_RST
-echo -e $C_MGN"  ${E4_APP_NAME_UCASE} Version: ${E4_APP_VERSION}"$C_RST
-echo -e $C_MGN'  ------'$C_RST
+echo -e $C_MGN'	Manage local data center cluster with Docker'$C_RST
+echo -e $C_MGN"	${E4_APP_NAME_UCASE} Version: ${E4_APP_VERSION}"$C_RST
+echo -e $C_MGN'	------'$C_RST
 echo ""
 
 EXIT=0
@@ -401,48 +401,48 @@ fi
 
 if [ "$ACTION" == "create" ]
 then
-	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} CREATE${C_RST}    - Creating new cluster and destroying existing if exists"$C_RST
+	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} CREATE${C_RST}		- Creating new cluster and destroying existing if exists"$C_RST
 	echo ""
 
 	E4_USE_AWS=false
-    if ! [ -x "$(command -v ws)" ]; then
-      if aws s3 ls "s3://e4prov" 2>&1 | grep -q 'NoSuchBucket'; then
-        echo "Did not find bucket s3://e4prov. Using wget/curl for downloads."
-      else
-        echo "Found bucket s3://e4prov. Using aws-cli for downloads."
-        E4_USE_AWS=true
-      fi
-    fi
+		if ! [ -x "$(command -v ws)" ]; then
+			if aws s3 ls "s3://e4prov" 2>&1 | grep -q 'NoSuchBucket'; then
+				echo "Did not find bucket s3://e4prov. Using wget/curl for downloads."
+			else
+				echo "Found bucket s3://e4prov. Using aws-cli for downloads."
+				E4_USE_AWS=true
+			fi
+		fi
 
 	if [[ "$E4_APP_NAME" = "confluence" && ! -f $E4_PROV_DIR/synchrony-standalone.jar ]];
 	then
-	  if [[ "$E4_USE_AWS" = true ]]; then
-	    download_synchrony
-      else
-        download_synchrony_curl
-      fi
+		if [[ "$E4_USE_AWS" = true ]]; then
+			download_synchrony
+			else
+				download_synchrony_curl
+			fi
 	fi
 
 	if [[ "$E4_APP_NAME" = "jira" && ! -f $E4_PROV_DIR/mysql-connector.jar ]];
 	then
-	  if [[ "$E4_USE_AWS" = true ]]; then
-	    download_mysql_connector
-      else
-        download_mysql_connector_curl
-      fi
+		if [[ "$E4_USE_AWS" = true ]]; then
+				download_mysql_connector
+			else
+				download_mysql_connector_curl
+		 	fi
 	fi
 
 	if [[ ! -d $E4_PROV_DIR/$E4_PROV_KEY/${E4_APP_NAME}-home ]];
 	then
-	  echo ">> Download provisioning set for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
-	  if [[ "$E4_USE_AWS" = true ]]; then
-        download_app $E4_PROV_KEY
-	  else
-	    download_app_curl $E4_PROV_KEY
-	  fi
+		echo ">> Download provisioning set for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
+		if [[ "$E4_USE_AWS" = true ]]; then
+				download_app $E4_PROV_KEY
+		else
+			download_app_curl $E4_PROV_KEY
+		fi
 
 	else
-	  echo ">> Provision resources found for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
+		echo ">> Provision resources found for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
 	fi
 	chmod -R 777 $E4_PROV_DIR
 
@@ -461,9 +461,9 @@ then
 	kill_instance_database
 	if [[ "$E4_APP_NAME" = "jira" ]];
 	then
-	  start_instance_database_mysql
+		start_instance_database_mysql
 	else
-	  start_instance_database
+		start_instance_database
 	fi
 
 	echo ""
@@ -482,8 +482,8 @@ then
 		start_instance_node $node_id
 		if [[ "${node_id}" = "1" ]];
 		then
-		  echo ">>> Wait for node 1 to be fully started"
-		  wait_for_logs_to_contain "node1" "Server startup in"
+			echo ">>> Wait for node 1 to be fully started"
+			wait_for_logs_to_contain "node1" "Server startup in"
 		fi
 	echo ""
 	done
@@ -501,7 +501,7 @@ fi
 
 if [ "$ACTION" == "destroy" ]
 then
-	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} DESTROY${C_RST}   - Shutting down cluster and destroying instances."$C_RST
+	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} DESTROY${C_RST}	 - Shutting down cluster and destroying instances."$C_RST
 	echo ""
 
 	kill_all_running_nodes
@@ -516,14 +516,14 @@ fi
 
 if [ "$ACTION" == "update" ]
 then
-	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} UPDATE${C_RST}    - Update running cluster."$C_RST
+	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} UPDATE${C_RST}		- Update running cluster."$C_RST
 	echo ""
 
 	running_node_count=0
 	get_running_node_count running_node_count
 	if (( running_node_count > 0 )) # arithmetic brackets ... woohoo
 	then
-		echo -e $C_CYN">> update .............:${C_RST}${C_GRN} OK${C_RST}        - currently ${running_node_count} ${E4_APP_NAME_UCASE} nodes are running. Cluster should be scaled to ${SCALE} ${E4_APP_NAME_UCASE} nodes."$C_RST
+		echo -e $C_CYN">> update .............:${C_RST}${C_GRN} OK${C_RST}				- currently ${running_node_count} ${E4_APP_NAME_UCASE} nodes are running. Cluster should be scaled to ${SCALE} ${E4_APP_NAME_UCASE} nodes."$C_RST
 		start_node_id=$(($running_node_count + 1))
 		for (( node_id=$start_node_id; node_id<=$SCALE; node_id++ ))
 		do
@@ -538,7 +538,7 @@ then
 		start_instance_loadbalancer $SCALE
 		echo ""
 	else
-		echo -e $C_CYN">> update .............:${C_RST}${C_RED} FAIL${C_RST}      - currently 0 ${E4_APP_NAME_UCASE} nodes are running. Try to create the cluster first."$C_RST
+		echo -e $C_CYN">> update .............:${C_RST}${C_RED} FAIL${C_RST}			- currently 0 ${E4_APP_NAME_UCASE} nodes are running. Try to create the cluster first."$C_RST
 	fi
 	echo ""
 fi
@@ -555,12 +555,12 @@ fi
 
 if [ "$ACTION" == "info" ]
 then
-	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} INFO${C_RST}      - Cluster information."$C_RST
+	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} INFO${C_RST}			- Cluster information."$C_RST
 	echo ""
 
 	running_node_count=0
 	get_running_node_count running_node_count
-	echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} OK${C_RST}        - currently ${running_node_count} ${E4_APP_NAME_UCASE} node(s) are running. Showing 'docker ps' for cluster:"$C_RST
+	echo -e $C_CYN">> info ...............:${C_RST}${C_GRN} OK${C_RST}				- currently ${running_node_count} ${E4_APP_NAME_UCASE} node(s) are running. Showing 'docker ps' for cluster:"$C_RST
 	echo ""
 	docker ps --format '{{.ID}}\t {{.Names}}\t {{.Ports}}' --filter "name=${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-*"
 	echo ""
