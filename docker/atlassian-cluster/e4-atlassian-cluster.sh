@@ -186,7 +186,7 @@ function download_mysql_connector_curl {
 }
 
 function download_app_curl {
-	echo ">>> Attempting to download via CURL: aws s3 cp s3://e4prov/$E4_PROV_KEY.tar.gz $E4_PROV_DIR/"
+	echo ">>> Attempting to download via CURL"
 }
 
 function kill_instance_database {
