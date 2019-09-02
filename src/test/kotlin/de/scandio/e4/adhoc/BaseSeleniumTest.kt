@@ -8,7 +8,6 @@ import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.interfaces.VirtualUser
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.Util
-import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebDriver
