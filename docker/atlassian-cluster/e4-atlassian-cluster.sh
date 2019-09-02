@@ -405,7 +405,7 @@ then
 	echo ""
 
 	E4_USE_AWS=false
-		if ! [ -x "$(command -v aws)" ]; then
+		if [ -x "$(command -v aws)" ]; then
 			if aws s3 ls "s3://e4prov" 2>&1 | grep -q 'NoSuchBucket'; then
 				echo "Did not find bucket s3://e4prov. Using wget/curl for downloads."
 			else
