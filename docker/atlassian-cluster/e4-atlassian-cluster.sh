@@ -257,6 +257,7 @@ function print_cluster_ready_info {
 	echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
 	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} Ready${C_RST} - You can now access ${E4_APP_NAME} through your browser."
 	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
+	echo -e $C_CYN">> Note: do not forget to add your hostname to /etc/hosts - IP_ADDRESS ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb"
 	echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
 }
 
@@ -326,7 +327,6 @@ echo -e $C_MGN'                           /____/                                
 echo ""
 echo -e $C_MGN'  Manage local data center cluster with Docker'$C_RST
 echo -e $C_MGN"  ${E4_APP_NAME_UCASE} Version: ${E4_APP_VERSION}"$C_RST
-echo -e $C_MGN"  PostgreSQL Version: ${POSTGRESQL_VERSION}"$C_RST
 echo -e $C_MGN'  ------'$C_RST
 echo ""
 
