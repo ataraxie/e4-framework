@@ -115,7 +115,7 @@ A few environment variables should be set to make this know where things a are:
 * `E4_USER_PASSWORD`: password of an admin user in the application (default: `admin`)
 * `E4_IN_DIR`: path to directory where files needed for a test package are located (default: `./target/in`)
 * `E4_OUT_DIR`: path to directory where output files from E4 are produced (default: `./target/out`)
-* `E4_PREPARATION_RUM`: set this to `true` if you want to simulate a preparation run (default: `false`)
+* `E4_PREPARATION_RUN`: set this to `true` if you want to simulate a preparation run (default: `false`)
 
 We used IntelliJ to set the environment variables and then run the unit tests.
 It looks like this for the `VanillaTestPackage`:

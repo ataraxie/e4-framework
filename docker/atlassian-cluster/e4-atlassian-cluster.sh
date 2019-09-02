@@ -144,19 +144,19 @@ function start_instance_node {
 }
 
 function download_synchrony {
-	echo ">>> Download synchrony jar"
+	echo ">>> Download synchrony jar via AWS"
 	mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
 	aws s3 cp s3://e4prov/synchrony-standalone.jar $E4_PROV_DIR/
 }
 
 function download_mysql_connector {
-	echo ">>> Download mysql connector"
+	echo ">>> Download mysql connector via AWS"
 	mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
 	aws s3 cp s3://e4prov/mysql-connector.jar $E4_PROV_DIR/
 }
 
 function download_app {
-	echo ">>> Attempting to download: aws s3 cp s3://e4prov/$E4_PROV_KEY.tar.gz $E4_PROV_DIR/"
+	echo ">>> Attempting to download via AWS: aws s3 cp s3://e4prov/$E4_PROV_KEY.tar.gz $E4_PROV_DIR/"
 	if aws s3 ls "s3://e4prov" | grep "$E4_PROV_KEY.tar.gz" > /dev/null
 	then
 		echo ">> Provision file found"
@@ -175,6 +175,18 @@ function download_app {
 		echo ">> WARN ........: Provision file not found. Starting empty."
 		sleep 3
 	fi
+}
+
+function download_synchrony_curl {
+	echo ">>> Download synchrony jar via CURL"
+}
+
+function download_mysql_connector_curl {
+	echo ">>> Download mysql connector via CURL"
+}
+
+function download_app_curl {
+	echo ">>> Attempting to download via CURL: aws s3 cp s3://e4prov/$E4_PROV_KEY.tar.gz $E4_PROV_DIR/"
 }
 
 function kill_instance_database {
@@ -392,20 +404,43 @@ then
 	echo -e $C_CYN">> action .............:${C_RST}${C_GRN} CREATE${C_RST}    - Creating new cluster and destroying existing if exists"$C_RST
 	echo ""
 
+	E4_USE_AWS=false
+    if ! [ -x "$(command -v ws)" ]; then
+      if aws s3 ls "s3://e4prov" 2>&1 | grep -q 'NoSuchBucket'; then
+        echo "Did not find bucket s3://e4prov. Using wget/curl for downloads."
+      else
+        echo "Found bucket s3://e4prov. Using aws-cli for downloads."
+        E4_USE_AWS=true
+      fi
+    fi
+
 	if [[ "$E4_APP_NAME" = "confluence" && ! -f $E4_PROV_DIR/synchrony-standalone.jar ]];
 	then
-	  download_synchrony
+	  if [[ "$E4_USE_AWS" = true ]]; then
+	    download_synchrony
+      else
+        download_synchrony_curl
+      fi
 	fi
 
 	if [[ "$E4_APP_NAME" = "jira" && ! -f $E4_PROV_DIR/mysql-connector.jar ]];
 	then
-	  download_mysql_connector
+	  if [[ "$E4_USE_AWS" = true ]]; then
+	    download_mysql_connector
+      else
+        download_mysql_connector_curl
+      fi
 	fi
 
 	if [[ ! -d $E4_PROV_DIR/$E4_PROV_KEY/${E4_APP_NAME}-home ]];
 	then
 	  echo ">> Download provisioning set for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
-	  download_app $E4_PROV_KEY
+	  if [[ "$E4_USE_AWS" = true ]]; then
+        download_app $E4_PROV_KEY
+	  else
+	    download_app_curl $E4_PROV_KEY
+	  fi
+
 	else
 	  echo ">> Provision resources found for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
 	fi
