@@ -32,8 +32,8 @@ then
     if [[ -d /e4prov/$E4_PROV_KEY ]];
       then
       echo ">>> docker-entrypoint: provisioning home dir for $E4_PROV_KEY"
-      cp -r /e4prov/$E4_PROV_KEY/jira-home/* /jira-home/ 2>/dev/null || :
-      cp -r /e4prov/$E4_PROV_KEY/jira-shared-home/* /jira-shared-home/ 2>/dev/null || :
+      cp -r /e4prov/$E4_PROV_KEY/jira-home/* /jira-home/ #2>/dev/null || :
+      cp -r /e4prov/$E4_PROV_KEY/jira-shared-home/* /jira-shared-home/ #2>/dev/null || :
     else
       echo ">>> No provision dir found. Starting from scratch."
     fi

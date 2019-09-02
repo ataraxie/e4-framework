@@ -3,7 +3,7 @@
 set -e
 
 POSTGRESQL_VERSION="9.6"
-MYSQL_VERSION="5.6"
+MYSQL_VERSION="5.7"
 
 export CLICOLOR=1
 C_RED='\x1B[31m'
@@ -409,6 +409,7 @@ then
 	else
 	  echo ">> Provision resources found for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
 	fi
+	chmod -R 777 $E4_PROV_DIR
 
 	create_network
 	echo ""
