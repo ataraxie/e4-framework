@@ -418,25 +418,25 @@ then
 	then
 		if [[ "$E4_USE_AWS" = true ]]; then
 			download_synchrony
-			else
-				download_synchrony_curl
-			fi
+		else
+			download_synchrony_curl
+		fi
 	fi
 
 	if [[ "$E4_APP_NAME" = "jira" && ! -f $E4_PROV_DIR/mysql-connector.jar ]];
 	then
 		if [[ "$E4_USE_AWS" = true ]]; then
-				download_mysql_connector
-			else
-				download_mysql_connector_curl
-		 	fi
+			download_mysql_connector
+		else
+			download_mysql_connector_curl
+		fi
 	fi
 
 	if [[ ! -d $E4_PROV_DIR/$E4_PROV_KEY/${E4_APP_NAME}-home ]];
 	then
 		echo ">> Download provisioning set for $E4_APP_NAME_UCASE $E4_APP_VERSION with key $E4_PROV_KEY"
 		if [[ "$E4_USE_AWS" = true ]]; then
-				download_app $E4_PROV_KEY
+			download_app $E4_PROV_KEY
 		else
 			download_app_curl $E4_PROV_KEY
 		fi
