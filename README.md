@@ -116,6 +116,7 @@ A few environment variables should be set to make this know where things a are:
 * `E4_IN_DIR`: path to directory where files needed for a test package are located (default: `./target/in`)
 * `E4_OUT_DIR`: path to directory where output files from E4 are produced (default: `./target/out`)
 * `E4_PREPARATION_RUN`: set this to `true` if you want to simulate a preparation run (default: `false`)
+* `E4_ENABLE_DUMPING`: dump screenshots and HTML snapshots for Selenium driver to `E4_OUT_DIR` (default: `true`)
 
 We used IntelliJ to set the environment variables and then run the unit tests.
 It looks like this for the `VanillaTestPackage`:
@@ -240,6 +241,8 @@ The parameters of the script are as follows:
   * `conf6153_large` - Confluence 6.15.3 with a large dataset
   * `jira830` - empty Jira 8.3.0 with setup completed
 * `nodeheap`: heap space to use for each node in MB. This will be set as both `-Xmx` and `-Xms` startup parameters.
+
+**Note**: the provided datasets ship with a 10 user timebomb license. To make the datasets work you will have to enter a proper (evaluation) license in the Confluence Admin UI.
 
 #### Stop data center application
 
