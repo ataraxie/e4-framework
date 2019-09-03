@@ -308,6 +308,12 @@ The logs of the container will produce this:
 2019-09-03 | 15:58:12.435 | main |  INFO | d.s.e4.E4Application | E4 Worker is running on: http://localhost:3000/ and waiting for commands.
 ```
 
+A note on *machine resources*: a worker will spin up a Headless Chrome instance for each virtual user of a test package.
+This requires some resources. In our experience, a simplistic formula that works quite well is `100MB RAM for one 
+virtual user and 1 CPU for 10 virtual users` (measurements taken from AWS). 
+So, for example, if you want to run 50 virtual users on one worker, the worker process will require roughly 
+`5GB RAM and 5 CPUs`.
+
 <a name="heading4"></a>
 ## How do I start an E4 client and tell workers what to do?
 
