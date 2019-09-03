@@ -143,6 +143,19 @@ function start_instance_node {
 		-d codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
 }
 
+function download_curl_fail_if_unavailable {
+	echo ">>> Download via CURL: $1"
+	mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
+	curl -f -o "$E4_PROV_DIR/$2" "$1"
+	if [[ $? -eq 0 ]]
+	then
+	  echo "Download successful"
+	else
+	  echo "Download failed. Exiting."
+	  exit 1
+	fi
+}
+
 function download_synchrony {
 	echo ">>> Download synchrony jar via AWS"
 	mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
@@ -155,6 +168,18 @@ function download_mysql_connector {
 	aws s3 cp s3://e4prov/mysql-connector.jar $E4_PROV_DIR/
 }
 
+function download_app_after_success {
+	  echo ">>> Output file: $E4_PROV_DIR/$E4_PROV_KEY.tar.gz"
+    echo ">>> Extracting archive"
+		tar xf $E4_PROV_DIR/$E4_PROV_KEY.tar.gz -C $E4_PROV_DIR
+		if [ "$E4_APP_NAME" = "confluence" ]; then
+			cp $E4_PROV_DIR/synchrony-standalone.jar $E4_PROV_DIR/$E4_PROV_KEY/synchrony-standalone.jar
+		fi
+
+		rm $E4_PROV_DIR/$E4_PROV_KEY.tar.gz
+}
+
+
 function download_app {
 	echo ">>> Attempting to download via AWS: aws s3 cp s3://e4prov/$E4_PROV_KEY.tar.gz $E4_PROV_DIR/"
 	if aws s3 ls "s3://e4prov" | grep "$E4_PROV_KEY.tar.gz" > /dev/null
@@ -162,15 +187,7 @@ function download_app {
 		echo ">> Provision file found"
 		mkdir -p $E4_PROV_DIR/$E4_PROV_KEY
 		aws s3 cp s3://e4prov/$E4_PROV_KEY.tar.gz $E4_PROV_DIR/
-		echo ">>> Output file: $E4_PROV_DIR/$E4_PROV_KEY.tar.gz"
-		echo ">>> Extracting archive"
-		tar xf $E4_PROV_DIR/$E4_PROV_KEY.tar.gz -C $E4_PROV_DIR
-
-		if [ "$E4_APP_NAME" = "confluence" ]; then
-			cp $E4_PROV_DIR/synchrony-standalone.jar $E4_PROV_DIR/$E4_PROV_KEY/synchrony-standalone.jar
-		fi
-
-		rm $E4_PROV_DIR/$E4_PROV_KEY.tar.gz
+		download_app_after_success
 	else
 		echo ">> WARN ........: Provision file not found. Starting empty."
 		sleep 3
@@ -178,15 +195,24 @@ function download_app {
 }
 
 function download_synchrony_curl {
-	echo ">>> Download synchrony jar via CURL"
+	download_curl_fail_if_unavailable "https://e4prov.s3.eu-central-1.amazonaws.com/synchrony-standalone.jar" "synchrony-standalone.jar"
 }
 
 function download_mysql_connector_curl {
-	echo ">>> Download mysql connector via CURL"
+	download_curl_fail_if_unavailable "https://e4prov.s3.eu-central-1.amazonaws.com/mysql-connector.jar" "mysql-connector.jar"
 }
 
 function download_app_curl {
-	echo ">>> Attempting to download via CURL"
+	url="https://e4prov.s3.eu-central-1.amazonaws.com/$E4_PROV_KEY.tar.gz"
+	echo ">>> Download via CURL: $url"
+	mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
+	curl -f -o "$E4_PROV_DIR/$E4_PROV_KEY.tar.gz" "$url"
+	if [[ $? -eq 0 ]]; then
+		download_app_after_success
+	else
+		echo ">> WARN ........: Provision file not found. Starting empty."
+		sleep 3
+	fi
 }
 
 function kill_instance_database {
@@ -269,7 +295,7 @@ function print_cluster_ready_info {
 	echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
 	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} Ready${C_RST} - You can now access ${E4_APP_NAME} through your browser."
 	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
-	echo -e $C_CYN">> Note: do not forget to add your hostname to /etc/hosts - IP_ADDRESS ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb"
+	echo ">> Note: do not forget to add your hostname to /etc/hosts - IP_ADDRESS ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb"
 	echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
 }
 
