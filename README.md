@@ -196,7 +196,9 @@ But it worked for us this way.
 
 ### How to start a Confluence Data Center test system
 
-You need some server with enough resources to run all parts of the cluster (i.e. all application nodes, database, load balancer). For a `small dataset`, 50/150/250 concurrent users, and 1/2/4 nodes, we used an `t2.2xlarge` (8 CPUs, 32 GB RAM, 20 GB storage) AWS EC2 instance. 
+You need some server with enough resources to run all parts of the cluster (i.e. all application nodes, database, 
+load balancer). For a `small dataset`, 50/150/250 concurrent users, and 1/2/4 nodes, we used an `t2.2xlarge` 
+(8 CPUs, 32 GB RAM, 20 GB storage) AWS EC2 instance. 
 For a `large dataset`, and the same configurations, we used a `c5n.9xlarge` (36 CPUs, 96 GB RAM, 50 GB storage) instance.
 In general, we have observed that demand of resources increases strongly with the size of the dataset.
 
