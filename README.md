@@ -50,7 +50,8 @@ For each of the points above there is a section in this documentation below:
 1. [How do I implement a test package?](#heading1)
 1. [How do I start a test instance?](#heading1)  (We provide a Docker tool suite to start a test Confluence/Jira instance based on a _large dataset_ as defined by Atlassian.)
 1. [How do I start workers and run a test package?](#heading3)
-1. [How do I collect and process data?](#heading4)
+1. [How do I start an E4 client and tell workers what to do?](#heading4)
+1. [How do I collect and process data?](#heading5)
 
 <a name="heading1"></a>
 ## How do I implement a test package?
@@ -203,7 +204,7 @@ All the instances were Ubuntu systems.
 Docker needs to be installed which we scripted with `./docker/atlassian-cluster/docker-install-ubuntu.sh`.
 This script will also create a directory for provisioning and set an environment variable accordingly.
 You can also just look at the script and execute the steps manually.
-In general the requirements are:
+In general the requirements are (Ubuntu example):
 
 1. Installed: `docker-ce`, `docker-ce-cli`, `containerd.io`
 1. Docker user setup: `sudo usermod -a -G docker ubuntu`
@@ -269,9 +270,50 @@ For example, the following command will add 3 nodes to the cluster:
 <a name="heading3"></a>
 ## How do I start workers and run a test package?
 
-tbd.
+Similar as with the data center machine, you'll need one or more machines to start workers. 
+We will show an example with only one machine.
+The requirements are (Ubuntu example):
+
+1. Installed: `docker-ce`, `docker-ce-cli`, `containerd.io`
+1. Docker user setup: `sudo usermod -a -G docker ubuntu`
+
+There is an installation script for Ubuntu `./docker/worker/docker-install-ubuntu.sh`. 
+Afterwards you'll need to re-login to your terminal.
+
+You can now start a worker with `./docker/worker/startworker.sh WORKER_PORT TARGET_SYSTEM_IP APP_NAME APP_VERSION_NODOTS`, where:
+* `WORKER_PORT`: the port where the worker will listen for requests from the client
+* `TARGET_SYSTEM_IP`: the IP address of the server where Confluence is running (must be accessible)
+* `APP_NAME`: name of the Atlassian product (e.g. "confluence")
+* `APP_VERSION_NODOTS`: version of the Atlassian products without dots (e.g. "6153" for Confluence version "6.15.3")
+
+This will start a worker Docker container which will wait for requests from the E4 client. 
+
+For example, this will start a worker container on port 3000 of the local machine, with a Confluence 6.15.3 host that is
+accessible at IP 18.194.234.155.
+
+```
+./docker/worker/startworker.sh 3000 18.194.234.155 confluence 6153
+```
+
+The logs of the container will produce this:
+
+```
+15:58:10.621 [main] INFO de.scandio.e4.E4Application - E4 in worker-only mode... Enjoy!
+15:58:10.624 [main] INFO de.scandio.e4.E4Application - Set custom output dir: /tmp/e4/out/3000
+15:58:10.624 [main] INFO de.scandio.e4.E4Application - Set custom input dir: /tmp/e4/in
+2019-09-03 | 15:58:11.126 | main |  INFO | d.s.e4.E4Application | Starting E4Application v0.0.1-SNAPSHOT on 6448d9dabef2 with PID 9 (/e4.jar started by root in /)
+2019-09-03 | 15:58:11.127 | main |  INFO | d.s.e4.E4Application | No active profile set, falling back to default profiles: default
+2019-09-03 | 15:58:12.214 | main |  INFO | d.s.e.w.s.StorageService | New DB created with driver SQLite JDBC
+2019-09-03 | 15:58:12.435 | main |  INFO | d.s.e4.E4Application | Started E4Application in 1.715 seconds (JVM running for 2.073)
+2019-09-03 | 15:58:12.435 | main |  INFO | d.s.e4.E4Application | E4 Worker is running on: http://localhost:3000/ and waiting for commands.
+```
 
 <a name="heading4"></a>
+## How do I start an E4 client and tell workers what to do?
+
+tbd.
+
+<a name="heading5"></a>
 ## How do I collect and process data?
 
 tbd.

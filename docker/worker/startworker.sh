@@ -3,11 +3,11 @@
 E4_DIR="/tmp/e4"
 E4_APP_LICENSE="$E4_APP_LICENSE"
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: e4run WORKER_PORT TARGET_SYSTEM_IP"
+if [ "$#" -ne 4 ]; then
+    echo "Usage: e4run WORKER_PORT TARGET_SYSTEM_IP APP_NAME APP_VERSION_NODOTS"
 else
     docker run -d \
-        --add-host="confluence-cluster-6153-lb:$2" \
+        --add-host="$3-cluster-$4-lb:$2" \
         --shm-size=2048m \
         -v "$E4_DIR:$E4_DIR" \
         -p "$1:$1" \
