@@ -48,7 +48,7 @@ You will need to:
 For each of the points above there is a section in this documentation below:
 
 1. [How do I implement a test package?](#heading1)
-1. [How do I start a test instance?](#heading1)  (We provide a Docker tool suite to start a test Confluence/Jira instance based on a _large dataset_ as defined by Atlassian.)
+1. [How do I start a test instance?](#heading2)  (We provide a Docker tool suite to start a test Confluence/Jira instance based on a _large dataset_ as defined by Atlassian.)
 1. [How do I start workers and run a test package?](#heading3)
 1. [How do I start an E4 client and tell workers what to do?](#heading4)
 1. [How do I collect and process data?](#heading5)
