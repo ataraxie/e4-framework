@@ -327,7 +327,8 @@ case $key in
 	;;
 	-v|--version)
 	E4_APP_VERSION="$2"
-	E4_APP_VERSION_DOTFREE=${E4_APP_VERSION//\./}
+	# extract a dotfree number from the version string (must also work with things like '7.0.1-beta1' => 701
+	E4_APP_VERSION_DOTFREE=${E4_APP_VERSION//\./} | sed 's/-.*//g'
 	E4_LB_PUBLIC_PORT=$(expr "$([ "$E4_APP_NAME" == "jira" ] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
 		if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE" -lt "800" ]];
 	then
