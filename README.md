@@ -20,13 +20,10 @@ Therefore, we designed E4 with the following goals in mind:
 
 ## Table of Contents
 
-* [Disclaimer](#disclaimer)
-* [Table of Contents](#table-of-contents)
-* [Why E4?](#why-e4-)
-* [How does it work?](#how-does-it-work-)
-* [What do I need to do to test my application?](#what-do-i-need-to-do-to-test-my-application-)
-* [How do I implement a test package?](#how-do-i-implement-a-test-package-)
-  + [What is a test package?](#what-is-a-test-package-)
+* [How does it work?](#how-does-it-work)
+* [What do I need to do to test my application?](#what-do-i-need-to-do-to-test-my-application)
+* [How do I implement a test package?](#how-do-i-implement-a-test-package)
+  + [What is a test package?](#what-is-a-test-package)
   + [Components of a test package](#components-of-a-test-package)
     - [TestPackage declarator](#testpackage-declarator)
     - [Virtual User](#virtual-user)
@@ -34,14 +31,14 @@ Therefore, we designed E4 with the following goals in mind:
     - [Developing a test package](#developing-a-test-package)
     - [Run the vanilla Confluence example yourself](#run-the-vanilla-confluence-example-yourself)
     - [Explaining test packages with the `VanillaTestPackage` example](#explaining-test-packages-with-the--vanillatestpackage--example)
-* [How do I start a test instance?](#how-do-i-start-a-test-instance-)
+* [How do I start a test instance?](#how-do-i-start-a-test-instance)
   + [How to start a Confluence Data Center test system](#how-to-start-a-confluence-data-center-test-system)
     - [Start data center application](#start-data-center-application)
     - [Stop data center application](#stop-data-center-application)
     - [Scale application nodes dynamically](#scale-application-nodes-dynamically)
-* [How do I start workers and run a test package?](#how-do-i-start-workers-and-run-a-test-package-)
-* [How do I start an E4 client and tell workers what to do?](#how-do-i-start-an-e4-client-and-tell-workers-what-to-do-)
-* [How do I collect and process data?](#how-do-i-collect-and-process-data-)
+* [How do I start workers and run a test package?](#how-do-i-start-workers-and-run-a-test-package)
+* [How do I start an E4 client and tell workers what to do?](#how-do-i-start-an-e4-client-and-tell-workers-what-to-do)
+* [How do I collect and process data?](#how-do-i-collect-and-process-data)
 
 ## How does it work?
 
@@ -73,11 +70,11 @@ You will need to:
 
 For each of the points above there is a section in this documentation below:
 
-1. [How do I implement a test package?](#how-do-i-implement-a-test-package-)
-2. [How do I start a test instance?](#how-do-i-start-a-test-instance-)
-3. [How do I start workers and run a test package?](#how-do-i-start-workers-and-run-a-test-package-)
-4. [How do I start an E4 client and tell workers what to do?](#how-do-i-start-an-e4-client-and-tell-workers-what-to-do-)
-5. [How do I collect and process data?](#how-do-i-collect-and-process-data-)
+1. [How do I implement a test package?](#how-do-i-implement-a-test-package)
+2. [How do I start a test instance?](#how-do-i-start-a-test-instance)
+3. [How do I start workers and run a test package?](#how-do-i-start-workers-and-run-a-test-package)
+4. [How do I start an E4 client and tell workers what to do?](#how-do-i-start-an-e4-client-and-tell-workers-what-to-do)
+5. [How do I collect and process data?](#how-do-i-collect-and-process-data)
 
 ## How do I implement a test package?
 
@@ -415,3 +412,16 @@ _SQLite Command Line Shell_) in the correct format
 for the spreadsheets, but we have found that this is not a tremendous 
 improvement over copying the data by hand out of 
 the _DB Browser for SQLite_ UI tool.
+
+## Contributing / Contact / Support
+
+E4 has consumed quite some resources at [Scandio](https://github.com/scandio) and we'd love to see others contribute.
+We are not sure yet how this should happen, but at the very first, feel free to fork the project and create pull requests.
+There is no real format yet as to how we would like to proceed here in the future.
+
+As described in the disclaimer, we do not provide active support for this project. However, feel free to create
+issues here in the Github repository if you have questions or would like to get in touch.
+
+## License
+
+[MIT](https://github.com/scandio/e4-framework/blob/docs/LICENSE) © [Scandio GmbH](https://github.com/scandio)
