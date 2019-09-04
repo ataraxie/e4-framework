@@ -1,12 +1,16 @@
 # E4 - The enjoyable performance testing framework
 
-E4 is intended for performance and scale testing web applications with arbitrarily many browser agents running on arbitrarily many "worker nodes" around the globe. Check out the [E4 presentation](https://slides.com/fgrund/e4/) for an introduction.
+E4 is intended for performance and scale testing web applications with arbitrarily many browser agents running on 
+arbitrarily many "worker nodes" around the globe.
 
 ## Disclaimer
 
 This project and its documentation are work in progress.
-While E4 is applicable for any web application, it is currently being used and designed as performance testing framework for Atlassian's data center products (particularly Confluence at the moment). 
-This may change in the future.
+While E4 is applicable for any web application, it is currently being used and designed as performance testing 
+framework for Atlassian's data center products (particularly Confluence at the moment). 
+This may change in the future and the concept and core implementation are independent from Atlassian. 
+There is also a small intro [E4 presentation](https://slides.com/fgrund/e4/) 
+and a related blog post [Our Atlassian Data Center Story](https://www.scandio.de/blog/en/2019/08/our-data-center-story).
 
 ## Why E4?
 
