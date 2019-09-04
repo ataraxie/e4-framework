@@ -7,6 +7,7 @@ umask u+rxw,g+rwx,o-rwx
 # BEGIN: EDIT
 # Given by --env: $NODE_NUMBER, $E4_PROV_KEY, $E4_APP_VERSION, $E4_NODE_HEAP, $E4_APP_NAME, $E4_APP_VERSION_DOTFREE
 echo "DEBUG: E4_APP_VERSION_DOTFREE: $E4_APP_VERSION_DOTFREE"
+echo "DEBUG: E4_LB_PUBLIC_PORT: $E4_LB_PUBLIC_PORT"
 # END: EDIT
 
 #
@@ -26,12 +27,7 @@ export DATABASE_USER="confluence"
 export DATABASE_PASS="confluence"
 export DATABASE_DB="confluence"
 export LB_NAME="confluence-cluster-${E4_APP_VERSION_DOTFREE}-lb"
-if [[ "E4_APP_VERSION_DOTFREE" -lt "6100" ]];
-then
-    export LB_PORT="50${E4_APP_VERSION_DOTFREE}"
-else
-    export LB_PORT="2${E4_APP_VERSION_DOTFREE}"
-fi
+export LB_PORT="$E4_LB_PUBLIC_PORT"
 
 #
 # SYNCHRONY VARS
