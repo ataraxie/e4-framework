@@ -1,0 +1,18 @@
+# Cluster Setup
+
+Cluster Name: confluence-cluster
+Shared Home: /confluence-shared-home
+Multicast Address (click checkbox): 230.0.0.1
+
+# DB Setup
+
+Hostname: confluence-cluster-APP_VERSION_DOTFREE-db
+Port: 5432
+Confluence / Confluence / Confluence
+
+# Admin Account
+
+admin
+Administrator
+admin@example.com
+admin / admin

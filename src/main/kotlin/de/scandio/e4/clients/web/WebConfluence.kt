@@ -255,6 +255,7 @@ class WebConfluence(
     fun disableSecurityCheckbox(checkboxSelector: String) {
         log.info("Disabling security checkbox $checkboxSelector")
         navigateTo("admin/editsecurityconfig.action")
+        dom.awaitSeconds(20)
         dom.click(checkboxSelector)
         dom.click("#confirm")
         dom.awaitSeconds(10) // TODO: below doesn't work
