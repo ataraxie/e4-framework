@@ -134,6 +134,7 @@ function start_instance_node {
 		--env E4_PROV_DIR=$E4_PROV_DIR \
 		--env E4_NODE_HEAP=$E4_NODE_HEAP \
 		--env E4_APP_VERSION=$E4_APP_VERSION \
+		--env E4_APP_VERSION_DOTFREE=$E4_APP_VERSION_DOTFREE \
 		-v ${E4_APP_NAME}-shared-home-${E4_APP_VERSION_DOTFREE}:/${E4_APP_NAME}-shared-home \
 		-p "500$1:500$1" \
 		-p "433$1:433$1" \
