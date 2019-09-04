@@ -329,14 +329,18 @@ case $key in
 	E4_APP_VERSION="$2"
 	# extract a dotfree number from the version string (must also work with things like '7.0.1-beta1' => 701
 	E4_APP_VERSION_DOTFREE=$(echo ${E4_APP_VERSION//\./} | sed 's/-.*//g')
-	E4_APP_VERSION_DOTFREE_NUMDIGITS=$(echo "${#E4_APP_VERSION_DOTFREE}")
-	E4_LB_PUBLIC_PORT=$(expr "$([ "$E4_APP_NAME" == "jira" ] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
-	if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE_NUMDIGITS" -lt "4" ]]; then
+	E4_APP_VERSION_DOTFREE_FIRST3=$(echo "$E4_APP_VERSION_DOTFREE" | cut -c1-3)
+	E4_LB_PUBLIC_PORT=$(expr "$([[ "$E4_APP_NAME" == "jira" ]] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
+	if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE_FIRST3" -lt "800" ]]; then
+		echo "DEBUG: first three digits {$E4_APP_VERSION_DOTFREE_FIRST3} are lower than 800. Using port 60${E4_APP_VERSION_DOTFREE}"
 		E4_LB_PUBLIC_PORT="60${E4_APP_VERSION_DOTFREE}"
-	elif [[ "$E4_APP_NAME" = "confluence" && "$E4_APP_VERSION_DOTFREE_NUMDIGITS" -lt "4" ]]; then
-		E4_LB_PUBLIC_PORT="50${E4_APP_VERSION_DOTFREE}"
+	elif [[ "$E4_APP_NAME" = "confluence" ]]; then
+		if [[ ${E4_APP_VERSION} =~ 6\.[0-9]\.[0-9] ]]; then
+			echo "DEBUG: version ${E4_APP_VERSION} matches 6.x.x. Using port 50${E4_APP_VERSION_DOTFREE}"
+			E4_LB_PUBLIC_PORT="50${E4_APP_VERSION_DOTFREE}"
+		fi
 	fi
-	echo "PORT: $E4_LB_PUBLIC_PORT"
+	echo "DEBUG: $E4_APP_NAME $E4_APP_VERSION -- using port $E4_LB_PUBLIC_PORT"
 
 	shift
 	;;
