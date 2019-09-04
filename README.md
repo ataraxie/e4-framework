@@ -6,7 +6,7 @@ E4 is intended for performance and scale testing web applications with arbitrari
 
 This project and its documentation are work in progress.
 While E4 is applicable for any web application, it is currently being used and designed as performance testing framework for Atlassian's data center products (particularly Confluence at the moment). 
-This will change in the future.
+This may change in the future.
 
 ## Why E4?
 
@@ -319,10 +319,78 @@ So, for example, if you want to run 50 virtual users on one worker, the worker p
 <a name="heading4"></a>
 ## How do I start an E4 client and tell workers what to do?
 
-tbd.
+An E4 client that will connect to one or more workers is started with the e4-XXX.jar artifact (built with `./mvnw package`).
+It will consume a JSON config file. One example is provided in `./example-config.json`. Example command for this config:
+
+```
+java -jar target/e4-LATEST.jar -config example-config.json
+```
+
+The example config is as follows:
+
+```
+{
+  "target": { // specifies the target instance
+    "url": "http://confluence-cluster-6153-lb:26153/", // base url of the target instance
+    "adminUser": "admin", // admin username
+    "adminPassword": "admin" // admin password
+  },
+  "testPackage": "de.scandio.e4.testpackages.vanilla.VanillaTestPackage", // full class path to the test package class
+  "numConcurrentUsers": 50, // how many concurrent users?
+  "durationInSeconds": 600, // how long should the users run?
+  // An array of worker instances. In our case we have only one worker that runs on a machine with the hostname 'e4w'
+  // on port 3000 (as described previously with the startworker.sh script). You can specify multiple workers here
+  // and the virtual users will be divided onto the workers accordingly.
+  "workers": [
+    "http://e4w:3000"
+  ]
+}
+```
+
+The logs of the worker will then continue as follows:
+
+```
+2019-09-04 | 06:26:42.732 | Thread-5 |  INFO | d.s.e.w.s.PreparationService | [E4W] Preparing worker with index {0} ...
+2019-09-04 | 06:26:42.732 | Thread-5 |  INFO | d.s.e.w.s.PreparationService | Running prepare actions of package {de.scandio.e4.testpackages.vanilla.VanillaTestPackage} against URL {http://confluence-cluster-6153-lb:26153/}
+2019-09-04 | 06:26:43.608 | Thread-5 |  INFO | d.s.e.w.s.PreparationService | No setup scenarios given.
+2019-09-04 | 06:26:43.608 | Thread-5 |  INFO | d.s.e.w.s.PreparationService | [E4W] Preparations are finished!
+2019-09-04 | 06:26:44.805 | Thread-6 |  INFO | d.s.e.w.s.TestRunnerService | >>> MAIN E4 THREAD: Running test package {de.scandio.e4.testpackages.vanilla.VanillaTestPackage} against URL {http://confluence-cluster-6153-lb:26153/}
+2019-09-04 | 06:26:44.807 | Thread-6 |  INFO | d.s.e.w.s.TestRunnerService | >>> MAIN E4 THREAD: This worker with index {0} needs to start {250} users.
+...
+```
+
+The performance measurements for each action is also logged:
+
+```
+2019-09-04 | 06:38:03.607 | pool-2-thread-218 |  INFO | d.s.e.c.web.WebConfluence | [SELENIUM] Navigating to {pages/viewpage.action?pageId=1245504} with current URL {http://confluence-cluster-6153-lb:26153/#all-updates}
+2019-09-04 | 06:38:03.698 | pool-2-thread-202 |  INFO | d.s.e.w.s.StorageService | [REC_MEASURE]4872|pool-2-thread-202-486|Reader|ViewRandomContent|node1:d62e1ae6
+```
+
+Then, at the very end, you will be pointed to a SQLite database that contains all the results:
+
+```
+2019-09-04 | 06:39:33.510 | Thread-6 |  INFO | d.s.e.w.s.TestRunnerService | >>> MAIN E4 THREAD: All {250} threads are finished. {1634} actions were executed with {45} errors. Your database is at {jdbc:sqlite:/tmp/e4/out/3000/e4-1567578305764.sqlite}
+```
+
+This database will contain all the results for your test run. It looks as follows:
+
+<img src="doc/linked/dbscreen.png" width="600" style="border: 1px solid #ccc; padding: 5px;">
+
+You can now download this file (e.g. with `scp`) and continue with the processing. We used 
+[DB Browser for SQLite](https://sqlitebrowser.org/) on MacOS as well as the 
+[SQLite Command Line Shell](https://sqlite.org/cli.html) for scripted processing.
 
 <a name="heading5"></a>
 ## How do I collect and process data?
 
-tbd.
+We used Google Spreadsheets for processing of the data. We have a public 
+[example spreadsheet](https://docs.google.com/spreadsheets/d/1Oxm7it2gV0oibya9xuTYMv3IEBy_Y2XuvZrYjNGeEeg/edit#gid=0) 
+that is a good example of processed data that also contains a fair number of charts.
 
+<img src="doc/linked/spreadsheet.png" width="600" style="border: 1px solid #ccc; padding: 5px;">
+
+We used some scripts (in `./docker/worker/experimental`) to get the data out of the SQLite DB (using the 
+_SQLite Command Line Shell_) in the correct format 
+for the spreadsheets, but we have found that this is not a tremendous 
+improvement over copying the data by hand out of 
+the _DB Browser for SQLite_ UI tool.
