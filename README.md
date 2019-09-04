@@ -8,6 +8,33 @@ This project and its documentation are work in progress.
 While E4 is applicable for any web application, it is currently being used and designed as performance testing framework for Atlassian's data center products (particularly Confluence at the moment). 
 This may change in the future.
 
+## Table of Contents
+
+- [E4 - The enjoyable performance testing framework](#e4---the-enjoyable-performance-testing-framework)
+  * [Disclaimer](#disclaimer)
+  * [Table of Contents](#table-of-contents)
+  * [Why E4?](#why-e4-)
+  * [How does it work?](#how-does-it-work-)
+  * [What do I need to do to test my application?](#what-do-i-need-to-do-to-test-my-application-)
+  * [How do I implement a test package?](#how-do-i-implement-a-test-package-)
+    + [What is a test package?](#what-is-a-test-package-)
+    + [Components of a test package](#components-of-a-test-package)
+      - [TestPackage declarator](#testpackage-declarator)
+      - [Virtual User](#virtual-user)
+      - [Action](#action)
+      - [Developing a test package](#developing-a-test-package)
+      - [Run the vanilla Confluence example yourself](#run-the-vanilla-confluence-example-yourself)
+      - [Explaining test packages with the `VanillaTestPackage` example](#explaining-test-packages-with-the--vanillatestpackage--example)
+  * [How do I start a test instance?](#how-do-i-start-a-test-instance-)
+    + [How to start a Confluence Data Center test system](#how-to-start-a-confluence-data-center-test-system)
+      - [Start data center application](#start-data-center-application)
+      - [Stop data center application](#stop-data-center-application)
+      - [Scale application nodes dynamically](#scale-application-nodes-dynamically)
+  * [How do I start workers and run a test package?](#how-do-i-start-workers-and-run-a-test-package-)
+  * [How do I start an E4 client and tell workers what to do?](#how-do-i-start-an-e4-client-and-tell-workers-what-to-do-)
+  * [How do I collect and process data?](#how-do-i-collect-and-process-data-)
+
+<a name="h2-1"></a>
 ## Why E4?
 
 Our work on E4 was motivated by us not finding the means to test our own Atlassian apps properly with the tools available. In particular, we were bugged by a lack of platform independence (only for a specific product), transparency (what is happening? why am I paying so many $$$ to AWS?) and versatility in testing (e.g. only REST or only Selenium user interaction). 
@@ -18,6 +45,7 @@ Therefore, we designed E4 with the following goals in mind:
 * E4 does not fully automate _everything_. We want the developer to remain aware of _what's happening_. For example, we intentionally do not start scripted AWS instances. We accept that using E4 is _not a single command_. We try to make it as easy as necessary - but not easier.
 * E4 provides means to test an application with a mix of _HTTP requests and Selenium_. We think that both types of interaction (simulated users using a browser _and_ manually sending HTTP requests / REST calls) are necessary for proper testing. The frameworks we have seen support only one of the two.
 
+<a name="h2-2"></a>
 ## How does it work?
 
 <img src="doc/e4-map.png" width="600" style="border: 1px solid #ccc; padding: 5px;">
@@ -36,24 +64,26 @@ The result of each worker when the test duration ends is an SQLite database file
 
 We think it is most intuitive to see an example worker log output to get a better picture how this works. [Here](doc/sample-worker-log.zip) you can find the (compressed) logs for a test run simulating a "Vanilla" test package for a Atlassian Confluence (Data Center) application.
 
+<a name="h2-3"></a>
 ## What do I need to do to test my application?
 
 You will need to:
 
 1. Implement a test package with Kotlin
 1. Have your application running and accessible by HTTP
-1. Start worker nodes and run the test package
+1. Start worker nodes for running the test package
+1. Start a client that tells the workers what to do
 1. Collect and process the data from the results
 
 For each of the points above there is a section in this documentation below:
 
-1. [How do I implement a test package?](#heading1)
-1. [How do I start a test instance?](#heading2)  (We provide a Docker tool suite to start a test Confluence/Jira instance based on a _large dataset_ as defined by Atlassian.)
-1. [How do I start workers and run a test package?](#heading3)
-1. [How do I start an E4 client and tell workers what to do?](#heading4)
-1. [How do I collect and process data?](#heading5)
+1. [How do I implement a test package?](#h2-4)
+1. [How do I start a test instance?](#h2-5)  (We provide a Docker tool suite to start a test Confluence/Jira instance based on a _large dataset_ as defined by Atlassian.)
+1. [How do I start workers and run a test package?](#h2-6)
+1. [How do I start an E4 client and tell workers what to do?](#h2-7)
+1. [How do I collect and process data?](#h2-8)
 
-<a name="heading1"></a>
+<a name="h2-4"></a>
 ## How do I implement a test package?
 
 ### What is a test package?
