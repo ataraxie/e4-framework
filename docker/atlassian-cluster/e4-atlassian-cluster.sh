@@ -329,14 +329,14 @@ case $key in
 	E4_APP_VERSION="$2"
 	# extract a dotfree number from the version string (must also work with things like '7.0.1-beta1' => 701
 	E4_APP_VERSION_DOTFREE=$(echo ${E4_APP_VERSION//\./} | sed 's/-.*//g')
+	E4_APP_VERSION_DOTFREE_NUMDIGITS=$(echo "${#E4_APP_VERSION_DOTFREE}")
 	E4_LB_PUBLIC_PORT=$(expr "$([ "$E4_APP_NAME" == "jira" ] && echo "1" || echo "2")${E4_APP_VERSION_DOTFREE}")
-		if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE" -lt "800" ]];
-	then
-				E4_LB_PUBLIC_PORT="60${E4_APP_VERSION_DOTFREE}"
-		elif [[ "$E4_APP_NAME" = "confluence" && "$E4_APP_VERSION_DOTFREE" -lt "6100" ]];
-		then
-				E4_LB_PUBLIC_PORT="50${E4_APP_VERSION_DOTFREE}"
+	if [[ "$E4_APP_NAME" = "jira" && "$E4_APP_VERSION_DOTFREE_NUMDIGITS" -lt "4" ]]; then
+		E4_LB_PUBLIC_PORT="60${E4_APP_VERSION_DOTFREE}"
+	elif [[ "$E4_APP_NAME" = "confluence" && "$E4_APP_VERSION_DOTFREE_NUMDIGITS" -lt "4" ]]; then
+		E4_LB_PUBLIC_PORT="50${E4_APP_VERSION_DOTFREE}"
 	fi
+	echo "PORT: $E4_LB_PUBLIC_PORT"
 
 	shift
 	;;
