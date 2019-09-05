@@ -137,8 +137,8 @@ function start_instance_node {
 		--env E4_APP_VERSION_DOTFREE=$E4_APP_VERSION_DOTFREE \
 		--env E4_LB_PUBLIC_PORT=$E4_LB_PUBLIC_PORT \
 		-v ${E4_APP_NAME}-shared-home-${E4_APP_VERSION_DOTFREE}:/${E4_APP_NAME}-shared-home \
-		-p "500$1:500$1" \
-		-p "433$1:433$1" \
+		-p "3${E4_APP_VERSION_DOTFREE}$1:500$1" \
+		-p "4${E4_APP_VERSION_DOTFREE}$1:433$1" \
 		-v $(pwd)/${E4_APP_NAME}node:/e4work \
 		-v $E4_PROV_DIR:/e4prov \
 		--entrypoint /e4work/docker-entrypoint.sh \
