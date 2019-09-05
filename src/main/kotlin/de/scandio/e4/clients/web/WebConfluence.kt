@@ -25,20 +25,7 @@ class WebConfluence(
             dom.insertText("#os_username", this.username)
             dom.insertText("#os_password", this.password)
             dom.click("#loginButton")
-            try {
-                dom.awaitElementPresent(".pagebody", 40)
-                if (dom.isElementPresent("#dashboard-onboarding-dialog")) {
-                    dom.click("#dashboard-onboarding-dialog .aui-button-primary")
-                    dom.awaitMilliseconds(50)
-                }
-            } catch (e: TimeoutException) {
-                dom.click("#grow-intro-video-skip-button", 40)
-                dom.click("#grow-ic-content button[data-action='skip']")
-                dom.click(".intro-find-spaces-relevant-spaces text:first-child .intro-find-spaces-space")
-                dom.awaitMilliseconds(1000)
-                dom.click(".intro-find-spaces-button-continue")
-                dom.awaitElementPresent(".pagebody", 40)
-            }
+            dom.awaitElementPresent(".pagebody", 40)
         } else {
             log.debug("Went to login screen but was already logged in")
         }
@@ -167,6 +154,7 @@ class WebConfluence(
     }
 
     fun createDefaultPage(pageTitleBeginning: String) {
+        dom.removeElementWithJQuery(".aui-blanket")
         dom.click("#quick-create-page-button")
         dom.awaitElementPresent("#wysiwyg")
         val pageTitle = "$pageTitleBeginning $username (${Date().time})"
