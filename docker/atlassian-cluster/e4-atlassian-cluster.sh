@@ -145,17 +145,6 @@ function start_instance_node {
 		-d codeclou/docker-atlassian-${E4_APP_NAME}-data-center:${E4_APP_NAME}node-${E4_APP_VERSION}
 }
 
-function start_mail_server {
-	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}	- Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-mail."
-	docker run \
-    --net=confluence-cluster-701 \
-    --net-alias=confluence-cluster-701-mail \
-    --name mailcatcher \
-    -p 1080:1080 \
-    -p 1025:1025 \
-    -d schickling/mailcatcher
-}
-
 function download_curl_fail_if_unavailable {
 	echo ">>> Download via CURL: $1"
 	mkdir -p "$E4_PROV_DIR/$E4_PROV_KEY"
@@ -307,8 +296,7 @@ function remove_all_dangling_nodes {
 function print_cluster_ready_info {
 	echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
 	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} Ready${C_RST} - You can now access ${E4_APP_NAME} through your browser."
-	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} ${E4_APP_NAME}: http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
-	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} Mail Server: http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:1080 (smtp port: 1025)${C_RST} "
+	echo -e $C_CYN">> info ....:${C_RST}${C_GRN} http://${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_LB_PUBLIC_PORT}${C_RST} "
 	echo ">> Note: do not forget to add your hostname to /etc/hosts - IP_ADDRESS ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-lb"
 	echo -e $C_CYN">> ---------------------------------------------------------------------------------------------"$C_RST
 }
