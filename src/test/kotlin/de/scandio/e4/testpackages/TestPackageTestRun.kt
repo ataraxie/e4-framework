@@ -31,12 +31,11 @@ abstract class TestPackageTestRun {
         loggerContext.getLogger(packagePath).level = level
     }
 
-    protected fun executeTestPackage(testPackage: TestPackage, howManyTimes: Int = 1) {
+    protected fun executeTestPackage(testPackage: TestPackage, howOften: Int = 1) {
         log.info("==============================================================")
         log.info("START executing ${testPackage.virtualUsers.size} virtual users")
 
-        repeat(howManyTimes) {
-            log.info("==> NEXT RUN: $it")
+        repeat(howOften) {
             for (virtualUserClass in testPackage.virtualUsers) {
                 val virtualUser = virtualUserClass.newInstance()
                 log.info("Executing virtual user ${virtualUser.javaClass.simpleName}")
