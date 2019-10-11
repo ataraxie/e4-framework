@@ -4,6 +4,7 @@ import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.util.RandomData
 import java.util.*
 
 /**
@@ -26,7 +27,7 @@ import java.util.*
  *
  * @author Felix Grund
  */
-open class MergeBranchAction (
+open class ViewDiffAction (
         spaceKey: String,
         originPageTitle: String = "PLACEHOLDER",
         branchName: String = "PLACEHOLDER"
@@ -39,7 +40,7 @@ open class MergeBranchAction (
         webConfluence.login()
 
         if (originPageTitle.equals("PLACEHOLDER")) {
-            super.originPageTitle = "MergeBranchAction (${Date().time})"
+            super.originPageTitle = "ViewDiffAction (${Date().time})"
             super.createOriginPage(webConfluence)
         }
         if (branchName.equals("PLACEHOLDER")) {
@@ -48,17 +49,15 @@ open class MergeBranchAction (
         }
 
         this.start = Date().time
-        dom.click("#action-menu-link")
-        dom.awaitElementClickable("#action-menu .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-1")
-        dom.click("#action-menu .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-2")
-        dom.awaitElementClickable("#merge-branch-confirmation-dialog .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-3")
-        dom.click("#merge-branch-confirmation-dialog .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-4")
-        dom.awaitElementPresent(".page-metadata-modification-info")
-        webConfluence.debugScreen("mergebranch-5")
+        webConfluence.goToPage(spaceKey, "${super.branchName}: ${super.originPageTitle}")
+        webConfluence.goToEditPage()
+        dom.addTextTinyMce(RandomData.STRING_LOREM_IPSUM_2)
+        webConfluence.savePage()
+        dom.click("#content-metadata-pagebranching")
+        dom.click("a.pagebranching-viewdiff-link")
+        dom.awaitElementPresent("#num-changes-container .haschanges .count")
+        assert(dom.findElement("#num-changes-container .haschanges .count").text == "1")
+        dom.findElement("#added-diff-0")
         this.end = Date().time
     }
 
