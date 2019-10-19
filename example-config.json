@@ -4,9 +4,9 @@
     "adminUser": "admin",
     "adminPassword": "admin"
   },
-  "testPackage": "de.scandio.e4.testpackages.livelytheme.LivelyThemeTestPackage",
-  "numConcurrentUsers": 50,
-  "durationInSeconds": 600,
+  "testPackage": "de.scandio.e4.testpackages.diary.DiaryTestPackage",
+  "numConcurrentUsers": 10,
+  "durationInSeconds": 40,
   "workers": [
     "http://e4w:3000"
   ]

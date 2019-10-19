@@ -1,4 +1,4 @@
-package de.scandio.e4.testpackages.gitsnippets
+package de.scandio.e4.testpackages.diary
 
 import de.scandio.e4.testpackages.gitsnippets.actions.SetupDiaryMacroPagesAction
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
