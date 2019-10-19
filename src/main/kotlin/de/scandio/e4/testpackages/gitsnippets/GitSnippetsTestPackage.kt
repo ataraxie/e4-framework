@@ -1,8 +1,10 @@
 package de.scandio.e4.testpackages.gitsnippets
 
 import de.scandio.e4.testpackages.gitsnippets.actions.SetupGitSnippets
+import de.scandio.e4.testpackages.gitsnippets.actions.SetupDiaryMacroPagesAction
 import de.scandio.e4.testpackages.gitsnippets.actions.SetupGitSnippetsMacroPagesAction
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.GitSnippetsMacroPageCreator
+import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
+import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryMacroPageReader
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.GitSnippetsMacroPageReader
 import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
@@ -51,8 +53,7 @@ class GitSnippetsTestPackage: TestPackage {
         virtualUsers.add(Dashboarder::class.java, 0.12)
 
         // 0.12
-        virtualUsers.add(GitSnippetsMacroPageCreator::class.java, 0.04)
-        virtualUsers.add(GitSnippetsMacroPageReader::class.java, 0.08)
+        virtualUsers.add(GitSnippetsMacroPageReader::class.java, 0.12)
         return virtualUsers
     }
 

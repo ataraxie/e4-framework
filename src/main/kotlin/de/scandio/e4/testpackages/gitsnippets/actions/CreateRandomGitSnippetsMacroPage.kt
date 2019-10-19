@@ -6,7 +6,6 @@ import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.WorkerUtils
-import org.slf4j.LoggerFactory
 import java.util.*
 
 open class CreateRandomGitSnippetsMacroPage (

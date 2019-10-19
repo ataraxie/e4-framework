@@ -133,6 +133,19 @@ class WebConfluence(
         saveMacroBrowser()
     }
 
+    fun insertMarkdown(markdown: String) {
+        driver.switchTo().frame("wysiwygTextarea_ifr")
+        dom.click("#tinymce")
+        driver.switchTo().parentFrame()
+        dom.click("#rte-button-insert")
+        dom.click("#rte-insert-wikimarkup")
+        dom.setSelectedOption("#wiki-parser-selection-tool", "MARKDOWN")
+        dom.insertText("#insert-wiki-textarea", markdown)
+        dom.click("#insert-wiki-markup-dialog .button-panel-button")
+        dom.awaitElementClickable("#rte-button-publish")
+        dom.awaitMilliseconds(50)
+    }
+
     fun search(searchString: String) {
         navigateTo("search/searchv3.action")
         dom.awaitElementPresent("#query-string")

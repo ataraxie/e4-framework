@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.livelyblogs
 
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.GitSnippetsMacroPageCreator
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.GitSnippetsMacroPageReader
+import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
+import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryMacroPageReader
 import de.scandio.e4.testpackages.livelyblogs.actions.*
 import de.scandio.e4.testpackages.livelyblogs.virtualusers.*
 import de.scandio.e4.testpackages.vanilla.actions.CreateMultiplePagesActionRest
@@ -82,8 +82,8 @@ class LivelyBlogsTestPackage: TestPackage {
         // 0.34
         virtualUsers.add(LivelyBlogNavigator::class.java, 0.1)
         virtualUsers.add(LivelyBlogSearcher::class.java, 0.04)
-        virtualUsers.add(GitSnippetsMacroPageCreator::class.java, 0.04)
-        virtualUsers.add(GitSnippetsMacroPageReader::class.java, 0.08)
+        virtualUsers.add(DiaryEntryCreator::class.java, 0.04)
+        virtualUsers.add(DiaryMacroPageReader::class.java, 0.08)
         virtualUsers.add(LivelyBlogPostCreator::class.java, 0.04)
         virtualUsers.add(LivelyBlogPageToBlogpostConvertor::class.java, 0.04)
         return virtualUsers
