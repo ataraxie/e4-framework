@@ -22,7 +22,7 @@ public class E4Env {
 	public static final String APP_VERSION = getenv("E4_APP_VERSION", "");
 	public static final String APP_LICENSE = getenv("E4_APP_LICENSE", "");
 
-	public static final boolean ENABLE_DUMPING = "true".equals(getenv("E4_ENABLE_DUMPING", "true"));
+	public static final boolean ENABLE_DUMPING = "true".equals(getenv("E4_ENABLE_DUMPING", "false"));
 
 	public static String resolveBaseUrl(String varName, String defaultValue) {
 		String url = getenv(varName, defaultValue);
