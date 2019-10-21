@@ -248,17 +248,17 @@ public class TestRunnerService {
 				storageService.recordMeasurement(measurement);
 			} catch (Exception e) {
 				log.error("FAILED ACTION: {{}} with exception type {{}} and message {{}}",
-						action.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
+						action.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage(), e);
 				E4Error e4error = new E4Error("ACTION_FAILED",
 						e.getClass().getName(),
 						virtualUser.getClass().getSimpleName(),
 						action.getClass().getSimpleName());
 				storageService.recordError(e4error);
 				numFailedActions += 1;
-//				if (webClient != null) {
-//					webClient.takeScreenshot("failed-action");
-//					webClient.dumpHtml("failed-action");
-//				}
+				if (webClient != null) {
+					webClient.takeScreenshot("failed-action");
+					webClient.dumpHtml("failed-action");
+				}
 
 			} finally {
 				if (webClient != null) {

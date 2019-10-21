@@ -50,21 +50,14 @@ class CreateDiaryEntryAction (
         webConfluence.login()
         this.start = Date().time
         webConfluence.goToPage(randomContentId, ".quick-editor-prompt")
-        var diaryEntriesOnPage = 0
-        try {
-            diaryEntriesOnPage = dom.findElements("li.entry:not(.welcome-message)").size
-            log.info("$diaryEntriesOnPage elements on page so far")
-        } catch (e: Exception) {
-            log.info("No elements on page yet")
-        }
         dom.click(".quick-editor-prompt")
         dom.awaitElementPresent("#wysiwygTextarea_ifr")
-        diaryEntriesOnPage += 1
         webConfluence.insertMarkdown(markdownFileString)
         dom.removeElementWithJQuery(".aui-blanket")
-        dom.awaitMilliseconds(50)
+        dom.awaitMilliseconds(200)
+//        dom.executeScript("$('#rte-button-publish').click()")
         dom.click("#rte-button-publish")
-        dom.awaitElementClickable("li.entry:not(.welcome-message):nth-child(${diaryEntriesOnPage})")
+        dom.awaitElementClickable("li.entry.focused")
         this.end = Date().time
     }
 

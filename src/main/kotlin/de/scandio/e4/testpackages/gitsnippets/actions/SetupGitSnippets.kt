@@ -17,11 +17,11 @@ class SetupGitSnippets: Action() {
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         val dom = webConfluence.dom
-        val accessToken = System.getenv("GIT_SNIPPETS_TOKEN") ?: throw Exception("Access Token not found!")
+        val accessToken = "60578a45881a97098af808b9198830383b799b2d"
         webConfluence.login()
         this.start = Date().time
         webConfluence.navigateTo("admin/plugins/git-snippets/settings.action")
-        dom.awaitMilliseconds(10)
+        dom.awaitMilliseconds(3000)
         dom.insertText("#githubPersonalAccessToken", accessToken, true)
         dom.click(".settings .buttons .aui-button.submit")
         dom.awaitHasValue("#githubPersonalAccessToken", "****************************************")
