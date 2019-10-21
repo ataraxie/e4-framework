@@ -1,5 +1,6 @@
 package de.scandio.e4.worker.services;
 
+import de.scandio.e4.E4Env;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.worker.factories.ClientFactory;
 import de.scandio.e4.worker.model.E4Error;
@@ -255,7 +256,7 @@ public class TestRunnerService {
 						action.getClass().getSimpleName());
 				storageService.recordError(e4error);
 				numFailedActions += 1;
-				if (webClient != null) {
+				if (webClient != null && E4Env.ENABLE_DUMPING) {
 					webClient.takeScreenshot("failed-action");
 					webClient.dumpHtml("failed-action");
 				}

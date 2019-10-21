@@ -1,5 +1,6 @@
 package de.scandio.e4.worker.services;
 
+import de.scandio.e4.E4Env;
 import de.scandio.e4.client.config.WorkerConfig;
 import de.scandio.e4.dto.PreparationStatus;
 import de.scandio.e4.dto.TestsStatus;
@@ -85,7 +86,7 @@ public class PreparationService {
 							action.execute(webClient, restClient);
 						} catch (Exception e) {
 							log.error("Failed executing action {{}}", action.getClass().getSimpleName(), e);
-							if (!action.isRestOnly()) {
+							if (!action.isRestOnly() && E4Env.ENABLE_DUMPING) {
 								webClient.takeScreenshot("failed-action");
 								webClient.dumpHtml("failed-action");
 							}
