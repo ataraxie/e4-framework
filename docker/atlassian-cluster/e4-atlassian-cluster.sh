@@ -137,7 +137,7 @@ function start_instance_node {
 		--env E4_APP_VERSION_DOTFREE=$E4_APP_VERSION_DOTFREE \
 		--env E4_LB_PUBLIC_PORT=$E4_LB_PUBLIC_PORT \
 		-v ${E4_APP_NAME}-shared-home-${E4_APP_VERSION_DOTFREE}:/${E4_APP_NAME}-shared-home \
-		-p "$(($1 + 2))${E4_APP_VERSION_DOTFREE}:500$1" \
+		#-p "$(($1 + 2))${E4_APP_VERSION_DOTFREE}:500$1" \
 		-p "${E4_APP_VERSION_DOTFREE}$1:433$1" \
 		-v $(pwd)/${E4_APP_NAME}node:/e4work \
 		-v $E4_PROV_DIR:/e4prov \
