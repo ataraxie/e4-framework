@@ -38,11 +38,11 @@ class VanillaTestPackage: TestPackage {
 
     override fun getVirtualUsers(): VirtualUserCollection {
         val virtualUsers = VirtualUserCollection()
-        virtualUsers.add(Commentor::class.java, 0.08)
-        virtualUsers.add(Reader::class.java, 0.36)
-        virtualUsers.add(Creator::class.java, 0.08)
+        virtualUsers.add(Commentor::class.java, 0.12)
+        virtualUsers.add(Reader::class.java, 0.32)
+        virtualUsers.add(Creator::class.java, 0.12)
         virtualUsers.add(Searcher::class.java, 0.16)
-        virtualUsers.add(Editor::class.java, 0.16)
+        virtualUsers.add(Editor::class.java, 0.12)
         virtualUsers.add(Dashboarder::class.java, 0.16)
         return virtualUsers
     }
