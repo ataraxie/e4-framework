@@ -17,7 +17,7 @@ import de.scandio.e4.worker.collections.VirtualUserCollection
 /**
  * === GitSnippetsTestPackage ===
  *
- * Test package for app "Lively Blogs for Confluence".
+ * Test package for app "Git Snippets for Confluence".
  *
  * Assumptions:
  * - Running Confluence
