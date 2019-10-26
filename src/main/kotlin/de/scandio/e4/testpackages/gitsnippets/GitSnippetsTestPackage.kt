@@ -14,6 +14,29 @@ import de.scandio.e4.worker.collections.ActionCollection
 import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.collections.VirtualUserCollection
 
+/**
+ * === LivelyBlogsTestPackage ===
+ *
+ * Test package for app "Lively Blogs for Confluence".
+ *
+ * Assumptions:
+ * - Running Confluence
+ * - App Git Snippets
+ *
+ * Setup:
+ * - Create a space with key "GS" and name "Git Snippets"
+ * - Configure Git Snippets in the Confluence Admin settings page (will add a Github auth token)
+ * - Create a page with title "macros" in the "GS" space
+ * - Create 100 pages with the Git Snippets macro and random macro parameters
+ *
+ * Virtual Users:
+ * - GitSnippetsMacroPageReader (weight 0.2): views a random child page of the "macros" page (all of these contain
+ *      one version of the Git Snippets macro
+ *
+ * Sum of weight is 0.2 which leaves 0.8 for vanilla virtual users.
+ *
+ * @author Felix Grund
+ */
 class GitSnippetsTestPackage: TestPackage {
 
     companion object {
@@ -44,16 +67,16 @@ class GitSnippetsTestPackage: TestPackage {
 
     override fun getVirtualUsers(): VirtualUserCollection {
         val virtualUsers = VirtualUserCollection()
-        // 0.88
+        // 0.8
         virtualUsers.add(Commentor::class.java, 0.08)
-        virtualUsers.add(Reader::class.java, 0.32)
+        virtualUsers.add(Reader::class.java, 0.28)
         virtualUsers.add(Creator::class.java, 0.1)
-        virtualUsers.add(Searcher::class.java, 0.16)
+        virtualUsers.add(Searcher::class.java, 0.12)
         virtualUsers.add(Editor::class.java, 0.1)
         virtualUsers.add(Dashboarder::class.java, 0.12)
 
-        // 0.12
-        virtualUsers.add(GitSnippetsMacroPageReader::class.java, 0.12)
+        // 0.2
+        virtualUsers.add(GitSnippetsMacroPageReader::class.java, 0.2)
         return virtualUsers
     }
 
