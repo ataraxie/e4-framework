@@ -21,7 +21,7 @@ import de.scandio.e4.worker.collections.VirtualUserCollection
  *
  * Assumptions:
  * - Running Confluence
- * - App Git Snippets
+ * - App Git Snippets installed
  *
  * Setup:
  * - Create a space with key "GS" and name "Git Snippets"
