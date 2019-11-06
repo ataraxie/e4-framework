@@ -50,7 +50,7 @@ sed -i -e "s/export CATALINA_OPTS/#replaced/g" /confluence/atlassian-confluence-
 echo -e "CATALINA_OPTS=\"-Dconfluence.cluster.node.name=${NODE_ID} \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
 echo -e "CATALINA_OPTS=\"-Dsynchrony.service.url=http://confluence-cluster-${E4_APP_VERSION_DOTFREE}-lb:${E4_APP_VERSION_DOTFREE}/synchrony/v1 \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
 echo -e "CATALINA_OPTS=\"-Datlassian.webresource.disable.minification=true \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
-#echo -e "CATALINA_OPTS=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=500$NODE_NUMBER \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
+echo -e "CATALINA_OPTS=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=500$NODE_NUMBER \${CATALINA_OPTS}\"" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
 echo -e "CATALINA_OPTS=\"-Dupm.pac.disable=true \${CATALINA_OPTS}\" " >> /confluence/atlassian-confluence-latest/bin/setenv.sh
 echo -e "\nexport CATALINA_OPTS" >> /confluence/atlassian-confluence-latest/bin/setenv.sh
 
