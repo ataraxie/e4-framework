@@ -18,4 +18,6 @@ public interface WebClient {
 
 	String getUser();
 
+	void refreshDriver();
+
 }

@@ -46,7 +46,7 @@ open abstract class SetupBaseTest {
         this.dom.outDir = OUT_DIR
         this.dom.screenshotBeforeClick = true
         this.dom.screenshotBeforeInsert = true
-        this.webConfluence = WebConfluence(driver, URI(BASE_URL), OUT_DIR, USERNAME, PASSWORD)
+        this.webConfluence = WebConfluence(driver, URI(BASE_URL), IN_DIR, OUT_DIR, USERNAME, PASSWORD)
         this.restConfluence = RestConfluence(BASE_URL, USERNAME, PASSWORD)
     }
 
@@ -65,7 +65,8 @@ open abstract class SetupBaseTest {
         this.dom.outDir = OUT_DIR
         this.dom.screenshotBeforeClick = true
         this.dom.screenshotBeforeInsert = true
-        this.webConfluence = WebConfluence(driver, URI(BASE_URL), OUT_DIR, USERNAME, PASSWORD)
+
+        this.webConfluence = WebConfluence(driver, URI(BASE_URL), IN_DIR, OUT_DIR, USERNAME, PASSWORD)
 
         if (login) {
             webConfluence.login()

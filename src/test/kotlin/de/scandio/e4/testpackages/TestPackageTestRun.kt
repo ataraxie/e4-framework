@@ -26,6 +26,7 @@ abstract class TestPackageTestRun {
 
     abstract fun getBaseUrl(): String
     abstract fun getOutDir(): String
+    abstract fun getInDir(): String
     abstract fun getUsername(): String
     abstract fun getPassword(): String
     abstract fun getTestPackage(): TestPackage
@@ -64,7 +65,7 @@ abstract class TestPackageTestRun {
 
     protected fun executeAction(action: Action) {
         val webConfluence = WorkerUtils.newChromeWebClientPreparePhase(
-                getBaseUrl(), getOutDir(), getUsername(), getPassword()) as WebConfluence
+                getBaseUrl(), getInDir(), getOutDir(), getUsername(), getPassword()) as WebConfluence
         webConfluence.webDriver.manage().window().size = Dimension(2000, 1500)
         val restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
         log.info("Executing action ${action.javaClass.simpleName}")
@@ -82,7 +83,7 @@ abstract class TestPackageTestRun {
         var numActionsRun = 0
         for (action in actions) {
             val webConfluence = WorkerUtils.newChromeWebClientPreparePhase(
-                    getBaseUrl(), getOutDir(), getUsername(), getPassword()) as WebConfluence
+                    getBaseUrl(), getInDir(), getOutDir(), getUsername(), getPassword()) as WebConfluence
             val restConfluence = RestConfluence(getBaseUrl(), getUsername(), getPassword())
             try {
                 log.info("Executing action ${action.javaClass.simpleName}")

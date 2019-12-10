@@ -3,6 +3,7 @@ package de.scandio.e4.confluence.web
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.RandomData
+import de.scandio.e4.worker.util.WorkerUtils
 import org.apache.commons.io.FileUtils
 import org.openqa.selenium.*
 import org.slf4j.LoggerFactory
@@ -13,13 +14,18 @@ import java.net.URLEncoder
 import java.util.*
 
 class WebConfluence(
-        val driver: WebDriver,
+        var driver: WebDriver,
         val base: URI,
         val outputDir: String,
+        val inputDir: String,
         val username: String,
         val password: String
 ): WebClient {
 
+    // TODO: this is a bit weird because the original driver came from outside in the constructor..
+    override fun refreshDriver() {
+        this.driver = WorkerUtils.newChromeDriver()
+    }
 
     override fun getUser(): String {
         return this.username
@@ -55,7 +61,7 @@ class WebConfluence(
         // Do the following if you want to do it only initially when the browser is opened
         // if (driver.currentUrl.equals("about:blank") || driver.currentUrl.equals("data:,")) { // only login once!
         navigateTo("login.action")
-        dom.awaitElementPresent("form[name='loginform'], .login-section p.last, #main-content", 10)
+        dom.awaitElementPresent("form[name='loginform'], .login-section p.last, #main-content", 20)
         if (dom.isElementPresent("form[name='loginform']")) {
             dom.insertText("#os_username", this.username)
             dom.insertText("#os_password", this.password)
@@ -67,7 +73,7 @@ class WebConfluence(
                     dom.awaitMilliseconds(50)
                 }
             } catch (e: TimeoutException) {
-                dom.click("#grow-intro-video-skip-button", 5)
+                dom.click("#grow-intro-video-skip-button", 20)
                 dom.click("#grow-ic-content button[data-action='skip']")
                 dom.click(".intro-find-spaces-relevant-spaces label:first-child .intro-find-spaces-space")
                 dom.awaitMilliseconds(1000)

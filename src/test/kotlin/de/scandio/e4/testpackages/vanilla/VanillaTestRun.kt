@@ -16,6 +16,7 @@ class VanillaTestRun : TestPackageTestRun() {
 
     private val BASE_URL = "http://confluence-cluster-6153-lb:26153/"
     private val OUT_DIR = "/tmp/e4/out"
+    private val IN_DIR = "/tmp/e4/in"
     private val USERNAME = "admin"
     private val PASSWORD = "admin"
     private val TEST_PACKAGE = VanillaTestPackage()
@@ -43,6 +44,7 @@ class VanillaTestRun : TestPackageTestRun() {
 
     override fun getBaseUrl(): String { return BASE_URL }
     override fun getOutDir(): String { return OUT_DIR }
+    override fun getInDir(): String { return IN_DIR }
     override fun getUsername(): String { return USERNAME }
     override fun getPassword(): String { return PASSWORD }
     override fun getTestPackage(): TestPackage { return TEST_PACKAGE }

@@ -19,6 +19,7 @@ open class TestBase {
 
     open val BASE_URL = "http://confluence-cluster-6153-lb:26153/"
     open val OUT_DIR = "/tmp/e4/out"
+    open val IN_DIR = "/tmp/e4/in"
     open val USERNAME = "admin"
     open val PASSWORD = "admin"
 
@@ -43,7 +44,7 @@ open class TestBase {
         this.dom.outDir = OUT_DIR
         this.dom.screenshotBeforeClick = true
         this.dom.screenshotBeforeInsert = true
-        this.webConfluence = WebConfluence(driver, URI(BASE_URL), OUT_DIR, USERNAME, PASSWORD)
+        this.webConfluence = WebConfluence(driver, URI(BASE_URL), IN_DIR, OUT_DIR, USERNAME, PASSWORD)
         this.webConfluence.dom = dom
         this.restConfluence = RestConfluence(BASE_URL, USERNAME, PASSWORD)
     }
