@@ -69,6 +69,8 @@ function kill_instance_loadbalancer {
 
 function start_instance_database {
 	echo -e $C_CYN">> docker run .........:${C_RST}${C_GRN} Starting${C_RST}	- Starting instance ${E4_APP_NAME}-cluster-${E4_APP_VERSION_DOTFREE}-db."
+	#echo "NOTE: USING SMALL POSTGRES INSTANCE: max_connections=50 shared_buffers=50MB effective_cache_size=100MB"
+	#echo "ORIGINAL: USING SMALL POSTGRES INSTANCE: max_connections=350 shared_buffers=2GB effective_cache_size=8GB"
 	docker run \
 		--rm \
 		--cpu-shares=512 \

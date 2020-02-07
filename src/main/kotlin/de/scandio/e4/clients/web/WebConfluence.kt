@@ -128,6 +128,7 @@ class WebConfluence(
     fun insertMacro(macroId: String, macroSearchTerm: String, macroParameters: Map<String, String> = emptyMap()) {
         openMacroBrowser(macroId, macroSearchTerm)
         debugScreen("after-openMacroBrowser")
+        dom.awaitMilliseconds(100)
         setMacroParameters(macroParameters)
         debugScreen("after-setParams")
         saveMacroBrowser()
@@ -194,7 +195,7 @@ class WebConfluence(
     }
 
     fun setPageTitleInEditor(pageTitle: String) {
-        dom.click("#content-title-div")
+        dom.click("#content-title-div", 40)
         dom.insertText("#content-title", pageTitle)
     }
 

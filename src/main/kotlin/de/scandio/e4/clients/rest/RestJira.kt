@@ -4,7 +4,7 @@ import de.scandio.e4.worker.rest.RestAtlassian
 import de.scandio.e4.worker.services.StorageService
 
 class RestJira(
-        storageService: StorageService,
+        storageService: StorageService?,
         baseUrl: String,
         username: String,
         password: String) : RestAtlassian(storageService, baseUrl, username, password) {

@@ -4,6 +4,8 @@ import de.scandio.e4.worker.client.ApplicationName;
 import de.scandio.e4.worker.factories.ClientFactory;
 import de.scandio.e4.worker.interfaces.RestClient;
 import de.scandio.e4.worker.interfaces.WebClient;
+import de.scandio.e4.worker.services.ApplicationStatusService;
+import de.scandio.e4.worker.services.StorageService;
 import org.apache.commons.lang3.StringUtils;
 
 public class E4Env {
@@ -23,6 +25,8 @@ public class E4Env {
 	public static final String APP_LICENSE = getenv("E4_APP_LICENSE", "");
 
 	public static final boolean ENABLE_DUMPING = "true".equals(getenv("E4_ENABLE_DUMPING", "false"));
+
+	public static final boolean IS_DATACENTER = "true".equals(getenv("E4_IS_DATACENTER", "false"));
 
 	public static String resolveBaseUrl(String varName, String defaultValue) {
 		String url = getenv(varName, defaultValue);
