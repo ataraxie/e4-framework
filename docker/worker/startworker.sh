@@ -12,7 +12,7 @@ else
         -v "$E4_DIR:$E4_DIR" \
         -p "$1:$1" \
         -e E4_PORT="$1" \
-        -e E4_JAR_URL='https://e4prov.s3.eu-central-1.amazonaws.com/e4-LATEST.jar' \
+        -e E4_JAR_URL='https://e4prov.s3-us-west-2.amazonaws.com/e4-LATEST.jar' \
         -e E4_OUTPUT_DIR="$E4_DIR/out/$1" \
         -e E4_INPUT_DIR="$E4_DIR/in" \
         -e E4_APP_LICENSE="$E4_APP_LICENSE" \

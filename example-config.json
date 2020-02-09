@@ -4,7 +4,7 @@
     "adminUser": "admin",
     "adminPassword": "admin"
   },
-  "testPackage": "de.scandio.e4.testpackages.diary.DiaryTestPackage",
+  "testPackage": "de.scandio.e4.testpackages.teamadmin.TeamAdminTestPackage",
   "numConcurrentUsers": 10,
   "durationInSeconds": 40,
   "workers": [
