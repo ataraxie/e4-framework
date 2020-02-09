@@ -1,10 +1,7 @@
 package de.scandio.e4.testpackages.gitsnippets
 
 import de.scandio.e4.testpackages.gitsnippets.actions.SetupGitSnippets
-import de.scandio.e4.testpackages.gitsnippets.actions.SetupDiaryMacroPagesAction
 import de.scandio.e4.testpackages.gitsnippets.actions.SetupGitSnippetsMacroPagesAction
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryMacroPageReader
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.GitSnippetsMacroPageReader
 import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction

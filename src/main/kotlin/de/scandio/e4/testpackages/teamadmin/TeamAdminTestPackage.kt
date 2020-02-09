@@ -33,29 +33,25 @@ import de.scandio.e4.worker.collections.VirtualUserCollection
  *
  * @author Felix Grund
  */
-class DiaryTestPackage: TestPackage {
+class TeamAdminTestPackage: TestPackage {
 
     override fun getSetupActions(): ActionCollection {
         val actions = ActionCollection()
-        actions.add(CreateSpaceAction("DR", "Diary", true))
-        actions.add(CreatePageAction("DR", "macros", "<ac:structured-macro ac:name=\"children\" />", true))
-        actions.add(SetupDiaryMacroPagesAction("DR", "macros", 100))
         return actions
     }
 
     override fun getVirtualUsers(): VirtualUserCollection {
         val virtualUsers = VirtualUserCollection()
-        // 0.8
+        // 0.9
         virtualUsers.add(Commentor::class.java, 0.08)
-        virtualUsers.add(Reader::class.java, 0.28)
+        virtualUsers.add(Reader::class.java, 0.3)
         virtualUsers.add(Creator::class.java, 0.1)
-        virtualUsers.add(Searcher::class.java, 0.12)
+        virtualUsers.add(Searcher::class.java, 0.16)
         virtualUsers.add(Editor::class.java, 0.1)
-        virtualUsers.add(Dashboarder::class.java, 0.12)
+        virtualUsers.add(Dashboarder::class.java, 0.16)
 
-        // 0.2
-        virtualUsers.add(DiaryEntryCreator::class.java, 0.08)
-        virtualUsers.add(SpaceGroupCreator::class.java, 0.12)
+        // 0.1
+        virtualUsers.add(SpaceGroupCreator::class.java, 0.1)
         return virtualUsers
     }
 

@@ -4,7 +4,7 @@ import de.scandio.e4.testpackages.gitsnippets.actions.SetupDiaryMacroPagesAction
 import de.scandio.e4.testpackages.gitsnippets.actions.SetupGitSnippets
 import de.scandio.e4.testpackages.gitsnippets.actions.SetupGitSnippetsMacroPagesAction
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryMacroPageReader
+import de.scandio.e4.testpackages.gitsnippets.virtualusers.SpaceGroupCreator
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.GitSnippetsMacroPageReader
 import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
@@ -44,7 +44,7 @@ class DiaryAndGitSnippetsTestPackage: TestPackage {
         // 0.2
         virtualUsers.add(GitSnippetsMacroPageReader::class.java, 0.08)
         virtualUsers.add(DiaryEntryCreator::class.java, 0.04)
-        virtualUsers.add(DiaryMacroPageReader::class.java, 0.08)
+        virtualUsers.add(SpaceGroupCreator::class.java, 0.08)
         return virtualUsers
     }
 

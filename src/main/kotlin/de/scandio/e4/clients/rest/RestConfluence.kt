@@ -26,6 +26,7 @@ class RestConfluence(
     private val GSON = Gson()
 
     private val contentIds = HashMap<String, Long>()
+    private val allSpaceKeys: ArrayList<String> = arrayListOf()
 
     private val REST_ENTITY_SEARCH_LIMIT = 100
 
@@ -104,6 +105,7 @@ class RestConfluence(
 
     fun fillCachesIfEmpty() {
         findContentIdsUseCache(REST_ENTITY_SEARCH_LIMIT, null, null)
+        findSpaceKeysUseCache()
     }
 
     fun getRandomContentId(spaceKey: String? = null, parentPageTitle: String? = null): Long {
@@ -195,6 +197,13 @@ class RestConfluence(
         return pageId
     }
 
+    fun findSpaceKeysUseCache(): List<String> {
+        if (this.allSpaceKeys.isEmpty()) {
+            this.allSpaceKeys.addAll(retrieveAllSpaceKeys())
+        }
+        return this.allSpaceKeys
+    }
+
     fun createSpace(spaceKey: String, spaceName: String): String {
         val spaceDesc = "Space used for testing"
         val body =
@@ -241,6 +250,11 @@ class RestConfluence(
             log.warn("Error sending get request for spaceExists")
             false
         }
+    }
+
+    private fun retrieveAllSpaceKeys(): List<String> {
+        val response = sendGetRequestReturnResponse("rest/api/space")
+        return getListFromResponse("key", response.body)
     }
 
 }

@@ -1,12 +1,8 @@
 package de.scandio.e4.testpackages
 
 import de.scandio.e4.E4Env
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryMacroPageReader
 import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsTestPackage
 import de.scandio.e4.testpackages.livelyblogs.virtualusers.*
-import de.scandio.e4.testpackages.livelytheme.virtualusers.LivelyMacroPageCreator
-import de.scandio.e4.testpackages.livelytheme.virtualusers.LivelyMacroPageReader
 import org.junit.Before
 import org.junit.Test
 

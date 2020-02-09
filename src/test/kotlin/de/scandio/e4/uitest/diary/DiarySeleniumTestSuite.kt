@@ -2,9 +2,8 @@ package de.scandio.e4.uitest.diary
 
 import de.scandio.e4.E4Env
 import de.scandio.e4.testpackages.TestPackageTestRun
-import de.scandio.e4.testpackages.diary.DiaryTestPackage
+import de.scandio.e4.testpackages.diary.TeamAdminTestPackage
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
-import org.junit.Before
 import org.junit.Test
 
 class DiarySeleniumTestSuite : TestPackageTestRun() {
@@ -12,7 +11,7 @@ class DiarySeleniumTestSuite : TestPackageTestRun() {
     @Test
     fun setupIfPreparationRun() {
         if (E4Env.PREPARATION_RUN) {
-            executeTestPackagePrepare(DiaryTestPackage())
+            executeTestPackagePrepare(TeamAdminTestPackage())
         }
     }
 
