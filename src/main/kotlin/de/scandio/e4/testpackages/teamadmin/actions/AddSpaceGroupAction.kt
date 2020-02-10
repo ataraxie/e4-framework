@@ -10,21 +10,20 @@ import java.util.*
 
 class AddSpaceGroupAction () : Action() {
 
+    private val SPACEKEY: String = "TEST"
+
     protected var start: Long = 0
     protected var end: Long = 0
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
-        val restConfluence = restClient as RestConfluence
         val dom = webConfluence.dom
-        val allSpaceKeys = restConfluence.findSpaceKeysUseCache()
-        val spaceKey = WorkerUtils.getRandomItem(allSpaceKeys)
         val newGroupName = "e4${Date().time}"
 
         webConfluence.login()
 
         this.end = Date().time
-        webConfluence.navigateTo("/spaces/spacepermissions.action?key=${spaceKey}")
+        webConfluence.navigateTo("/spaces/spacepermissions.action?key=${SPACEKEY}")
         dom.click("#spaceadmin-create-group-button")
         dom.insertText("#spaceadmin-create-group-name", newGroupName)
         val checkboxes = dom.findElements(".spaceadmin-permission-checkbox:not(#spaceadmin-permission-checkbox-all-view)")
@@ -35,7 +34,7 @@ class AddSpaceGroupAction () : Action() {
             }
         }
         dom.click("#create-dialog-submit-button")
-        dom.awaitElementClickable("#spaceadminedit-${spaceKey.toLowerCase()}-${newGroupName}")
+        dom.awaitElementClickable("#spaceadminedit-${SPACEKEY.toLowerCase()}-${newGroupName}")
         this.end = Date().time
     }
 
