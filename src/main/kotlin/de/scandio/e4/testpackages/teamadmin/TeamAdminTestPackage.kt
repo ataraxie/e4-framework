@@ -1,15 +1,11 @@
-package de.scandio.e4.testpackages.diary
+package de.scandio.e4.testpackages.teamadmin
 
-import de.scandio.e4.testpackages.gitsnippets.actions.SetupDiaryMacroPagesAction
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.SpaceGroupCreator
-import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
-import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
 import de.scandio.e4.testpackages.vanilla.virtualusers.*
 import de.scandio.e4.worker.client.ApplicationName
 import de.scandio.e4.worker.collections.ActionCollection
-import de.scandio.e4.worker.interfaces.TestPackage
 import de.scandio.e4.worker.collections.VirtualUserCollection
+import de.scandio.e4.worker.interfaces.TestPackage
 
 /**
  * === DiaryTestPackage ===

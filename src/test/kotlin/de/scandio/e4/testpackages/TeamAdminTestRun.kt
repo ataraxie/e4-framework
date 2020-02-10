@@ -1,8 +1,6 @@
 package de.scandio.e4.testpackages
 
 import de.scandio.e4.E4Env
-import de.scandio.e4.testpackages.diary.TeamAdminTestPackage
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.SpaceGroupCreator
 import org.junit.Before
 import org.junit.Test

@@ -1,14 +1,14 @@
 package de.scandio.e4.testpackages
 
 import de.scandio.e4.E4Env
-import de.scandio.e4.testpackages.diary.TeamAdminTestPackage
+import de.scandio.e4.testpackages.diary.DiaryTestPackage
 import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
 import org.junit.Before
 import org.junit.Test
 
 class DiaryTestRun : TestPackageTestRun() {
 
-    private val TEST_PACKAGE = TeamAdminTestPackage()
+    private val TEST_PACKAGE = DiaryTestPackage()
 
     @Before
     fun before() {
