@@ -1,6 +1,6 @@
 # E4 - The enjoyable performance testing framework
 
-**NOTE:** The Github repository is not only a mirror of the Bitbucket repository!
+**NOTE: The Github repository is now only a mirror of the Bitbucket repository!**
 
 E4 is intended for performance and scale testing web applications with arbitrarily many browser agents running on 
 arbitrarily many "worker nodes" around the globe.
