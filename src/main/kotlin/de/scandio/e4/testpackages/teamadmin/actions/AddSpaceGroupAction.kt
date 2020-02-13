@@ -22,7 +22,7 @@ class AddSpaceGroupAction () : Action() {
 
         webConfluence.login()
 
-        this.start = Date().time
+        this.end = Date().time
         webConfluence.navigateTo("/spaces/spacepermissions.action?key=${SPACEKEY}")
         dom.click("#spaceadmin-create-group-button")
         dom.insertText("#spaceadmin-create-group-name", newGroupName)

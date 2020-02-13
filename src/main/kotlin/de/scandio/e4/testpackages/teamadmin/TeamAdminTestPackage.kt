@@ -8,24 +8,23 @@ import de.scandio.e4.worker.collections.VirtualUserCollection
 import de.scandio.e4.worker.interfaces.TestPackage
 
 /**
- * === DiaryTestPackage ===
+ * === TeamAdminTestPackage ===
  *
- * Test package for app "Diary for Confluence".
+ * Test package for app "Team Admin for Confluence".
  *
  * Assumptions:
  * - Running Confluence
- * - App Diary installed
+ * - App Team Admin installed
+ * - A space with key "TEST"
+ * - confluence-users group as ADMINISTERSPACE permission to be able to test space permissions in a randomized fashion
  *
  * Setup:
- * - Create a space with key "DR" and name "Diary"
- * - Create a page with title "macros" in the "DR" space
- * - Create 100 pages with the Diary macro and random macro parameters
+ * - No automated setup actions
  *
  * Virtual Users:
- * - DiaryEntryCreator: creates a diary entry in a random existing diary (on one of the 100 created pages)
- * - DiaryMacroPageReader: views a random page with the Diary macro (one of the 100 created pages)
+ * - SpaceGroupCreator: creates a space admin group with a randomized set of permissions
  *
- * Sum of weight is 0.2 which leaves 0.8 for vanilla virtual users.
+ * Weight is 0.1 which leaves 0.9 for vanilla virtual users.
  *
  * @author Felix Grund
  */
