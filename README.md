@@ -430,4 +430,4 @@ issues here in the Github repository if you have questions or would like to get 
 
 ## License
 
-[MIT](https://github.com/scandio/e4-framework/blob/docs/LICENSE) © [Scandio GmbH](https://github.com/scandio)
+[MIT](https://github.com/scandio/e4-framework/blob/docs/LICENSE) © [Lively Apps](https://www.livelyapps.com)
