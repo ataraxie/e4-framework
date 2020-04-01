@@ -31,7 +31,7 @@ class SetupGitSnippets: Action() {
         webConfluence.navigateTo("admin/plugins/git-snippets/settings.action")
         dom.awaitMilliseconds(3000)
         dom.insertText("#githubPersonalAccessToken", accessToken, true)
-        dom.click(".settings .buttons .aui-button.submit")
+        dom.click("#gitsnippets-settings-container .buttons .aui-button.submit")
         dom.awaitHasValue("#githubPersonalAccessToken", "****************************************")
         this.end = Date().time
     }

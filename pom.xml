@@ -22,7 +22,7 @@
 		<selenium.version>3.141.59</selenium.version>
         <phantomjsdriver.version>1.4.3</phantomjsdriver.version>
         <chromedriver.version>3.141.59</chromedriver.version>
-        <webdrivermanager.version>3.6.0</webdrivermanager.version>
+        <webdrivermanager.version>3.8.1</webdrivermanager.version>
 		<sqlite.version>3.27.2.1</sqlite.version>
 		<mockito.version>1.10.19</mockito.version>
 		<junit.platform.version>1.5.1</junit.platform.version>
