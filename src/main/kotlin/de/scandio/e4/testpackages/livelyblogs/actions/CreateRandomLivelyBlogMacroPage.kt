@@ -4,7 +4,6 @@ import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
-import org.slf4j.LoggerFactory
 import java.util.*
 
 /**
@@ -57,7 +56,7 @@ open class CreateRandomLivelyBlogMacroPage (
         )
         webConfluence.insertMacro(macroId, macroId, paramMap)
         // dom.addTextTinyMce(paramMap.toString()) // outcomment to verify macro parameters in page content
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         this.end = Date().time
     }
 

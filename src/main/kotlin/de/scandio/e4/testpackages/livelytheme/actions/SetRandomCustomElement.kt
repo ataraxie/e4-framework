@@ -87,7 +87,7 @@ open class SetRandomCustomElement(
                     mapOf("element" to "all-updates"))
             webConfluence.insertMacro("lively-dashboard-element", "Confluence Element",
                     mapOf("element" to "welcome-message"))
-            webConfluence.savePage()
+            webConfluence.savePageOrBlogPost()
         }
 
         this.end = Date().time
@@ -105,7 +105,7 @@ open class SetRandomCustomElement(
         webConfluence.awaitEditPageLoaded()
         if (setContentAndSave) {
             dom.insertTextTinyMce("<p>Auto generated $customElementKey page</p>")
-            webConfluence.savePage()
+            webConfluence.savePageOrBlogPost()
         }
     }
 

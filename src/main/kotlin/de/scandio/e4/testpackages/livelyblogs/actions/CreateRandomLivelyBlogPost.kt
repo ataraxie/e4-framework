@@ -5,9 +5,6 @@ import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.RandomData
-import org.openqa.selenium.Keys
-import org.openqa.selenium.interactions.Actions
-import org.slf4j.LoggerFactory
 import java.util.*
 
 /**
@@ -51,7 +48,7 @@ open class CreateRandomLivelyBlogPost (
         if (rnd("1", "2", "3") == "3") { // create teaser image for 1/3 of posts
             webConfluence.insertRandomImageFromPage(attachmentPageTitle)
         }
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
 
         this.end = Date().time
     }

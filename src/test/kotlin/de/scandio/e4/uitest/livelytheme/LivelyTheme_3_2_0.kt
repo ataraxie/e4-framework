@@ -47,7 +47,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
                 "color" to "#bada55"
         ))
         webConfluence.insertMacroBody("lively-widget", "<p>TEST</p>")
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         webConfluence.debugScreen("products_925")
         assertOneElement(".lively-widget.background-style-colored.text-style-dark")
         assertHasContent(".lively-widget .title", "PRODUCTS-925")
@@ -67,7 +67,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
                 "height" to "100px"
         ))
         webConfluence.insertMacroBody("lively-widget", "<p>TEST</p>")
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         webConfluence.debugScreen("products_1318_no_scroll")
         assertHasStyles(".lively-widget section", mapOf(
                 "height" to "100px"
@@ -87,7 +87,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
                 "height" to "100px"
         ))
         webConfluence.insertMacroBody("lively-widget", "<p>TEST</p><p>TEST</p><p>TEST</p><p>TEST</p>")
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         webConfluence.debugScreen("products_1318_scroll")
         assertHasStyles(".lively-widget section", mapOf(
                 "height" to "100px"
@@ -109,7 +109,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
         dom.scrollToBottom(".macro-input-fields")
         webConfluence.setMacroParameters(mapOf("customClass" to "e4class"))
         webConfluence.saveMacroBrowser()
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         assertOneElement(".lively-widget-custom-e4class")
         webConfluence.debugScreen("products_376")
     }

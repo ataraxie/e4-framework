@@ -91,7 +91,7 @@ class PocketQueryConfluenceSeleniumTestSuite : BaseSeleniumTest() {
             webConfluence.createDefaultPage(SPACEKEY, pageTitle)
             webConfluence.goToEditPage()
             pqHelper.insertPocketQueryMacro(outerQueryName)
-            webConfluence.savePage()
+            webConfluence.savePageOrBlogPost()
             webConfluence.dom.awaitElementPresent(".pocketquery-result .mw-parser-output", 40)
         } finally {
             dump()

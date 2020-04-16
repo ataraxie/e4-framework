@@ -32,7 +32,7 @@ class PagePropertyInlineSeleniumTestSuite : BaseSeleniumTest() {
             webConfluence.insertMacro("page-property-inline", "page property inline", mapOf(
                     "key" to "Key1"
             ))
-            webConfluence.savePage()
+            webConfluence.savePageOrBlogPost()
             val valueElement = webConfluence.dom.findElement(".ppi-value")
             assertEquals("Value1", valueElement.text)
         } catch (e: Exception) {

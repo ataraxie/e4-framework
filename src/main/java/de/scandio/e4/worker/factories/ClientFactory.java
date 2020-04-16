@@ -10,6 +10,7 @@ import de.scandio.e4.clients.rest.RestJira;
 import de.scandio.e4.worker.services.StorageService;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -22,6 +23,7 @@ public class ClientFactory {
 	public static WebDriver newChromeDriver() {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions chromeOptions = new ChromeOptions();
+		chromeOptions.setPageLoadStrategy(PageLoadStrategy.EAGER);
 //		chromeOptions.setPageLoadStrategy(PageLoadStrategy.NONE); // https://www.skptricks.com/2018/08/timed-out-receiving-message-from-renderer-selenium.html
 		chromeOptions.addArguments("start-maximized");
 		chromeOptions.addArguments("disable-extensions");

@@ -50,7 +50,7 @@ class CreateOverviewPageAction(
         this.start = Date().time
         webConfluence.goToEditPage()
         webConfluence.insertMacro("page-branching-overview", "page branching")
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         this.end = Date().time
     }
 

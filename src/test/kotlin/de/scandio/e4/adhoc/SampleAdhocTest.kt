@@ -24,7 +24,7 @@ class SampleAdhocTest : BaseSeleniumTest() {
                     "title" to "E4 Provided Title",
                     "icon" to "false"
             ))
-            webConfluence.savePage()
+            webConfluence.savePageOrBlogPost()
             val renderedMacroPresent = webConfluence.dom.isElementPresent(".confluence-information-macro.has-no-icon")
             assertTrue(renderedMacroPresent)
         } catch (e: Exception) {

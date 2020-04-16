@@ -257,4 +257,10 @@ class RestConfluence(
         return getListFromResponse("key", response.body)
     }
 
+    fun getContentId(spaceKey: String, pageTitle: String): Long? {
+        val responseText = findPage(spaceKey, pageTitle)
+        val pages = getResultListFromResponse(responseText)
+        return java.lang.Long.parseLong(pages[0]["id"] as String)
+    }
+
 }

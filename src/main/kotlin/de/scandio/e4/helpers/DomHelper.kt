@@ -1,5 +1,7 @@
 package de.scandio.e4.helpers
 
+import com.sun.org.apache.xpath.internal.operations.Bool
+import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.enjoy.wait
 import de.scandio.e4.worker.util.Util
 import org.openqa.selenium.By
@@ -241,5 +243,23 @@ class DomHelper(
 
     fun setFile(inputSelector: String, absolutePath: String) {
         findElement(inputSelector).sendKeys(absolutePath)
+    }
+
+    fun expectElementPresent(selector: String) {
+        findElement(selector)
+    }
+
+    fun expectElementNotPresent(selector: String) {
+        var elementFound = false
+        try {
+            findElement(selector)
+            elementFound = true
+        } catch (e: Exception) {
+            // leave false
+        }
+
+        if (elementFound) {
+            throw Exception("Found element that was not expected")
+        }
     }
 }

@@ -31,7 +31,7 @@ open class CreateRandomGitSnippetsMacroPage (
         )
         webConfluence.insertMacro(macroId, macroId, paramMap)
         // dom.addTextTinyMce(paramMap.toString()) // outcomment to verify macro parameters in page content
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         this.end = Date().time
     }
 

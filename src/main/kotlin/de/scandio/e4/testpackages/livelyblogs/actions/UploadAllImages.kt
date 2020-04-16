@@ -45,7 +45,7 @@ open class UploadAllImages (
         val restConfluence = restClient as RestConfluence
         val webConfluence = webClient as WebConfluence
         val dom = webConfluence.dom
-        val pageId = restConfluence.getContentIdUseCache(spaceKey, pageTitle)
+        val pageId = restConfluence.getContentId(spaceKey, pageTitle)
         val images = webConfluence.getFilesFromInputDir(this.filenameRegex)
         if (images.isEmpty()) {
             repeat(10) {

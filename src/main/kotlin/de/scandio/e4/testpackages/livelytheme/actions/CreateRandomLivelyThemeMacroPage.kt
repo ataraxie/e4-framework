@@ -93,7 +93,7 @@ open class CreateRandomLivelyThemeMacroPage (
                 insertLivelyMacro(macroId, mapOf("width" to "300px"))
             }
         }
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         this.end = Date().time
     }
 

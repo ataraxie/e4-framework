@@ -48,7 +48,7 @@ class PocketQueryConfluenceSeleniumHelper(
         webConfluence().createDefaultPage(pqSpaceKey, pageTitle)
         webConfluence().goToEditPage()
         insertPocketQueryMacro(queryName, macroParamsToCheck, queryParameters)
-        webConfluence().savePage()
+        webConfluence().savePageOrBlogPost()
     }
 
     private fun webConfluence() : WebConfluence {

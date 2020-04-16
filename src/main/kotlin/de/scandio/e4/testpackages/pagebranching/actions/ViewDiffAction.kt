@@ -52,7 +52,7 @@ open class ViewDiffAction (
         webConfluence.goToPage(spaceKey, "${super.branchName}: ${super.originPageTitle}")
         webConfluence.goToEditPage()
         dom.addTextTinyMce(RandomData.STRING_LOREM_IPSUM_2)
-        webConfluence.savePage()
+        webConfluence.savePageOrBlogPost()
         dom.click("#content-metadata-pagebranching")
         dom.click("a.pagebranching-viewdiff-link")
         dom.awaitElementPresent("#num-changes-container .haschanges .count")

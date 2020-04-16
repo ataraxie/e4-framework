@@ -157,7 +157,7 @@ class WebConfluence(
         dom.awaitElementInsivible(".search-blanket")
     }
 
-    fun savePage() {
+    fun savePageOrBlogPost() {
         dom.removeElementWithJQuery(".aui-blanket")
         dom.click("#rte-button-publish")
         dom.awaitElementPresent("#main-content")
@@ -210,7 +210,7 @@ class WebConfluence(
         }
         setPageTitleInEditor(pageTitle)
         dom.addTextTinyMce(html)
-        savePage()
+        savePageOrBlogPost()
     }
 
     fun createEmptySpace(spaceKey: String, spaceName: String) {
@@ -278,7 +278,7 @@ class WebConfluence(
         dom.awaitElementPresent("#wysiwyg")
         dom.addTextTinyMce(htmlContentToAdd)
         dom.awaitMilliseconds(50)
-        savePage()
+        savePageOrBlogPost()
     }
 
     fun addRandomComment(htmlComment: String) {
@@ -364,7 +364,10 @@ class WebConfluence(
         dom.awaitElementVisible("#searched-images .attached-file")
         debugScreen("insertRandomImageFromPage-3")
         val allImages = dom.findElements("#searched-images .attached-file")
-        val randIndex = Random().nextInt(allImages.size - 1)
+        var randIndex = 0
+        if (allImages.size > 1) {
+            randIndex = Random().nextInt(allImages.size - 1)
+        }
         dom.click(allImages[randIndex])
         debugScreen("insertRandomImageFromPage-4")
         dom.click("#insert-image-dialog button.insert")
