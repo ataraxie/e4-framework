@@ -55,7 +55,7 @@ class GitSnippetsTestPackage: TestPackage {
 
     override fun getSetupActions(): ActionCollection {
         val actions = ActionCollection()
-//        actions.add(CreateSpaceAction("GS", "Git Snippets", true))
+        actions.add(CreateSpaceAction("GS", "Git Snippets", true))
         actions.add(SetupGitSnippets())
         actions.add(CreatePageAction("GS", "macros", "<ac:structured-macro ac:name=\"children\" />", true))
         actions.add(SetupGitSnippetsMacroPagesAction("GS", "macros", 100))

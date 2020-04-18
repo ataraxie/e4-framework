@@ -58,7 +58,7 @@ class LivelyBlogsTestPackage: TestPackage {
 
     override fun getSetupActions(): ActionCollection {
         val actions = ActionCollection()
-//        actions.add(CreateSpaceAction("LB", "Lively Blog", true))
+        actions.add(CreateSpaceAction("LB", "Lively Blog", true))
         actions.add(CreateMultiplePagesActionRest("LB", "Lively Blog Home", 100))
         actions.add(SetupSetSpaceForFeaturedPosts())
         actions.add(SetupLivelyBlogCategories())

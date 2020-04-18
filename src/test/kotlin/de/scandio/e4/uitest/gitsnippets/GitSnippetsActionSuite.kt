@@ -9,7 +9,7 @@ import de.scandio.e4.testpackages.livelyblogs.virtualusers.*
 import org.junit.Before
 import org.junit.Test
 
-class GitSnippetsSeleniumTestSuite : TestPackageTestRun() {
+class GitSnippetsActionSuite : TestPackageTestRun() {
 
     @Test
     fun setupIfPreparationRun() { // FIXME: always run this test first!
