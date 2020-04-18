@@ -10,9 +10,7 @@ import de.scandio.e4.worker.util.WorkerUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.StringEscapeUtils
 import org.slf4j.LoggerFactory
-
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 @Suppress("UNCHECKED_CAST", "SameParameterValue")
 class RestConfluence(
@@ -169,17 +167,6 @@ class RestConfluence(
             val ancestorsObj = jsonElement("""[{"id":$parentContentId}]""")
             bodyObj.add("ancestors", ancestorsObj)
         }
-//        if (labels.isNotEmpty()) {
-//            val metadataObj = JsonObject()
-//            val labelArr = JsonArray()
-//            for (label in labels) {
-//                val labelObj = JsonObject()
-//                labelObj.addProperty("name", label)
-//                labelArr.add(labelObj)
-//            }
-//            metadataObj.add("labels", labelArr)
-//            bodyObj.add("metadata", metadataObj)
-//        }
 
         val responseText = sendPostRequest("rest/api/content/", GSON.toJson(bodyObj))
         return getContentIdFromCreateResponse(responseText)
@@ -221,6 +208,10 @@ class RestConfluence(
 }
 """
         return sendPostRequest("rest/api/space/", body)
+    }
+
+    fun removeSpace(spaceKey: String): Int {
+        return sendDeleteRequestReturnStatus("rest/api/space/$spaceKey")
     }
 
     fun jsonObject(jsonString: String): JsonObject {

@@ -11,6 +11,7 @@ class GitSnippetsSeleniumHelper(
 ) {
 
     private val ENV_VAR_KEY = "GIT_SNIPPETS_TOKEN"
+    private val MACRO_ID = "live-snippet"
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -24,6 +25,28 @@ class GitSnippetsSeleniumHelper(
         dom.insertText("#githubPersonalAccessToken", accessToken, true)
         dom.click("#gitsnippets-settings-container .buttons .aui-button.submit")
         dom.awaitHasValue("#githubPersonalAccessToken", "****************************************")
+    }
+
+    fun createGitSnippetsMacroPageWaitTillRendered(spaceKey: String, pageTitle: String, macroParameters: Map<String, String>) {
+        createGitSnippetsMacroPageKeepMacroBrowserOpen(spaceKey, pageTitle, macroParameters)
+        webConfluence.saveMacroBrowser()
+        saveAndWaitTillRendered()
+    }
+
+    fun createGitSnippetsMacroPageKeepMacroBrowserOpen(spaceKey: String, pageTitle: String, macroParameters: Map<String, String>) {
+        webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey")
+        dom.awaitElementPresent("#wysiwyg")
+        dom.click("#wysiwyg")
+        webConfluence.setPageTitleInEditor(pageTitle)
+        webConfluence.openMacroBrowser(MACRO_ID, MACRO_ID)
+        dom.awaitMilliseconds(100)
+        webConfluence.setMacroParameters(macroParameters)
+        dom.awaitMilliseconds(300)
+    }
+
+    fun saveAndWaitTillRendered() {
+        webConfluence.savePageOrBlogPost()
+        dom.awaitElementPresent(".snippet-container")
     }
 
 }

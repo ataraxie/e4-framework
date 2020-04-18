@@ -57,12 +57,25 @@ public abstract class RestAtlassian implements RestClient {
 		return sendPostOrPutRequest(HttpMethod.POST, urlAfterBaseUrl, body);
 	}
 
+	public int sendGetRequestReturnStatus(String urlAfterBaseUrl) {
+		return sendGetRequestReturnResponse(urlAfterBaseUrl).getStatusCodeValue();
+	}
+
+	public String sendGetRequestReturnBody(String urlAfterBaseUrl) {
+		return sendGetRequestReturnResponse(urlAfterBaseUrl).getBody();
+	}
+
+	protected ResponseEntity<String> sendGetRequestReturnResponse(String urlAfterBaseUrl) {
+		return sendGetOrDeleteRequestReturnResponse(urlAfterBaseUrl, HttpMethod.GET);
+	}
+
+	protected int sendDeleteRequestReturnStatus(String urlAfterBaseUrl) {
+		return sendGetOrDeleteRequestReturnResponse(urlAfterBaseUrl, HttpMethod.DELETE).getStatusCodeValue();
+	}
+
 	protected String sendPostOrPutRequest(HttpMethod method, String urlAfterBaseUrl, String body) {
 		final String url = this.baseUrl + urlAfterBaseUrl;
 		RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-//		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-//		interceptors.add(new LoggingRequestInterceptor());
-//		restTemplate.setInterceptors(interceptors);
 
 		log.debug("Sending {{}} request {{}} with body {{}}", method, url, body);
 
@@ -83,24 +96,13 @@ public abstract class RestAtlassian implements RestClient {
 		return response.getBody();
 	}
 
-	public int sendGetRequestReturnStatus(String urlAfterBaseUrl) {
-		return sendGetRequestReturnResponse(urlAfterBaseUrl).getStatusCodeValue();
-	}
-
-	public String sendGetRequestReturnBody(String urlAfterBaseUrl) {
-		ResponseEntity<String> response = sendGetRequestReturnResponse(urlAfterBaseUrl);
-		String responseText = response.getBody();
-//		log.debug("Response text {{}}", responseText);
-		return responseText;
-	}
-
-	protected ResponseEntity<String> sendGetRequestReturnResponse(String urlAfterBaseUrl) {
+	protected ResponseEntity<String> sendGetOrDeleteRequestReturnResponse(String urlAfterBaseUrl, HttpMethod method) {
 		final String url = this.baseUrl + urlAfterBaseUrl;
 		final RestTemplate restTemplate = new RestTemplateBuilder()
 				.setConnectTimeout(Duration.ofSeconds(40))
 				.setReadTimeout(Duration.ofSeconds(40)).build();
 
-		log.debug("Sending GET request {{}}", url);
+		log.debug("Sending {{}} request {{}}", method, url);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", getBasicAuth());
@@ -108,9 +110,9 @@ public abstract class RestAtlassian implements RestClient {
 		HttpEntity<String> request = new HttpEntity<>(headers);
 		ResponseEntity<String> response;
 		try {
-			response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+			response = restTemplate.exchange(url, method, request, String.class);
 		} catch (HttpClientErrorException e) {
-			log.error("Exception sending REST GET request for user {{}} with password {{}} and URL {{}}", this.username, this.password, url);
+			log.error("Exception sending REST {{}} request for user {{}} with password {{}} and URL {{}}", method, this.username, this.password, url);
 			throw e;
 		}
 
