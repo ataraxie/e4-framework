@@ -19,9 +19,13 @@ class GitSnippetsSeleniumHelper(
         return System.getenv(ENV_VAR_KEY) ?: throw Exception("Access Token not found!")
     }
 
-    fun setAccessTokenInGitSnippetsConfig(accessToken: String) {
+    fun goToGitSnippetsSettings() {
         webConfluence.navigateTo("admin/plugins/git-snippets/settings.action")
         dom.awaitMilliseconds(3000) // FIXME: hard-coded interval! need to wait for event instead!
+    }
+
+    fun setAccessTokenInGitSnippetsConfig(accessToken: String) {
+        goToGitSnippetsSettings()
         dom.insertText("#githubPersonalAccessToken", accessToken, true)
         dom.click("#gitsnippets-settings-container .buttons .aui-button.submit")
         dom.awaitHasValue("#githubPersonalAccessToken", "****************************************")
