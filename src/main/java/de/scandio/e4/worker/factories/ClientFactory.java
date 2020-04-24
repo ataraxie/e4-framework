@@ -1,5 +1,6 @@
 package de.scandio.e4.worker.factories;
 
+import de.scandio.e4.E4Env;
 import de.scandio.e4.clients.web.WebConfluence;
 import de.scandio.e4.clients.web.WebJira;
 import de.scandio.e4.worker.client.ApplicationName;
@@ -30,7 +31,9 @@ public class ClientFactory {
 		chromeOptions.addArguments("enable-automation");
 		chromeOptions.addArguments("--start-maximized");
 		chromeOptions.addArguments("--disable-extensions");
-		chromeOptions.addArguments("--headless");
+		if(E4Env.CHROME_HEADLESS) {
+			chromeOptions.addArguments("--headless");
+		}
 		chromeOptions.addArguments("--disable-impl-side-painting");
 		chromeOptions.addArguments("--no-sandbox");
 		chromeOptions.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770

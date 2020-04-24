@@ -28,6 +28,8 @@ public class E4Env {
 
 	public static final boolean IS_DATACENTER = "true".equals(getenv("E4_IS_DATACENTER", "false"));
 
+	public static final boolean CHROME_HEADLESS = "true".equalsIgnoreCase(getenv("E4_CHROME_HEADLESS", "true"));
+
 	public static String resolveBaseUrl(String varName, String defaultValue) {
 		String url = getenv(varName, defaultValue);
 		return url.endsWith("/") ? url : url + "/";
