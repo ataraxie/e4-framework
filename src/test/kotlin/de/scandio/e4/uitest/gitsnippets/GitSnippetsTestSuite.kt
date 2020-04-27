@@ -5,10 +5,12 @@ import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.testpackages.gitsnippets.GitSnippetsSeleniumHelper
+import junit.framework.Assert.assertEquals
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -125,18 +127,57 @@ class GitSnippetsTestSuite : BaseSeleniumTest() {
         }
     }
 
-//    @Test // GSCSRV-8 IN PROGRESS
-//    fun testAddAndRemoveBitbucketServer() {
-//        runWithDump {
-//            val pageTitle = "Git Snippets Markdown Page (${Date().time})"
-//            webConfluence.login()
-//            helper.goToGitSnippetsSettings()
-//            val listTokenUrlElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
-//            val listTokenElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token\"]")
-//            assertEquals( 1, listTokenUrlElements.size)
-//            assertEquals( 1, listTokenElements.size)
-//        }
-//    }
+    @Test // GSCSRV-8 Add and remove a bitbucket access key for a domain
+    fun testAddAndRemoveBitbucketServer() {
+        runWithDump {
+            webConfluence.login()
+            helper.goToGitSnippetsSettings()
+
+            var listTokenUrlElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
+            var listTokenElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token\"]")
+            assertEquals( 1, listTokenUrlElements.size)
+            assertEquals( 1, listTokenElements.size)
+            // We expect a empty list:
+            var firstListTokenUrlElement = listTokenUrlElements[0]
+            var firstListTokenElement = listTokenElements[0]
+            assertEquals("", firstListTokenUrlElement.getAttribute("value"))
+            assertEquals("", firstListTokenElement.getAttribute("value"))
+
+            dom.insertText("#bitbucket-server-access-token-list .list-item:nth-child(1) input[name=\"list-token-url\"]",
+                    "git.livelyapps.com", true)
+            dom.insertText("#bitbucket-server-access-token-list .list-item:nth-child(1) input[name=\"list-token\"]",
+                    "MASKED", true)
+
+            dom.click("input.submit")
+            dom.awaitMilliseconds(100)
+
+
+            listTokenUrlElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
+            listTokenElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token\"]")
+            assertEquals( 1, listTokenUrlElements.size)
+            assertEquals( 1, listTokenElements.size)
+            // We expect the data we just set, but masked
+            firstListTokenUrlElement = listTokenUrlElements[0]
+            firstListTokenElement = listTokenElements[0]
+            assertEquals("git.livelyapps.com", firstListTokenUrlElement.getAttribute("value"))
+            assertEquals(false, firstListTokenUrlElement.isEnabled)
+            assertEquals("****************************************", firstListTokenElement.getAttribute("value"))
+
+            dom.click("#bitbucket-server-access-token-list .list-item:nth-child(1) .aui-iconfont-cross")
+            dom.click("input.submit")
+            dom.awaitMilliseconds(100)
+
+            listTokenUrlElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
+            listTokenElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token\"]")
+            assertEquals( 1, listTokenUrlElements.size)
+            assertEquals( 1, listTokenElements.size)
+            // We expect a empty list:
+            firstListTokenUrlElement = listTokenUrlElements[0]
+            firstListTokenElement = listTokenElements[0]
+            assertEquals("", firstListTokenUrlElement.getAttribute("value"))
+            assertEquals("", firstListTokenElement.getAttribute("value"))
+        }
+    }
     // END: Release/2.6.0
 
     fun runWithDump(block: () -> Unit) {
