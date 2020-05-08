@@ -135,27 +135,27 @@ class GitSnippetsTestSuite : BaseSeleniumTest() {
 
             var listTokenUrlElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
             var listTokenElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token\"]")
-            assertEquals( 1, listTokenUrlElements.size)
-            assertEquals( 1, listTokenElements.size)
+            assertEquals(1, listTokenUrlElements.size)
+            assertEquals(1, listTokenElements.size)
             // We expect a empty list:
             var firstListTokenUrlElement = listTokenUrlElements[0]
             var firstListTokenElement = listTokenElements[0]
             assertEquals("", firstListTokenUrlElement.getAttribute("value"))
             assertEquals("", firstListTokenElement.getAttribute("value"))
 
-            dom.insertText("#bitbucket-server-access-token-list .list-item:nth-child(1) input[name=\"list-token-url\"]",
+            dom.insertText("#bitbucket-server-access-token-list .list-item:first-child input[name=\"list-token-url\"]",
                     "git.livelyapps.com", true)
-            dom.insertText("#bitbucket-server-access-token-list .list-item:nth-child(1) input[name=\"list-token\"]",
+            dom.insertText("#bitbucket-server-access-token-list .list-item:first-child input[name=\"list-token\"]",
                     "MASKED", true)
 
             dom.click("input.submit")
-            dom.awaitMilliseconds(100)
 
+            dom.awaitElementPresent("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
 
             listTokenUrlElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
             listTokenElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token\"]")
-            assertEquals( 1, listTokenUrlElements.size)
-            assertEquals( 1, listTokenElements.size)
+            assertEquals(1, listTokenUrlElements.size)
+            assertEquals(1, listTokenElements.size)
             // We expect the data we just set, but masked
             firstListTokenUrlElement = listTokenUrlElements[0]
             firstListTokenElement = listTokenElements[0]
@@ -163,14 +163,15 @@ class GitSnippetsTestSuite : BaseSeleniumTest() {
             assertEquals(false, firstListTokenUrlElement.isEnabled)
             assertEquals("****************************************", firstListTokenElement.getAttribute("value"))
 
-            dom.click("#bitbucket-server-access-token-list .list-item:nth-child(1) .aui-iconfont-cross")
+            dom.click("#bitbucket-server-access-token-list .list-item:first-child .aui-iconfont-cross")
             dom.click("input.submit")
-            dom.awaitMilliseconds(100)
+
+            dom.awaitElementPresent("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
 
             listTokenUrlElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token-url\"]")
             listTokenElements = dom.findElements("#bitbucket-server-access-token-list input[name=\"list-token\"]")
-            assertEquals( 1, listTokenUrlElements.size)
-            assertEquals( 1, listTokenElements.size)
+            assertEquals(1, listTokenUrlElements.size)
+            assertEquals(1, listTokenElements.size)
             // We expect a empty list:
             firstListTokenUrlElement = listTokenUrlElements[0]
             firstListTokenElement = listTokenElements[0]
