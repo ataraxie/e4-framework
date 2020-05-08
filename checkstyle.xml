@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+
+    <property name="severity" value="error"/>
+
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <module name="TreeWalker">
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^\t* "/>
+            <property name="message" value="Indent must use tab characters"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+
+        <module name="WhitespaceAround">
+            <property name="tokens" value="LCURLY,RCURLY,COLON"/>
+            <property name="allowEmptyMethods" value="true" />
+            <property name="allowEmptyConstructors" value="true" />
+            <property name="ignoreEnhancedForColon" value="false" />
+        </module>
+
+        <module name="NeedBraces"/>
+    </module>
+</module>

@@ -69,7 +69,7 @@ public class E4Client {
 	}
 
 	private void orchestrateLocal(ClientConfig clientConfig) throws Exception {
-		final HashMap<String, Object> props = new HashMap<String, Object>(){{
+		final HashMap<String, Object> props = new HashMap<String, Object>() { {
 			if (parsedArgs.hasOption("port")) {
 				put("server.port", parsedArgs.getOptionValue("port"));
 			} else {
@@ -84,7 +84,7 @@ public class E4Client {
 				put("input.dir", parsedArgs.getOptionValue("input-dir"));
 				log.info("Set custom input dir: " + get("input.dir"));
 			}
-		}};
+		} };
 
 		final ConfigurableApplicationContext run = new SpringApplicationBuilder()
 				.sources(E4Application.class)
@@ -112,7 +112,7 @@ public class E4Client {
 	}
 
 	private void orchestrateRemote(ClientConfig clientConfig) throws Exception {
-		for (String workerURL: clientConfig.getWorkers()) {
+		for (String workerURL : clientConfig.getWorkers()) {
 			try {
 				final int statusCode = WorkerRestUtil.getStatus(workerURL).getStatusCodeValue();
 				if (statusCode == 200) {

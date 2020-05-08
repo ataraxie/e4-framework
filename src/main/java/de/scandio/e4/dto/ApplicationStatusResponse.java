@@ -11,9 +11,10 @@ public class ApplicationStatusResponse {
 
 	public ApplicationStatusResponse() {}
 
-	public ApplicationStatusResponse(WorkerConfig config,
-									 PreparationStatus preparationStatus,
-									 TestsStatus testsStatus) {
+	public ApplicationStatusResponse(
+			WorkerConfig config,
+			PreparationStatus preparationStatus,
+			TestsStatus testsStatus) {
 		this.config = config;
 		this.preparationStatus = preparationStatus;
 		this.testsStatus = testsStatus;

@@ -31,7 +31,7 @@ public class ClientFactory {
 		chromeOptions.addArguments("enable-automation");
 		chromeOptions.addArguments("--start-maximized");
 		chromeOptions.addArguments("--disable-extensions");
-		if(E4Env.CHROME_HEADLESS) {
+		if (E4Env.CHROME_HEADLESS) {
 			chromeOptions.addArguments("--headless");
 		}
 		chromeOptions.addArguments("--disable-impl-side-painting");
