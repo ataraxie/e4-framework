@@ -26,9 +26,10 @@ public class E4Resource {
 
 	private static final Logger log = LoggerFactory.getLogger(E4Resource.class);
 
-	public E4Resource(TestRunnerService testRunnerService,
-					  ApplicationStatusService applicationStatusService,
-					  PreparationService preparationService) {
+	public E4Resource(
+			TestRunnerService testRunnerService,
+			ApplicationStatusService applicationStatusService,
+			PreparationService preparationService) {
 		this.testRunnerService = testRunnerService;
 		this.applicationStatusService = applicationStatusService;
 		this.preparationService = preparationService;
