@@ -5,8 +5,13 @@ public class E4Measurement extends E4Model {
 	private Long timeTaken;
 	private String nodeId;
 
-	public E4Measurement(Long timeTaken, String threadId,
-						 String virtualUser, String action, String nodeId, String testPackage) {
+	public E4Measurement(
+			Long timeTaken,
+			String threadId,
+			String virtualUser,
+			String action,
+			String nodeId,
+			String testPackage) {
 		super(threadId, virtualUser, action, testPackage);
 		this.timeTaken = timeTaken;
 		this.nodeId = nodeId;

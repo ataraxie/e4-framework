@@ -26,10 +26,11 @@
 		<sqlite.version>3.27.2.1</sqlite.version>
 		<mockito.version>1.10.19</mockito.version>
 		<junit.platform.version>1.5.1</junit.platform.version>
-		<junit.jupiter.version>5.5.1</junit.jupiter.version>
+		<junit.jupiter.version>5.3.2</junit.jupiter.version>
 		<spring.boot.starter.version>2.1.7.RELEASE</spring.boot.starter.version>
 		<maven.surefire.version>2.22.2</maven.surefire.version>
 		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+		<maven.checkstyle.version>3.1.1</maven.checkstyle.version>
 	</properties>
 
 	<dependencies>
@@ -229,6 +230,41 @@
                         </goals>
                     </execution>
                 </executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven.checkstyle.version}</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<configuration>
+							<configLocation>checkstyle.xml</configLocation>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+							<failOnViolation>true</failOnViolation>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>package</id>
+						<phase>package</phase>
+						<configuration>
+							<configLocation>checkstyle.xml</configLocation>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>false</failsOnError>
+							<failOnViolation>false</failOnViolation>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

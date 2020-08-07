@@ -23,46 +23,47 @@ import java.util.logging.Level;
 @Service
 public class PreparationService {
 
-    private static final String DEFAULT_USER_PASSWORD = "password"; // TODO: extract to client config!
+	private static final String DEFAULT_USER_PASSWORD = "password"; // TODO: extract to client config!
 
-    private static final Logger log = LoggerFactory.getLogger(PreparationService.class);
+	private static final Logger log = LoggerFactory.getLogger(PreparationService.class);
 
-    private final ApplicationStatusService applicationStatusService;
-    private final UserCredentialsService userCredentialsService;
-    private final StorageService storageService;
+	private final ApplicationStatusService applicationStatusService;
+	private final UserCredentialsService userCredentialsService;
+	private final StorageService storageService;
 
-    public PreparationService(ApplicationStatusService applicationStatusService,
-                              UserCredentialsService userCredentialsService,
-                              StorageService storageService) {
-        this.applicationStatusService = applicationStatusService;
-        this.userCredentialsService = userCredentialsService;
-        this.storageService = storageService;
-    }
+	public PreparationService(
+			ApplicationStatusService applicationStatusService,
+			UserCredentialsService userCredentialsService,
+			StorageService storageService) {
+		this.applicationStatusService = applicationStatusService;
+		this.userCredentialsService = userCredentialsService;
+		this.storageService = storageService;
+	}
 
-    public void prepare(int workerIndex, WorkerConfig config) throws Exception {
+	public void prepare(int workerIndex, WorkerConfig config) throws Exception {
 		// TODO: Log level from config
 
-        if (applicationStatusService.getTestsStatus().equals(TestsStatus.RUNNING)) {
-            throw new Exception("Can not prepare while tests are running!");
-        }
+		if (applicationStatusService.getTestsStatus().equals(TestsStatus.RUNNING)) {
+			throw new Exception("Can not prepare while tests are running!");
+		}
 
-        log.info("[E4W] Preparing worker with index {{}} ...", workerIndex);
-        applicationStatusService.setPreparationStatus(PreparationStatus.ONGOING);
-        applicationStatusService.setConfig(config);
+		log.info("[E4W] Preparing worker with index {{}} ...", workerIndex);
+		applicationStatusService.setPreparationStatus(PreparationStatus.ONGOING);
+		applicationStatusService.setConfig(config);
 
-        storageService.setWorkerIndex(workerIndex);
+		storageService.setWorkerIndex(workerIndex);
 
-        log.info("Running prepare actions of package {{}} against URL {{}}", config.getTestPackage(), config.getTarget());
+		log.info("Running prepare actions of package {{}} against URL {{}}", config.getTestPackage(), config.getTarget());
 
-        final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(config.getTestPackage());
-        final TestPackage testPackageInstance = testPackage.newInstance();
+		final Class<TestPackage> testPackage = (Class<TestPackage>) Class.forName(config.getTestPackage());
+		final TestPackage testPackageInstance = testPackage.newInstance();
 
-        final ActionCollection setupScenarios = testPackageInstance.getSetupActions();
-        final RestClient restClient = ClientFactory.newRestClient(testPackageInstance.getApplicationName(), storageService,
+		final ActionCollection setupScenarios = testPackageInstance.getSetupActions();
+		final RestClient restClient = ClientFactory.newRestClient(testPackageInstance.getApplicationName(), storageService,
 				config.getTarget(), config.getUsername(), config.getPassword());
 
-        try {
-            List<String> usernames = restClient.getUsernames();
+		try {
+			List<String> usernames = restClient.getUsernames();
 			List<UserCredentials> userCredentials = new ArrayList<>();
 			for (String username : usernames) {
 				if (!username.equals(config.getUsername())) {
@@ -70,9 +71,9 @@ public class PreparationService {
 				}
 			}
 			userCredentialsService.storeUsers(userCredentials);
-            if (!setupScenarios.isEmpty()) {
+			if (!setupScenarios.isEmpty()) {
 				WebClient webClient;
-            	if (setupScenarios.allRestOnly()) {
+				if (setupScenarios.allRestOnly()) {
 					webClient = new NoopWebClient();
 				} else {
 					webClient = ClientFactory.newChromeWebClient(testPackageInstance.getApplicationName(),
@@ -99,16 +100,16 @@ public class PreparationService {
 					webClient.quit();
 				}
 			} else {
-            	log.info("No setup scenarios given.");
+				log.info("No setup scenarios given.");
 			}
 
-            log.info("[E4W] Preparations are finished!");
-            applicationStatusService.setPreparationStatus(PreparationStatus.FINISHED);
-        } catch (Exception ex) {
-            log.error("Preparation Action failed.");
-            ex.printStackTrace();
-            applicationStatusService.setPreparationStatus(PreparationStatus.ERROR);
-        }
-    }
+			log.info("[E4W] Preparations are finished!");
+			applicationStatusService.setPreparationStatus(PreparationStatus.FINISHED);
+		} catch (Exception ex) {
+			log.error("Preparation Action failed.");
+			ex.printStackTrace();
+			applicationStatusService.setPreparationStatus(PreparationStatus.ERROR);
+		}
+	}
 
 }
