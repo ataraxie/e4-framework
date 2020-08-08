@@ -47,7 +47,7 @@ class ViewRandomBlogpostOverview: Action() {
         log.info("Navigating on item {{}}", randomItem.getAttribute("data-filter"))
         dom.click(randomItem)
         dom.awaitMilliseconds(50)
-        dom.awaitElementVisible(".blog-posts-container .lively-blog-posts")
+        dom.awaitElementVisible(".overview-container .lively-blog-posts")
         this.end = Date().time
     }
 
