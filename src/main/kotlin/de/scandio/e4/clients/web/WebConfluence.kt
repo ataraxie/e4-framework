@@ -1,10 +1,14 @@
 package de.scandio.e4.clients.web
 
 import de.scandio.e4.worker.util.RandomData
+import de.scandio.e4.worker.util.WorkerUtils
+import org.apache.commons.io.FileUtils
 import org.openqa.selenium.*
 import org.openqa.selenium.interactions.Actions
+import java.io.File
 import java.net.URI
 import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 class WebConfluence(
@@ -386,6 +390,23 @@ class WebConfluence(
         navigateTo("admin/maintenance/edit.action")
         dom.click("#readOnlyModeEnabled:checked")
         dom.click("#confirm")
+    }
+
+    fun getRandomMarkdownContent(): String {
+        var markdownFiles = getFilesFromInputDir("random-markdown.*\\.md")
+        if (markdownFiles.isEmpty()) {
+            repeat(10) {
+                val filename = "random-markdown-$it.md"
+                val path = "/markdown/$filename"
+                val inputUrl = javaClass.getResource(path)
+                val destUrl = "${inputDir}/$filename"
+                FileUtils.copyURLToFile(inputUrl, File(destUrl))
+            }
+        }
+        markdownFiles = getFilesFromInputDir("random-markdown.*\\.md")
+        val randInt = WorkerUtils.getRandomItem(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+        val markdownFile = markdownFiles[randInt]
+        return FileUtils.readFileToString(markdownFile, StandardCharsets.UTF_8);
     }
 
 }
