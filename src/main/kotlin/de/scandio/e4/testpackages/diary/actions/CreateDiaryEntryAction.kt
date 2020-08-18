@@ -31,20 +31,6 @@ class CreateDiaryEntryAction (
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         val restConfluence = restClient as RestConfluence
-        var markdownFiles = webConfluence.getFilesFromInputDir("random-markdown.*\\.md")
-        if (markdownFiles.isEmpty()) {
-            repeat(10) {
-                val filename = "random-markdown-$it.md"
-                val path = "/markdown/$filename"
-                val inputUrl = javaClass.getResource(path)
-                val destUrl = "${webConfluence.inputDir}/$filename"
-                FileUtils.copyURLToFile(inputUrl, File(destUrl))
-            }
-        }
-        markdownFiles = webConfluence.getFilesFromInputDir("random-markdown.*\\.md")
-        val randInt = WorkerUtils.getRandomItem(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
-        val markdownFile = markdownFiles[randInt]
-        val markdownFileString = FileUtils.readFileToString(markdownFile, StandardCharsets.UTF_8);
         val randomContentId = restConfluence.getRandomContentId(spaceKey, parentPageTitle)
         val dom = webConfluence.dom
         webConfluence.login()
@@ -52,7 +38,7 @@ class CreateDiaryEntryAction (
         webConfluence.goToPage(randomContentId, ".quick-editor-prompt")
         dom.click(".quick-editor-prompt")
         dom.awaitElementPresent("#wysiwygTextarea_ifr")
-        webConfluence.insertMarkdown(markdownFileString)
+        webConfluence.insertMarkdown(webConfluence.getRandomMarkdownContent())
         dom.removeElementWithJQuery(".aui-blanket")
         dom.awaitMilliseconds(200)
 //        dom.executeScript("$('#rte-button-publish').click()")

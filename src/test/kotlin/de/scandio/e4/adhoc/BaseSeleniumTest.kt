@@ -149,4 +149,13 @@ abstract class BaseSeleniumTest {
 
     fun String.trimLines() = replace("\n", "")
 
+    fun runWithDump(block: () -> Unit) {
+        try {
+            block()
+        } finally {
+            shot()
+            dump()
+        }
+    }
+
 }

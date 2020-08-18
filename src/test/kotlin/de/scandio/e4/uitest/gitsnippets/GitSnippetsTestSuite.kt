@@ -181,15 +181,6 @@ class GitSnippetsTestSuite : BaseSeleniumTest() {
     }
     // END: Release/2.6.0
 
-    fun runWithDump(block: () -> Unit) {
-        try {
-            block()
-        } finally {
-            shot()
-            dump()
-        }
-    }
-
     @AfterAll
     fun cleanup() {
         log.info("Removing space {{}} after test suite has executed", this.spaceKey)

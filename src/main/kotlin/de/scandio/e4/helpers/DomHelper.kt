@@ -15,6 +15,10 @@ import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.net.URLEncoder
 import java.time.Duration
+import org.openqa.selenium.interactions.Actions
+import org.apache.tomcat.jni.Proc.wait
+
+
 
 class DomHelper(
         val driver: WebDriver,
@@ -261,5 +265,10 @@ class DomHelper(
         if (elementFound) {
             throw Exception("Found element that was not expected")
         }
+    }
+
+    fun hoverOverElement(selector: String) {
+        val builder = Actions(driver)
+        builder.moveToElement(findElement(selector)).perform()
     }
 }
