@@ -28,7 +28,7 @@ abstract class BaseSeleniumTest {
     protected var restClient: RestClient? = null
 
     protected var driver: WebDriver? = null
-    protected var util: Util? = null
+    protected var util: Util = Util()
 
     protected var screenshotCount = 0
     protected var dumpCount = 0
