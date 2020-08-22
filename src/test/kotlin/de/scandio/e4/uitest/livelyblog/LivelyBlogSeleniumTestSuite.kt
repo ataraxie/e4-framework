@@ -15,10 +15,9 @@ import java.util.*
 
 // REQUIRES:
 // - Lively Blog installed
-// - NO space with key "LB" (delete it first if you have it!)
 // - Confluence user admin/admin (if not configured differently with envvars)
 //
-// Run this first with envvar PREPARATION_RUN enabled and then again disabled!
+// If you want the setup to run, set E4_PREPARATION_RUN envvar to true.
 class LivelyBlogSeleniumTestSuite : BaseSeleniumTest() {
 
     val spaceKey = if (E4Env.PREPARATION_RUN) "LB${Date().time}" else "LB"
