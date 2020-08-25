@@ -56,7 +56,7 @@ class SearchBlogpostOverview(
         dom.click(".select2-result:nth-child(1)")
         dom.click("#lbp-filter-submit")
         dom.awaitMilliseconds(50)
-        dom.awaitElementVisible(".blog-posts-container .lively-blog-posts")
+        dom.awaitElementVisible(".overview-container .lively-blog-posts")
 
         log.info("Search for label {{}}", label)
         this.end = Date().time
