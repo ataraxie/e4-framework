@@ -2,6 +2,7 @@ package de.scandio.e4.testpackages.livelyblogs.actions
 
 import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.clients.rest.RestConfluence
+import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -44,29 +45,12 @@ open class UploadAllImages (
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val restConfluence = restClient as RestConfluence
         val webConfluence = webClient as WebConfluence
-        val dom = webConfluence.dom
-        val pageId = restConfluence.getContentId(spaceKey, pageTitle)
-        val images = webConfluence.getFilesFromInputDir(this.filenameRegex)
-        if (images.isEmpty()) {
-            repeat(10) {
-                val filename = "random-image-$it.jpg"
-                val path = "/images/$filename"
-                val inputUrl = javaClass.getResource(path)
-                val destUrl = "${webConfluence.inputDir}/$filename"
-                FileUtils.copyURLToFile(inputUrl, File(destUrl))
-            }
-        }
+        val helper = LivelyBlogsSeleniumHelper(webClient)
+        val pageId = restConfluence.getContentId(spaceKey, pageTitle)!!
+        val images = helper.prepareImages(this.filenameRegex)
         webConfluence.login()
         this.start = Date().time
-        for (image in images) {
-            webConfluence.navigateTo("pages/viewpageattachments.action?pageId=$pageId")
-            dom.awaitElementPresent("#upload-files")
-            dom.setFile("#file_0", image.absolutePath)
-            dom.click("#edit")
-            dom.awaitElementPresent(".filename[title='${image.name}']")
-            webConfluence.debugScreen("attachment-${image.name}")
-        }
-
+        helper.uploadImages(pageId, images)
         this.end = Date().time
     }
 
