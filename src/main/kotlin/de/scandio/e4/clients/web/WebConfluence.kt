@@ -413,4 +413,8 @@ class WebConfluence(
         return FileUtils.readFileToString(markdownFile, StandardCharsets.UTF_8);
     }
 
+    fun likeOrUnlikePageOrBlogpost() {
+        dom.click("#likes-section .like-button")
+    }
+
 }

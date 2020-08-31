@@ -52,5 +52,11 @@ class LivelyBlogsSeleniumHelper(
         webConfluence.dom.awaitElementPresent("span#spaces")
     }
 
+    fun goToBlogOverview() {
+        val webConfluence = webClient as WebConfluence
+        webConfluence.navigateTo("plugins/lively/blog/all.action")
+        webConfluence.dom.awaitElementPresent(".lively-blog-filter")
+    }
+
 
 }
