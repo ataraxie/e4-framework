@@ -4,6 +4,7 @@ import de.scandio.e4.E4Env
 import de.scandio.e4.adhoc.BaseSeleniumTest
 import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.worker.util.RandomData
 import org.apache.commons.io.FileUtils
 import org.junit.After
@@ -63,10 +64,12 @@ class LivelyBlog_3_9_1 : BaseSeleniumTest() {
             dom.click("#wysiwyg")
             val content = "Random Blog Post Content"
             val blogpost1Title = "$spaceKey1 Blog Post (${Date().time})"
+            val helper = LivelyBlogsSeleniumHelper(webConfluence)
             webConfluence.setPageTitleInEditor(blogpost1Title)
-            webConfluence.focusEditor()
+            webConfluence.focusAndUnfocusEditor()
             dom.addTextTinyMce(content)
             webConfluence.insertRandomImageFromPage(attachmentPageTitle)
+            helper.setTeaserImage()
             webConfluence.savePageOrBlogPost()
             val page1Title = "$spaceKey1 Macro Page (${Date().time})"
             webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey1")
@@ -116,7 +119,7 @@ class LivelyBlog_3_9_1 : BaseSeleniumTest() {
             dom.click("#wysiwyg")
             val content = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
             webConfluence.setPageTitleInEditor(title)
-            webConfluence.focusEditor()
+            webConfluence.focusAndUnfocusEditor()
             dom.addTextTinyMce(content)
             webConfluence.savePageOrBlogPost()
         }

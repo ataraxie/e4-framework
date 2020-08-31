@@ -102,7 +102,6 @@ class WebConfluence(
         dom.click("#tinymce")
         driver.switchTo().parentFrame()
         dom.click("#confluence-insert-files")
-        dom.awaitSeconds(2)
     }
 
     fun saveMacroBrowser() {
@@ -333,9 +332,17 @@ class WebConfluence(
         Actions(driver).sendKeys(text).perform()
     }
 
+    fun focusAndUnfocusEditor() {
+        focusEditor()
+        unfocusEditor()
+    }
+
     fun focusEditor() {
         driver.switchTo().frame("wysiwygTextarea_ifr")
         dom.click("#tinymce")
+    }
+
+    fun unfocusEditor() {
         driver.switchTo().parentFrame()
     }
 
@@ -357,12 +364,12 @@ class WebConfluence(
         dom.awaitMilliseconds(50)
     }
 
-    fun insertRandomImageFromPage(attachmentPageTitle: String) {
-        log.debug("Inserting random image from page {{}}", attachmentPageTitle)
+    fun insertRandomImageFromPage(attachmentPageTitleSearch: String) {
+        log.debug("Inserting random image from page {{}}", attachmentPageTitleSearch)
         openInsertImageDialog()
         debugScreen("insertRandomImageFromPage-1")
         dom.click("#insert-image-dialog .page-menu-item:nth-child(3)")
-        dom.insertText("#search-image-form .search-image-text", attachmentPageTitle)
+        dom.insertText("#search-image-form .search-image-text", attachmentPageTitleSearch)
         debugScreen("insertRandomImageFromPage-2")
         dom.click("#search-image-form .search-button")
         dom.awaitElementVisible("#searched-images .attached-file")
@@ -375,9 +382,6 @@ class WebConfluence(
         dom.click(allImages[randIndex])
         debugScreen("insertRandomImageFromPage-4")
         dom.click("#insert-image-dialog button.insert")
-        dom.click(".lively-blog-set-teaser")
-        dom.awaitMilliseconds(50)
-        debugScreen("insertRandomImageFromPage-5")
     }
 
     fun enterReadOnlyMode() {

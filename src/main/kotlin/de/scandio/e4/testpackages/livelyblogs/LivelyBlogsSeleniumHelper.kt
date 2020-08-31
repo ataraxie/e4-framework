@@ -37,4 +37,20 @@ class LivelyBlogsSeleniumHelper(
         }
     }
 
+    fun setTeaserImage() {
+        val webConfluence = webClient as WebConfluence
+        val dom = webConfluence.dom
+        dom.click(".lively-blog-set-teaser")
+    }
+
+    fun setupFeaturedSpace(spaceKey: String) {
+        val webConfluence = webClient as WebConfluence
+        webConfluence.login()
+        webConfluence.navigateTo("admin/plugins/lively/blog/editsettings.action")
+        webConfluence.dom.insertText("#spaces", spaceKey, true)
+        webConfluence.dom.click("#confirm")
+        webConfluence.dom.awaitElementPresent("span#spaces")
+    }
+
+
 }
