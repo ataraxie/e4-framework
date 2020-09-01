@@ -46,7 +46,6 @@ class GitSnippetsTestSuite : BaseSeleniumTest() {
     lateinit var webConfluence: WebConfluence
     lateinit var helper: GitSnippetsSeleniumHelper
     lateinit var accessToken: String
-    lateinit var dom: DomHelper
 
     private val log = LoggerFactory.getLogger(javaClass)
 

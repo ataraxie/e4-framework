@@ -2,6 +2,7 @@ package de.scandio.e4.testpackages.livelyblogs
 
 import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.worker.interfaces.WebClient
+import de.scandio.e4.worker.util.RandomData
 import org.apache.commons.io.FileUtils
 import java.io.File
 
@@ -57,6 +58,5 @@ class LivelyBlogsSeleniumHelper(
         webConfluence.navigateTo("plugins/lively/blog/all.action")
         webConfluence.dom.awaitElementPresent(".lively-blog-filter")
     }
-
 
 }

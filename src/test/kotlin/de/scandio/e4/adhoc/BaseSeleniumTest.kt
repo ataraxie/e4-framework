@@ -24,10 +24,11 @@ abstract class BaseSeleniumTest {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    protected var webClient: WebClient? = null
-    protected var restClient: RestClient? = null
+    protected var webClient: WebClient = E4Env.newAdminTestWebClient()
+    protected var restClient: RestClient = E4Env.newAdminTestRestClient()
+    protected var dom = webClient.domHelper
 
-    protected var driver: WebDriver? = null
+    protected var driver: WebDriver = webClient.webDriver
     protected var util: Util = Util()
 
     protected var screenshotCount = 0
@@ -36,8 +37,6 @@ abstract class BaseSeleniumTest {
     init {
         val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         loggerContext.getLogger("org.apache").level = Level.WARN
-
-        setNewClients()
     }
 
     open fun refreshWebClient(login: Boolean = false, authenticate: Boolean = false) {
@@ -85,12 +84,15 @@ abstract class BaseSeleniumTest {
         webClient().quit()
     }
 
+    // FIXME: THESE CAN NOW BE REMOVED AND CLASS FIELD CAN JUST BE USED!
+    @Deprecated("Use field webClient instead", ReplaceWith("this.webClient"))
     fun webClient() : WebClient {
-        return this.webClient!!
+        return this.webClient
     }
 
+    @Deprecated("Use field restClient instead", ReplaceWith("this.restClient"))
     fun restClient() : RestClient {
-        return this.restClient!!
+        return this.restClient
     }
 
     fun runPrepareActions(testPackage: TestPackage) {

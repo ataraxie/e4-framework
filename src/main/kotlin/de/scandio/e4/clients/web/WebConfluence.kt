@@ -417,4 +417,19 @@ class WebConfluence(
         dom.click("#likes-section .like-button")
     }
 
+    fun startCreateBlogpostKeepOpen(spaceKey: String, blogpostTitle: String) {
+        navigateTo("pages/createblogpost.action?spaceKey=$spaceKey") //Create a new blog post
+        dom.awaitElementPresent("#wysiwyg")
+        dom.click("#wysiwyg")
+        val content = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
+        setPageTitleInEditor(blogpostTitle)
+        focusAndUnfocusEditor()
+        dom.addTextTinyMce(content)
+    }
+
+    fun createBlogpostAndSave(spaceKey: String, blogpostTitle: String) {
+        startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
+        savePageOrBlogPost()
+    }
+
 }

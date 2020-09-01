@@ -18,13 +18,13 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     // NOTE: If you re-use the space (i.e. no PREPARATION_RUN flag set, you'll have to make sure your space is set as
     // the featured space in the global LB settings.
     val spaceKey = if (E4Env.PREPARATION_RUN) "LB${Date().time}" else "LB"
+    val webConfluence = webClient as WebConfluence
+    val restConfluence = restClient as RestConfluence
+    val helper = LivelyBlogsSeleniumHelper(webConfluence)
 
     init {
-        val webConfluence = webConfluence()
-        val helper = LivelyBlogsSeleniumHelper(webConfluence)
         if (E4Env.PREPARATION_RUN) {
             runWithDump {
-                val restConfluence = restClient() as RestConfluence
                 restConfluence.createSpace(spaceKey, spaceKey)
                 helper.setupFeaturedSpace(spaceKey)
                 // First, upload some attachments to some new random page such that we can create teaser images
@@ -35,17 +35,42 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
         }
     }
 
+    // LBCSRV-36: comments before likes
+    @Test
+    fun LBCSRV_36() {
+        runWithDump {
+            webConfluence.login()
+            val blogpostTitle = "New Blogpost ${Date().time}"
+            webConfluence.createBlogpostAndSave(spaceKey, blogpostTitle)
+            webConfluence.addRandomComment("Heeellooo this is a Comment oh yeah!!")
+            webConfluence.likeOrUnlikePageOrBlogpost()
+            webConfluence.goToDashboard()
+            dom.awaitSeconds(5)
+            dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction")
+            // Likes must be in the first immediate child of the .field-interaction container...
+            dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction > *:first-child .likes")
+            // ...and comments must be in the one after!
+            dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction > *:last-child .aui-iconfont-comment")
+        }
+    }
+
+//            Like the blogpost
+//
+//    comment a random text on the blogpost
+//
+//    visit the dashboard
+//
+//    Check if the Like-Icon and the number of likes is before the Comment-Icon and the Number of comments
+
     // LBCSRV-32: teaser warning
     @Test
     fun LBCSRV_32() {
         runWithDump {
-            val webConfluence = webConfluence()
-            val helper = LivelyBlogsSeleniumHelper(webConfluence)
-            val dom = webConfluence.dom
+            val dom = dom
             webConfluence.login()
             val timestamp = Date().time
             val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
-            startCreateBlogpostKeepOpen(blogpostTitle)
+            webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
             dom.expectElementPresent(".info-no-teaser.active")
             webConfluence.insertRandomImageFromPage("Page")
             clickImage()
@@ -71,13 +96,12 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_31() {
         runWithDump {
-            val webConfluence = webConfluence()
             val helper = LivelyBlogsSeleniumHelper(webConfluence)
-            val dom = webConfluence.dom
+            val dom = dom
             webConfluence.login()
             val timestamp = Date().time
             val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
-            startCreateBlogpostKeepOpen(blogpostTitle) // create a blog post
+            webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle) // create a blog post
             webConfluence.savePageOrBlogPost() // save it
             dom.awaitSeconds(3) // give index a bit
             helper.goToBlogOverview() // go to blog overview
@@ -105,12 +129,11 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_15() {
         runWithDump {
-            val webConfluence = webConfluence()
-            val dom = webConfluence.dom
+            val dom = dom
             webConfluence.login()
             dom.awaitSeconds(2)
             val blogpostTitle = "$spaceKey Blog Post (${Date().time})"
-            startCreateBlogpostKeepOpen(blogpostTitle)
+            webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
             webConfluence.insertRandomImageFromPage("Page")
             expectButtonNotActive()
             clickTeaserButton()
@@ -146,92 +169,76 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     }
 
     fun expectNoLikesButton(blogpostTitle: String) {
-        webConfluence().dom.expectElementNotPresent(".post[alt='${blogpostTitle}'] .field-interaction .likes")
+        dom.expectElementNotPresent(".post[alt='${blogpostTitle}'] .field-interaction .likes")
     }
 
     fun expectLikesButton(blogpostTitle: String) {
-        webConfluence().dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction .likes")
+        dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction .likes")
     }
 
     fun expectTeaserIsDisplayed(blogpostTitle: String) {
         awaitBlogpostPresentInList(blogpostTitle)
-        webConfluence().dom.expectElementPresent(".post[alt='${blogpostTitle}'] img[alt='${blogpostTitle}']")
+        dom.expectElementPresent(".post[alt='${blogpostTitle}'] img[alt='${blogpostTitle}']")
     }
 
     fun expectTeaserIsNotDisplayed(blogpostTitle: String) {
         awaitBlogpostPresentInList(blogpostTitle)
-        webConfluence().dom.expectElementNotPresent(".post[alt='${blogpostTitle}'] img[alt='${blogpostTitle}']")
+        dom.expectElementNotPresent(".post[alt='${blogpostTitle}'] img[alt='${blogpostTitle}']")
     }
 
     fun awaitBlogpostPresentInList(blogpostTitle: String) {
-        webConfluence().dom.awaitElementPresent(".post[alt='${blogpostTitle}']")
+        dom.awaitElementPresent(".post[alt='${blogpostTitle}']")
     }
 
     fun expectButtonActive() {
-        webConfluence().unfocusEditor()
-        webConfluence().dom.expectElementPresent(".lively-blog-set-teaser.active")
+        webConfluence.unfocusEditor()
+        dom.expectElementPresent(".lively-blog-set-teaser.active")
     }
 
     fun expectButtonNotActive() {
-        webConfluence().unfocusEditor()
-        webConfluence().dom.expectElementNotPresent(".lively-blog-set-teaser.active")
+        webConfluence.unfocusEditor()
+        dom.expectElementNotPresent(".lively-blog-set-teaser.active")
     }
 
     fun clickTeaserButton() {
-        webConfluence().unfocusEditor()
-        webConfluence().dom.click(".lively-blog-set-teaser")
-        webConfluence().dom.awaitSeconds(1)
+        webConfluence.unfocusEditor()
+        dom.click(".lively-blog-set-teaser")
+        dom.awaitSeconds(1)
     }
 
     fun clickProperties() {
-        webConfluence().unfocusEditor()
-        webConfluence().dom.click(".aui-button.image-properties")
-        webConfluence().dom.awaitSeconds(1)
+        webConfluence.unfocusEditor()
+        dom.click(".aui-button.image-properties")
+        dom.awaitSeconds(1)
     }
 
     fun unfocusImage() {
-        webConfluence().unfocusEditor()
-        webConfluence().dom.click("#content-title-div")
-        webConfluence().dom.awaitSeconds(1)
+        webConfluence.unfocusEditor()
+        dom.click("#content-title-div")
+        dom.awaitSeconds(1)
     }
 
     fun clickImage() {
-        webConfluence().focusEditor()
-        webConfluence().dom.click(".confluence-embedded-image")
-        webConfluence().dom.awaitSeconds(1)
+        webConfluence.focusEditor()
+        dom.click(".confluence-embedded-image")
+        dom.awaitSeconds(1)
     }
 
     fun likeOrUnlikeInList(blogpostTitle: String) {
-        webConfluence().dom.click(".post[alt='${blogpostTitle}'] .field-interaction .aui-iconfont-like")
+        dom.click(".post[alt='${blogpostTitle}'] .field-interaction .aui-iconfont-like")
     }
 
     fun awaitOneLike(blogpostTitle: String) {
-        webConfluence().dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction [data-liked-by-user=\"true\"]")
+        dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction [data-liked-by-user=\"true\"]")
     }
 
     fun awaitZeroLikes(blogpostTitle: String) {
-        webConfluence().dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction [data-liked-by-user=\"false\"]")
-    }
-
-    fun startCreateBlogpostKeepOpen(blogpostTitle: String) {
-        val webConfluence = webConfluence()
-        val dom = webConfluence.dom
-        webConfluence.navigateTo("pages/createblogpost.action?spaceKey=$spaceKey") //Create a new blog post
-        dom.awaitElementPresent("#wysiwyg")
-        dom.click("#wysiwyg")
-        val content = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
-        webConfluence.setPageTitleInEditor(blogpostTitle)
-        webConfluence.focusAndUnfocusEditor()
-        dom.addTextTinyMce(content)
+        dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction [data-liked-by-user=\"false\"]")
     }
 
     @After
     fun after() {
-        webClient().quit()
-    }
-
-    private fun webConfluence() : WebConfluence {
-        return this.webClient!! as WebConfluence
+        webClient.quit()
     }
 
 }
