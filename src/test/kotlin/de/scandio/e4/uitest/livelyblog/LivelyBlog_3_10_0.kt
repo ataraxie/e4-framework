@@ -27,7 +27,43 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
                 val restConfluence = restClient() as RestConfluence
                 restConfluence.createSpace(spaceKey, spaceKey)
                 helper.setupFeaturedSpace(spaceKey)
+                // First, upload some attachments to some new random page such that we can create teaser images
+                val pageId = restConfluence.createPage(spaceKey, "Page with all the attachments ${Date().time}", "Page used for attachments")
+                val images = helper.prepareImages("random-image-1.jpg")
+                helper.uploadImages(pageId, images)
             }
+        }
+    }
+
+    // LBCSRV-32: teaser warning
+    @Test
+    fun LBCSRV_32() {
+        runWithDump {
+            val webConfluence = webConfluence()
+            val helper = LivelyBlogsSeleniumHelper(webConfluence)
+            val dom = webConfluence.dom
+            webConfluence.login()
+            val timestamp = Date().time
+            val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
+            startCreateBlogpostKeepOpen(blogpostTitle)
+            dom.expectElementPresent(".info-no-teaser.active")
+            webConfluence.insertRandomImageFromPage("Page")
+            clickImage()
+            clickTeaserButton()
+            dom.expectElementNotPresent(".info-no-teaser.active")
+            clickImage()
+            clickTeaserButton()
+            dom.expectElementPresent(".info-no-teaser.active")
+            clickImage()
+            clickProperties()
+            dom.click("button#lively-blog-set-teaser") // FIXME: DUPLICATE ID (see LBCSRV-44)
+            dom.click("input#lively-blog-set-teaser")
+            dom.click("#image-properties-dialog .button-panel-submit-button")
+            dom.awaitSeconds(1)
+            dom.expectElementNotPresent(".info-no-teaser.active")
+            clickImage()
+            clickTeaserButton()
+            dom.expectElementPresent(".info-no-teaser.active")
         }
     }
 
@@ -69,20 +105,13 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_15() {
         runWithDump {
-            val webConfluence = webConfluence() as WebConfluence
-            val restConfluence = restClient() as RestConfluence
-            val helper = LivelyBlogsSeleniumHelper(webConfluence)
+            val webConfluence = webConfluence()
             val dom = webConfluence.dom
             webConfluence.login()
             dom.awaitSeconds(2)
-            val timestamp = Date().time
-            // First, upload some attachments to some new random page such that we can create teaser images
-            val pageId = restConfluence.createPage(spaceKey, "Page with all the attachments ${timestamp}", "Page used for attachments")
-            val images = helper.prepareImages("random-image-1.jpg")
-            val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
-            helper.uploadImages(pageId, images)
+            val blogpostTitle = "$spaceKey Blog Post (${Date().time})"
             startCreateBlogpostKeepOpen(blogpostTitle)
-            webConfluence.insertRandomImageFromPage("Page") //Insert an image from your local hard drive into the blog post
+            webConfluence.insertRandomImageFromPage("Page")
             expectButtonNotActive()
             clickTeaserButton()
             expectButtonActive()
@@ -151,6 +180,12 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     fun clickTeaserButton() {
         webConfluence().unfocusEditor()
         webConfluence().dom.click(".lively-blog-set-teaser")
+        webConfluence().dom.awaitSeconds(1)
+    }
+
+    fun clickProperties() {
+        webConfluence().unfocusEditor()
+        webConfluence().dom.click(".aui-button.image-properties")
         webConfluence().dom.awaitSeconds(1)
     }
 
