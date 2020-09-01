@@ -35,6 +35,27 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
         }
     }
 
+    // LBCSRV-16: tabs on Overview Preview
+    @Test
+    fun LBCSRV_16() {
+        runWithDump {
+            val categoryName = "E4${Date().time}"
+            val pageTitle = "New Page ${Date().time}"
+            val blogpostTitle = "New Blogpost with Label '${categoryName}'"
+            val blogpostId = restConfluence.createBlogpost(spaceKey, blogpostTitle, "Random Content")
+            restConfluence.addLabelsToContentEntity(blogpostId, arrayListOf(categoryName))
+            webConfluence.login()
+            val categoryId = helper.addLivelyBlogCategoryReturnId(categoryName)
+            webConfluence.goToCreatePage(spaceKey, pageTitle)
+            webConfluence.openMacroBrowser("lively-blog-posts-overview", "lively-blog-posts-overview")
+            dom.awaitSeconds(5)
+            webConfluence.focusMacroBrowserPreviewFrame()
+            dom.click(".lively-blog-categories li[data-filter='category:${categoryId}'] a")
+            awaitBlogpostPresentInList(blogpostTitle)
+            dom.awaitSeconds(3)
+        }
+    }
+
     // LBCSRV-36: comments before likes
     @Test
     fun LBCSRV_36() {
@@ -187,7 +208,7 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     }
 
     fun awaitBlogpostPresentInList(blogpostTitle: String) {
-        dom.awaitElementPresent(".post[alt='${blogpostTitle}']")
+        dom.awaitElementPresent(".post[alt=\"${blogpostTitle}\"]")
     }
 
     fun expectButtonActive() {

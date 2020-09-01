@@ -432,4 +432,8 @@ class WebConfluence(
         savePageOrBlogPost()
     }
 
+    fun focusMacroBrowserPreviewFrame() {
+        driver.switchTo().frame("macro-preview-iframe")
+    }
+
 }
