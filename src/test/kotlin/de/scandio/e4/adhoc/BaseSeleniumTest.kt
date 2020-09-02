@@ -43,11 +43,11 @@ abstract class BaseSeleniumTest {
         setNewClients()
 
         if (login) {
-            webClient().login()
+            webClient.login()
         }
 
         if (authenticate) {
-            webClient().authenticateAdmin()
+            webClient.authenticateAdmin()
         }
     }
 

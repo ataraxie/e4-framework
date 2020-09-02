@@ -10,6 +10,7 @@ import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
 import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
 import de.scandio.e4.testpackages.vanilla.actions.ViewRandomContent
 import org.junit.Test
+import org.junit.jupiter.api.TestInstance
 import java.util.*
 
 
@@ -18,14 +19,13 @@ import java.util.*
 // - Confluence user admin/admin (if not configured differently with envvars)
 //
 // If you want the setup to run, set E4_PREPARATION_RUN envvar to true.
-class LivelyBlogSeleniumTestSuite : BaseSeleniumTest() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // FIXME: DOES NOT WORK (ONE INSTANCE PER TEST METHOD IS CREATED)
+class LivelyBlogSeleniumTestSuite : AbstractLivelyBlogTestSuite() {
 
     val spaceKey = if (E4Env.PREPARATION_RUN) "LB${Date().time}" else "LB"
     val spaceName = "E4 Lively Blog"
     val homePageTitle = "E4 Lively Blog Home"
     val macroParentPageTitle = "macros"
-    val restConfluence = restClient() as RestConfluence
-    val webConfluence = webClient() as WebConfluence
 
     init {
         if (E4Env.PREPARATION_RUN) {
@@ -34,7 +34,7 @@ class LivelyBlogSeleniumTestSuite : BaseSeleniumTest() {
                 CreateMultiplePagesActionRest(spaceKey, homePageTitle, 10).execute(webConfluence, restConfluence)
                 SetupSetSpaceForFeaturedPosts().execute(webConfluence, restConfluence)
                 SetupLivelyBlogCategories().execute(webConfluence, restConfluence)
-                UploadAllImages(spaceKey, homePageTitle, "random-image-[1-3]\\.jpg").execute(webConfluence, restConfluence)
+                UploadAllImages(spaceKey, homePageTitle, "random-image-1.jpg").execute(webConfluence, restConfluence)
                 CreatePageAction(spaceKey, macroParentPageTitle, "<p>macro pages</p>", true).execute(webConfluence, restConfluence)
                 SetupLivelyBlogMacroPagesAction(spaceKey, macroParentPageTitle, 10).execute(webConfluence, restConfluence)
                 SetupLivelyBlogPostsAction(spaceKey, homePageTitle, 10).execute(webConfluence, restConfluence)
@@ -52,7 +52,10 @@ class LivelyBlogSeleniumTestSuite : BaseSeleniumTest() {
     @Test
     fun testLivelyBlogMacroPageReader() {
         runWithDump {
-            ViewRandomContent(spaceKey, macroParentPageTitle, ".lively-blog-posts").execute(webConfluence, restConfluence)
+            val randomContentId = restConfluence.getRandomContentId(spaceKey, macroParentPageTitle)
+            webConfluence.login()
+            webConfluence.goToPage(randomContentId)
+            dom.awaitElementPresent(".lively-blog-posts", 5)
         }
     }
 

@@ -1,21 +1,18 @@
 package de.scandio.e4.uitest.livelyblog
 
 import de.scandio.e4.E4Env
-import de.scandio.e4.adhoc.BaseSeleniumTest
-import de.scandio.e4.clients.rest.RestConfluence
-import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.worker.util.RandomData
 import org.apache.commons.io.FileUtils
 import org.junit.After
 import org.junit.Test
-import org.slf4j.LoggerFactory
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestInstance.Lifecycle
 import java.io.File
 import java.util.*
 
-class LivelyBlog_3_9_1 : BaseSeleniumTest() {
-
-    private val log = LoggerFactory.getLogger(javaClass)
+@TestInstance(Lifecycle.PER_CLASS) // FIXME: DOES NOT WORK (ONE INSTANCE PER TEST METHOD IS CREATED)
+class LivelyBlog_3_9_1 : AbstractLivelyBlogTestSuite() {
 
     private val spaceKey1 = "E4LB3911${Date().time}"
     private val spaceName1 = "E4 Lively Blog 3.9.1 - 1"
@@ -26,7 +23,6 @@ class LivelyBlog_3_9_1 : BaseSeleniumTest() {
     init {
         if (E4Env.PREPARATION_RUN) {
             runWithDump {
-                val restConfluence = restClient() as RestConfluence
                 restConfluence.createSpace(spaceKey1, spaceName1)
                 restConfluence.createSpace(spaceKey2, spaceName2)
             }
@@ -37,9 +33,6 @@ class LivelyBlog_3_9_1 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_21() {
         runWithDump {
-            val webConfluence = webConfluence()
-            val dom = webConfluence.dom
-            val restConfluence = restClient!! as RestConfluence
             webConfluence.login()
             val attachmentPageTitle = "Attachment Page ${Date().time}"
             val pageId = restConfluence.createPage(spaceKey1, attachmentPageTitle, "Attachment Page Content")
@@ -88,8 +81,6 @@ class LivelyBlog_3_9_1 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_22() {
         runWithDump {
-            val webConfluence = webConfluence()
-            val dom = webConfluence.dom
             webConfluence.login()
             val timestamp = Date().time
             val blogpost1Title = "$spaceKey1 Blog Post ($timestamp)"
@@ -112,8 +103,6 @@ class LivelyBlog_3_9_1 : BaseSeleniumTest() {
 
     fun createBlogPost(spaceKey: String, title: String) {
         runWithDump {
-            val webConfluence = webConfluence()
-            val dom = webConfluence.dom
             webConfluence.navigateTo("pages/createblogpost.action?spaceKey=$spaceKey")
             dom.awaitElementPresent("#wysiwyg")
             dom.click("#wysiwyg")
@@ -127,11 +116,6 @@ class LivelyBlog_3_9_1 : BaseSeleniumTest() {
 
     @After
     fun after() {
-        webClient().quit()
+        webClient.quit()
     }
-
-    private fun webConfluence() : WebConfluence {
-        return this.webClient!! as WebConfluence
-    }
-
 }

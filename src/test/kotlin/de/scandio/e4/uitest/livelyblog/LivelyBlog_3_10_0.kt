@@ -8,19 +8,16 @@ import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.worker.util.RandomData
 import org.junit.After
 import org.junit.Test
+import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 import java.util.*
 
-class LivelyBlog_3_10_0 : BaseSeleniumTest() {
-
-    private val log = LoggerFactory.getLogger(javaClass)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // FIXME: DOES NOT WORK (ONE INSTANCE PER TEST METHOD IS CREATED)
+class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
 
     // NOTE: If you re-use the space (i.e. no PREPARATION_RUN flag set, you'll have to make sure your space is set as
     // the featured space in the global LB settings.
     val spaceKey = if (E4Env.PREPARATION_RUN) "LB${Date().time}" else "LB"
-    val webConfluence = webClient as WebConfluence
-    val restConfluence = restClient as RestConfluence
-    val helper = LivelyBlogsSeleniumHelper(webConfluence)
 
     init {
         if (E4Env.PREPARATION_RUN) {
@@ -48,11 +45,11 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
             val categoryId = helper.addLivelyBlogCategoryReturnId(categoryName)
             webConfluence.goToCreatePage(spaceKey, pageTitle)
             webConfluence.openMacroBrowser("lively-blog-posts-overview", "lively-blog-posts-overview")
-            dom.awaitSeconds(5)
+            dom.awaitSeconds(3)
             webConfluence.focusMacroBrowserPreviewFrame()
             dom.click(".lively-blog-categories li[data-filter='category:${categoryId}'] a")
             awaitBlogpostPresentInList(blogpostTitle)
-            dom.awaitSeconds(3)
+            dom.awaitSeconds(1)
         }
     }
 
@@ -66,7 +63,7 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
             webConfluence.addRandomComment("Heeellooo this is a Comment oh yeah!!")
             webConfluence.likeOrUnlikePageOrBlogpost()
             webConfluence.goToDashboard()
-            dom.awaitSeconds(5)
+            dom.awaitSeconds(3)
             dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction")
             // Likes must be in the first immediate child of the .field-interaction container...
             dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction > *:first-child .likes")
@@ -87,7 +84,6 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_32() {
         runWithDump {
-            val dom = dom
             webConfluence.login()
             val timestamp = Date().time
             val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
@@ -117,8 +113,6 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_31() {
         runWithDump {
-            val helper = LivelyBlogsSeleniumHelper(webConfluence)
-            val dom = dom
             webConfluence.login()
             val timestamp = Date().time
             val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
@@ -131,7 +125,7 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
             webConfluence.goToDashboard() // go to the dashboard
             awaitBlogpostPresentInList(blogpostTitle)
             expectNoLikesButton(blogpostTitle) // there should be no likes button for the blog post
-            dom.click(".post[alt='${blogpostTitle}'] .title a") // go to blogpost
+            dom.click(".post[alt=\"${blogpostTitle}\"] .title a") // go to blogpost
             webConfluence.likeOrUnlikePageOrBlogpost() // click like button
             helper.goToBlogOverview() // go back to blog overview
             awaitBlogpostPresentInList(blogpostTitle)
@@ -150,7 +144,6 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     @Test
     fun LBCSRV_15() {
         runWithDump {
-            val dom = dom
             webConfluence.login()
             dom.awaitSeconds(2)
             val blogpostTitle = "$spaceKey Blog Post (${Date().time})"
@@ -170,11 +163,11 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
             clickTeaserButton()
             expectButtonActive()
             webConfluence.savePageOrBlogPost()
-            dom.awaitSeconds(5) // Give the index a few seconds
+            dom.awaitSeconds(3) // Give the index a few seconds
             webConfluence.goToDashboard()
-            dom.awaitSeconds(3)
+            dom.awaitSeconds(1)
             expectTeaserIsDisplayed(blogpostTitle)
-            dom.click(".post[alt='${blogpostTitle}'] img[alt='${blogpostTitle}']")
+            dom.click(".post[alt=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
             dom.awaitElementPresent("#main-content")
             webConfluence.goToEditPage()
             clickImage()
@@ -182,29 +175,29 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
             clickTeaserButton()
             expectButtonNotActive()
             webConfluence.savePageOrBlogPost()
-            dom.awaitSeconds(5) // Again, give it a few seconds
+            dom.awaitSeconds(3) // Again, give it a few seconds
             webConfluence.goToDashboard()
-            dom.awaitSeconds(3)
+            dom.awaitSeconds(1)
             expectTeaserIsNotDisplayed(blogpostTitle)
         }
     }
 
     fun expectNoLikesButton(blogpostTitle: String) {
-        dom.expectElementNotPresent(".post[alt='${blogpostTitle}'] .field-interaction .likes")
+        dom.expectElementNotPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction .likes")
     }
 
     fun expectLikesButton(blogpostTitle: String) {
-        dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction .likes")
+        dom.expectElementPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction .likes")
     }
 
     fun expectTeaserIsDisplayed(blogpostTitle: String) {
         awaitBlogpostPresentInList(blogpostTitle)
-        dom.expectElementPresent(".post[alt='${blogpostTitle}'] img[alt='${blogpostTitle}']")
+        dom.expectElementPresent(".post[alt=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
     }
 
     fun expectTeaserIsNotDisplayed(blogpostTitle: String) {
         awaitBlogpostPresentInList(blogpostTitle)
-        dom.expectElementNotPresent(".post[alt='${blogpostTitle}'] img[alt='${blogpostTitle}']")
+        dom.expectElementNotPresent(".post[alt=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
     }
 
     fun awaitBlogpostPresentInList(blogpostTitle: String) {
@@ -246,15 +239,15 @@ class LivelyBlog_3_10_0 : BaseSeleniumTest() {
     }
 
     fun likeOrUnlikeInList(blogpostTitle: String) {
-        dom.click(".post[alt='${blogpostTitle}'] .field-interaction .aui-iconfont-like")
+        dom.click(".post[alt=\"${blogpostTitle}\"] .field-interaction .aui-iconfont-like")
     }
 
     fun awaitOneLike(blogpostTitle: String) {
-        dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction [data-liked-by-user=\"true\"]")
+        dom.awaitElementPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction [data-liked-by-user=\"true\"]")
     }
 
     fun awaitZeroLikes(blogpostTitle: String) {
-        dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction [data-liked-by-user=\"false\"]")
+        dom.awaitElementPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction [data-liked-by-user=\"false\"]")
     }
 
     @After
