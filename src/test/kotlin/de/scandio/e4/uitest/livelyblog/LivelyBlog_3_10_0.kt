@@ -72,14 +72,6 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
         }
     }
 
-//            Like the blogpost
-//
-//    comment a random text on the blogpost
-//
-//    visit the dashboard
-//
-//    Check if the Like-Icon and the number of likes is before the Comment-Icon and the Number of comments
-
     // LBCSRV-32: teaser warning
     @Test
     fun LBCSRV_32() {
