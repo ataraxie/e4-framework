@@ -87,7 +87,7 @@ open class CreateRandomLivelyThemeMacroPage (
                 webConfluence.simulateText("Test")
             }
             "lively-column-width" -> {
-                webConfluence.focusEditor()
+                webConfluence.focusAndUnfocusEditor()
                 webConfluence.setTwoColumnLayout()
                 webConfluence.simulateText("COLUMN")
                 insertLivelyMacro(macroId, mapOf("width" to "300px"))

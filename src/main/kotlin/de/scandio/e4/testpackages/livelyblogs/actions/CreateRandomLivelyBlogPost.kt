@@ -1,6 +1,7 @@
 package de.scandio.e4.testpackages.livelyblogs.actions
 
 import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -36,6 +37,7 @@ open class CreateRandomLivelyBlogPost (
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
         val dom = webConfluence.dom
+        val helper = LivelyBlogsSeleniumHelper(webClient)
         webConfluence.login()
         this.start = Date().time
         webConfluence.navigateTo("pages/createblogpost.action?spaceKey=$spaceKey")
@@ -43,10 +45,11 @@ open class CreateRandomLivelyBlogPost (
         dom.click("#wysiwyg")
         val content = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
         webConfluence.setPageTitleInEditor("Lively Blog Post (${Date().time})")
-        webConfluence.focusEditor()
+        webConfluence.focusAndUnfocusEditor()
         dom.addTextTinyMce(content)
         if (rnd("1", "2", "3") == "3") { // create teaser image for 1/3 of posts
             webConfluence.insertRandomImageFromPage(attachmentPageTitle)
+            helper.setTeaserImage()
         }
         webConfluence.savePageOrBlogPost()
 

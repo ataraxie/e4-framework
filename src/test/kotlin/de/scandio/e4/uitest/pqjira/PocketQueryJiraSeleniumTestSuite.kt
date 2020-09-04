@@ -50,8 +50,9 @@ class PocketQueryJiraSeleniumTestSuite : BaseSeleniumTest() {
         return this.pqHelper!!
     }
 
+    @Deprecated("Use field instead", ReplaceWith("webJira"))
     private fun webJira() : WebJira {
-        return this.webClient!! as WebJira
+        return webClient as WebJira
     }
 
 }

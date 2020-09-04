@@ -19,16 +19,54 @@ import kotlin.test.assertTrue
 
 abstract class BaseSeleniumTest {
 
+    companion object {
+        @JvmStatic var webClient = E4Env.newAdminTestWebClient()
+        @JvmStatic var restClient = E4Env.newAdminTestRestClient()
+
+        var screenshotCount = 0
+        var dumpCount = 0
+
+        @JvmStatic
+        fun runWithDump(block: () -> Unit) {
+            try {
+                block()
+            } finally {
+                shot()
+                dump()
+            }
+        }
+
+        @JvmStatic
+        fun shot() {
+            screenshotCount += 1
+            val path = webClient.takeScreenshot("$screenshotCount-selenium-test.png")
+            println(path)
+        }
+
+        @JvmStatic
+        fun dump() {
+            dumpCount += 1
+            val path = webClient.dumpHtml("$dumpCount-selenium-test.html")
+            println(path)
+        }
+
+        @JvmStatic
+        fun setNewClients() {
+            webClient = E4Env.newAdminTestWebClient()
+            restClient = E4Env.newAdminTestRestClient()
+        }
+
+    }
+
     val DEFAULT_DURATION = 30L //seconds
     val DEFAULT_DIMENSION = Dimension(2000, 1500)
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    protected var webClient: WebClient? = null
-    protected var restClient: RestClient? = null
+    protected var dom = webClient.domHelper
 
-    protected var driver: WebDriver? = null
-    protected var util: Util? = null
+    protected var driver: WebDriver = webClient.webDriver
+    protected var util: Util = Util()
 
     protected var screenshotCount = 0
     protected var dumpCount = 0
@@ -36,19 +74,17 @@ abstract class BaseSeleniumTest {
     init {
         val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         loggerContext.getLogger("org.apache").level = Level.WARN
-
-        setNewClients()
     }
 
     open fun refreshWebClient(login: Boolean = false, authenticate: Boolean = false) {
         setNewClients()
 
         if (login) {
-            webClient().login()
+            webClient.login()
         }
 
         if (authenticate) {
-            webClient().authenticateAdmin()
+            webClient.authenticateAdmin()
         }
     }
 
@@ -64,33 +100,19 @@ abstract class BaseSeleniumTest {
         }
     }
 
-    fun setNewClients() {
-        this.webClient = E4Env.newAdminTestWebClient()
-        this.restClient = E4Env.newAdminTestRestClient()
-    }
-
-    open fun shot() {
-        this.screenshotCount += 1
-        val path = webClient().takeScreenshot("$screenshotCount-selenium-test.png")
-        println(path)
-    }
-
-    open fun dump() {
-        this.dumpCount += 1
-        val path = webClient().dumpHtml("$dumpCount-selenium-test.html")
-        println(path)
-    }
-
     open fun quit() {
         webClient().quit()
     }
 
+    // FIXME: THESE CAN NOW BE REMOVED AND CLASS FIELD CAN JUST BE USED!
+    @Deprecated("Use field webClient instead", ReplaceWith("this.webClient"))
     fun webClient() : WebClient {
-        return this.webClient!!
+        return webClient
     }
 
+    @Deprecated("Use field restClient instead", ReplaceWith("this.restClient"))
     fun restClient() : RestClient {
-        return this.restClient!!
+        return restClient
     }
 
     fun runPrepareActions(testPackage: TestPackage) {
@@ -148,14 +170,5 @@ abstract class BaseSeleniumTest {
     }
 
     fun String.trimLines() = replace("\n", "")
-
-    fun runWithDump(block: () -> Unit) {
-        try {
-            block()
-        } finally {
-            shot()
-            dump()
-        }
-    }
 
 }
