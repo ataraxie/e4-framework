@@ -93,7 +93,6 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             val timestamp = Date().time
             val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
             webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
-            dom.awaitSeconds(10)
             dom.expectElementPresent(".info-no-teaser.active")
             webConfluence.insertRandomImageFromPage("Page")
             clickImage()
