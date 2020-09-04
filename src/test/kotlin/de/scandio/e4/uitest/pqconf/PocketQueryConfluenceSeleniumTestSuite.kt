@@ -383,8 +383,9 @@ class PocketQueryConfluenceSeleniumTestSuite : BaseSeleniumTest() {
         return pqHelper().createSqlDatasource(CONFLUENCE_DB_NAME, CONFLUENCE_DB_URL, CONFLUENCE_DB_USER, CONFLUENCE_DB_PWD)
     }
 
+    @Deprecated("Use field instead", ReplaceWith("webConfluence"))
     private fun webConfluence() : WebConfluence {
-        return this.webClient!! as WebConfluence
+        return webClient as WebConfluence
     }
 
     private fun pqHelper() : PocketQueryConfluenceSeleniumHelper {

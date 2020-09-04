@@ -90,8 +90,9 @@ class TeamAdminSeleniumTestSuite : BaseSeleniumTest() {
         webClient().quit()
     }
 
+    @Deprecated("Use field instead", ReplaceWith("webConfluence"))
     private fun webConfluence() : WebConfluence {
-        return this.webClient!! as WebConfluence
+        return webClient as WebConfluence
     }
 
 }

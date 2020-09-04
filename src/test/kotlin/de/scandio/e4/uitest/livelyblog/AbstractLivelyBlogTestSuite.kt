@@ -10,8 +10,13 @@ import org.junit.jupiter.api.TestInstance.Lifecycle
 @TestInstance(Lifecycle.PER_CLASS)
 open class AbstractLivelyBlogTestSuite : BaseSeleniumTest() {
 
-    protected val webConfluence = webClient as WebConfluence
-    protected val restConfluence = restClient as RestConfluence
-    protected val helper = LivelyBlogsSeleniumHelper(webConfluence)
+    companion object {
+        @JvmStatic
+        var webConfluence = webClient as WebConfluence
+        @JvmStatic
+        var restConfluence = restClient as RestConfluence
+        @JvmStatic
+        var helper = LivelyBlogsSeleniumHelper(webConfluence)
+    }
 
 }

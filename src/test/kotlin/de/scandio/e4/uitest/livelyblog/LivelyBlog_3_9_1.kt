@@ -5,27 +5,34 @@ import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.worker.util.RandomData
 import org.apache.commons.io.FileUtils
 import org.junit.After
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.TestInstance.Lifecycle
 import java.io.File
 import java.util.*
 
-@TestInstance(Lifecycle.PER_CLASS) // FIXME: DOES NOT WORK (ONE INSTANCE PER TEST METHOD IS CREATED)
 class LivelyBlog_3_9_1 : AbstractLivelyBlogTestSuite() {
 
-    private val spaceKey1 = "E4LB3911${Date().time}"
-    private val spaceName1 = "E4 Lively Blog 3.9.1 - 1"
-    private val spaceKey2 = "E4LB3912${Date().time}"
-    private val spaceName2 = "E4 Lively Blog 3.9.1 - 2"
-    private val macroId = "lively-blog-posts"
+    companion object {
+        val spaceKey1 = "E4LB3911${Date().time}"
+        val spaceName1 = "E4 Lively Blog 3.9.1 - 1"
+        val spaceKey2 = "E4LB3912${Date().time}"
+        val spaceName2 = "E4 Lively Blog 3.9.1 - 2"
+        val macroId = "lively-blog-posts"
 
-    init {
-        if (E4Env.PREPARATION_RUN) {
-            runWithDump {
-                restConfluence.createSpace(spaceKey1, spaceName1)
-                restConfluence.createSpace(spaceKey2, spaceName2)
+        @BeforeClass
+        @JvmStatic internal fun beforeAll() {
+            if (E4Env.PREPARATION_RUN) {
+                runWithDump {
+                    restConfluence.createSpace(spaceKey1, spaceName1)
+                    restConfluence.createSpace(spaceKey2, spaceName2)
+                }
             }
+        }
+
+        @AfterClass
+        @JvmStatic internal fun afterAll() {
+            webClient.quit()
         }
     }
 
@@ -114,8 +121,4 @@ class LivelyBlog_3_9_1 : AbstractLivelyBlogTestSuite() {
         }
     }
 
-    @After
-    fun after() {
-        webClient.quit()
-    }
 }

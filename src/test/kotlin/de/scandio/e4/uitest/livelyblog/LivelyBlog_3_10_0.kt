@@ -5,30 +5,42 @@ import de.scandio.e4.adhoc.BaseSeleniumTest
 import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
+import de.scandio.e4.testpackages.livelyblogs.actions.*
+import de.scandio.e4.testpackages.vanilla.actions.CreateMultiplePagesActionRest
+import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
+import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
 import de.scandio.e4.worker.util.RandomData
 import org.junit.After
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 import java.util.*
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // FIXME: DOES NOT WORK (ONE INSTANCE PER TEST METHOD IS CREATED)
 class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
 
-    // NOTE: If you re-use the space (i.e. no PREPARATION_RUN flag set, you'll have to make sure your space is set as
-    // the featured space in the global LB settings.
-    val spaceKey = if (E4Env.PREPARATION_RUN) "LB${Date().time}" else "LB"
+    companion object {
+        // NOTE: If you re-use the space (i.e. no PREPARATION_RUN flag set, you'll have to make sure your space is set as
+        // the featured space in the global LB settings.
+        val spaceKey = if (E4Env.PREPARATION_RUN) "LB${Date().time}" else "LB"
 
-    init {
-        if (E4Env.PREPARATION_RUN) {
-            runWithDump {
-                restConfluence.createSpace(spaceKey, spaceKey)
-                helper.setupFeaturedSpace(spaceKey)
-                // First, upload some attachments to some new random page such that we can create teaser images
-                val pageId = restConfluence.createPage(spaceKey, "Page with all the attachments ${Date().time}", "Page used for attachments")
-                val images = helper.prepareImages("random-image-1.jpg")
-                helper.uploadImages(pageId, images)
+        @BeforeClass
+        @JvmStatic internal fun beforeAll() {
+            if (E4Env.PREPARATION_RUN) {
+                runWithDump {
+                    restConfluence.createSpace(spaceKey, spaceKey)
+                    helper.setupFeaturedSpace(spaceKey)
+                    // First, upload some attachments to some new random page such that we can create teaser images
+                    val pageId = restConfluence.createPage(spaceKey, "Page with all the attachments ${Date().time}", "Page used for attachments")
+                    val images = helper.prepareImages("random-image-1.jpg")
+                    helper.uploadImages(pageId, images)
+                }
             }
+        }
+        @AfterClass
+        @JvmStatic internal fun afterAll() {
+            webClient.quit()
         }
     }
 
@@ -62,13 +74,14 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             webConfluence.createBlogpostAndSave(spaceKey, blogpostTitle)
             webConfluence.addRandomComment("Heeellooo this is a Comment oh yeah!!")
             webConfluence.likeOrUnlikePageOrBlogpost()
+            dom.awaitSeconds(3) // give index a bit
             webConfluence.goToDashboard()
             dom.awaitSeconds(3)
-            dom.awaitElementPresent(".post[alt='${blogpostTitle}'] .field-interaction")
+            dom.awaitElementPresent(".post[data-title='${blogpostTitle}'] .field-interaction")
             // Likes must be in the first immediate child of the .field-interaction container...
-            dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction > *:first-child .likes")
+            dom.expectElementPresent(".post[data-title='${blogpostTitle}'] .field-interaction > *:first-child .likes")
             // ...and comments must be in the one after!
-            dom.expectElementPresent(".post[alt='${blogpostTitle}'] .field-interaction > *:last-child .aui-iconfont-comment")
+            dom.expectElementPresent(".post[data-title='${blogpostTitle}'] .field-interaction > *:last-child .aui-iconfont-comment")
         }
     }
 
@@ -80,6 +93,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             val timestamp = Date().time
             val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
             webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
+            dom.awaitSeconds(10)
             dom.expectElementPresent(".info-no-teaser.active")
             webConfluence.insertRandomImageFromPage("Page")
             clickImage()
@@ -117,7 +131,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             webConfluence.goToDashboard() // go to the dashboard
             awaitBlogpostPresentInList(blogpostTitle)
             expectNoLikesButton(blogpostTitle) // there should be no likes button for the blog post
-            dom.click(".post[alt=\"${blogpostTitle}\"] .title a") // go to blogpost
+            dom.click(".post[data-title=\"${blogpostTitle}\"] .title a") // go to blogpost
             webConfluence.likeOrUnlikePageOrBlogpost() // click like button
             helper.goToBlogOverview() // go back to blog overview
             awaitBlogpostPresentInList(blogpostTitle)
@@ -159,7 +173,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             webConfluence.goToDashboard()
             dom.awaitSeconds(1)
             expectTeaserIsDisplayed(blogpostTitle)
-            dom.click(".post[alt=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
+            dom.click(".post[data-title=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
             dom.awaitElementPresent("#main-content")
             webConfluence.goToEditPage()
             clickImage()
@@ -175,25 +189,25 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
     }
 
     fun expectNoLikesButton(blogpostTitle: String) {
-        dom.expectElementNotPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction .likes")
+        dom.expectElementNotPresent(".post[data-title=\"${blogpostTitle}\"] .field-interaction .likes")
     }
 
     fun expectLikesButton(blogpostTitle: String) {
-        dom.expectElementPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction .likes")
+        dom.expectElementPresent(".post[data-title=\"${blogpostTitle}\"] .field-interaction .likes")
     }
 
     fun expectTeaserIsDisplayed(blogpostTitle: String) {
         awaitBlogpostPresentInList(blogpostTitle)
-        dom.expectElementPresent(".post[alt=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
+        dom.expectElementPresent(".post[data-title=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
     }
 
     fun expectTeaserIsNotDisplayed(blogpostTitle: String) {
         awaitBlogpostPresentInList(blogpostTitle)
-        dom.expectElementNotPresent(".post[alt=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
+        dom.expectElementNotPresent(".post[data-title=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
     }
 
     fun awaitBlogpostPresentInList(blogpostTitle: String) {
-        dom.awaitElementPresent(".post[alt=\"${blogpostTitle}\"]")
+        dom.awaitElementPresent(".post[data-title=\"${blogpostTitle}\"]")
     }
 
     fun expectButtonActive() {
@@ -231,20 +245,15 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
     }
 
     fun likeOrUnlikeInList(blogpostTitle: String) {
-        dom.click(".post[alt=\"${blogpostTitle}\"] .field-interaction .aui-iconfont-like")
+        dom.click(".post[data-title=\"${blogpostTitle}\"] .field-interaction .aui-iconfont-like")
     }
 
     fun awaitOneLike(blogpostTitle: String) {
-        dom.awaitElementPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction [data-liked-by-user=\"true\"]")
+        dom.awaitElementPresent(".post[data-title=\"${blogpostTitle}\"] .field-interaction [data-liked-by-user=\"true\"]")
     }
 
     fun awaitZeroLikes(blogpostTitle: String) {
-        dom.awaitElementPresent(".post[alt=\"${blogpostTitle}\"] .field-interaction [data-liked-by-user=\"false\"]")
-    }
-
-    @After
-    fun after() {
-        webClient.quit()
+        dom.awaitElementPresent(".post[data-title=\"${blogpostTitle}\"] .field-interaction [data-liked-by-user=\"false\"]")
     }
 
 }
