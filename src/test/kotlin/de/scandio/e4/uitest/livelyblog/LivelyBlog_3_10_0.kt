@@ -111,6 +111,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             clickImage()
             clickTeaserButton()
             dom.expectElementPresent(".info-no-teaser.active")
+            webConfluence.savePageOrBlogPost()
         }
     }
 
