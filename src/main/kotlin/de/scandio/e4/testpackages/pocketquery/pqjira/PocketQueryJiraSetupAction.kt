@@ -13,7 +13,7 @@ class PocketQueryJiraSetupAction : Action() {
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webJira = webClient as WebJira
-        val pqHelper = PocketQueryJiraSeleniumHelper(webJira, webJira.dom)
+        val pqHelper = PocketQueryJiraSeleniumHelper(webJira)
         webJira.login()
         pqHelper.goToPocketQueryAdmin()
         this.start = Date().time

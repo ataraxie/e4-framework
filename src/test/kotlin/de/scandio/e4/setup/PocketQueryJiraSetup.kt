@@ -14,10 +14,10 @@ open class PocketQueryJiraSetup : BaseSeleniumTest() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private val webJira: WebJira = webClient() as WebJira
+    private val webJira: WebJira = webClient as WebJira
 
     private val PQ_JIRA_LICENSE = System.getenv("E4_PQ_LICENSE")
-    private val pqHelper: PocketQuerySeleniumHelper = PocketQueryJiraSeleniumHelper(webJira, webJira.dom)
+    private val pqHelper: PocketQuerySeleniumHelper = PocketQueryJiraSeleniumHelper(webJira)
 
     @Before
     fun before() {
@@ -26,7 +26,7 @@ open class PocketQueryJiraSetup : BaseSeleniumTest() {
 
     @After
     fun tearDown() {
-        driver!!.quit()
+        driver.quit()
     }
 
     @Test
@@ -34,7 +34,7 @@ open class PocketQueryJiraSetup : BaseSeleniumTest() {
         try {
             for (action in PocketQueryJiraTestPackage().setupActions) {
                 log.info("Executing action {{}}", action.javaClass.simpleName)
-                action.execute(webClient(), restClient())
+                action.execute(webClient, restClient)
             }
         } catch (e: Exception) {
             shot()

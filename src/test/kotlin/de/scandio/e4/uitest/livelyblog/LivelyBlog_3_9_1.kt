@@ -4,7 +4,6 @@ import de.scandio.e4.E4Env
 import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.worker.util.RandomData
 import org.apache.commons.io.FileUtils
-import org.junit.After
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
@@ -59,26 +58,17 @@ class LivelyBlog_3_9_1 : AbstractLivelyBlogTestSuite() {
             dom.click("#edit")
             dom.awaitElementPresent(".filename[title='${images[0].name}']")
 
-            webConfluence.navigateTo("pages/createblogpost.action?spaceKey=$spaceKey1")
-            dom.awaitElementPresent("#wysiwyg")
-            dom.click("#wysiwyg")
-            val content = "Random Blog Post Content"
-            val blogpost1Title = "$spaceKey1 Blog Post (${Date().time})"
-            val helper = LivelyBlogsSeleniumHelper(webConfluence)
-            webConfluence.setPageTitleInEditor(blogpost1Title)
-            webConfluence.focusAndUnfocusEditor()
-            dom.addTextTinyMce(content)
+            webConfluence.createBlogpostKeepOpen(spaceKey1, "LB BlogPost")
             webConfluence.insertRandomImageFromPage(attachmentPageTitle)
             helper.setTeaserImage()
             webConfluence.savePageOrBlogPost()
-            val page1Title = "$spaceKey1 Macro Page (${Date().time})"
-            webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey1")
-            dom.awaitElementPresent("#wysiwyg")
-            dom.click("#wysiwyg")
-            webConfluence.setPageTitleInEditor(page1Title)
+
+            webConfluence.createPageKeepOpen(spaceKey1, "LB Macro Page")
+
             val paramMap = mapOf<String, String>()
             webConfluence.insertMacro(macroId, macroId, paramMap)
             webConfluence.savePageOrBlogPost()
+
             dom.awaitElementPresent(".field-image")
             dom.expectElementNotPresent(".field-image[style]")
         }
@@ -89,35 +79,15 @@ class LivelyBlog_3_9_1 : AbstractLivelyBlogTestSuite() {
     fun LBCSRV_22() {
         runWithDump {
             webConfluence.login()
-            val timestamp = Date().time
-            val blogpost1Title = "$spaceKey1 Blog Post ($timestamp)"
-            val blogpost2Title = "$spaceKey2 Blog Post ($timestamp)"
-            createBlogPost(spaceKey1, blogpost1Title)
-            createBlogPost(spaceKey2, blogpost2Title)
-            val page1Title = "$spaceKey1 Macro Page ($timestamp)"
-            webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey1")
-            dom.awaitElementPresent("#wysiwyg")
-            dom.click("#wysiwyg")
-            webConfluence.setPageTitleInEditor(page1Title)
+            val blogpost1Title = webConfluence.createBlogpostAndSave(spaceKey1, "LB E4 Blog Post")
+            val blogpost2Title = webConfluence.createBlogpostAndSave(spaceKey2, "LB E4 Blog Post")
+            webConfluence.createPageKeepOpen(spaceKey1, "LB E4 Macro Page")
             val paramMap = mapOf<String, String>()
             webConfluence.insertMacro(macroId, macroId, paramMap)
             webConfluence.savePageOrBlogPost()
             dom.awaitElementPresent(".lively-blog-posts")
             dom.expectElementPresent(".lively-blog-posts a[title=\"$blogpost1Title\"]")
             dom.expectElementNotPresent(".lively-blog-posts a[title=\"$blogpost2Title\"]")
-        }
-    }
-
-    fun createBlogPost(spaceKey: String, title: String) {
-        runWithDump {
-            webConfluence.navigateTo("pages/createblogpost.action?spaceKey=$spaceKey")
-            dom.awaitElementPresent("#wysiwyg")
-            dom.click("#wysiwyg")
-            val content = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
-            webConfluence.setPageTitleInEditor(title)
-            webConfluence.focusAndUnfocusEditor()
-            dom.addTextTinyMce(content)
-            webConfluence.savePageOrBlogPost()
         }
     }
 

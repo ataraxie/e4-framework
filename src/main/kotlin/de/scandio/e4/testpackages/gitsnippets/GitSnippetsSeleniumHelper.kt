@@ -41,7 +41,7 @@ class GitSnippetsSeleniumHelper(
         webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey")
         dom.awaitElementPresent("#wysiwyg")
         dom.click("#wysiwyg")
-        webConfluence.setPageTitleInEditor(pageTitle)
+        webConfluence.setTitleInEditor(pageTitle)
         webConfluence.openMacroBrowser(MACRO_ID, MACRO_ID)
         dom.awaitMilliseconds(100)
         webConfluence.setMacroParameters(macroParameters)

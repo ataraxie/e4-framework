@@ -44,7 +44,7 @@ open class CreateRandomLivelyBlogPost (
         dom.awaitElementPresent("#wysiwyg")
         dom.click("#wysiwyg")
         val content = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
-        webConfluence.setPageTitleInEditor("Lively Blog Post (${Date().time})")
+        webConfluence.setTitleInEditor("Lively Blog Post (${Date().time})")
         webConfluence.focusAndUnfocusEditor()
         dom.addTextTinyMce(content)
         if (rnd("1", "2", "3") == "3") { // create teaser image for 1/3 of posts

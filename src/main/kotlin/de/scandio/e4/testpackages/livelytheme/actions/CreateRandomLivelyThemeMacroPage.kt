@@ -60,7 +60,7 @@ open class CreateRandomLivelyThemeMacroPage (
         webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey")
         dom.awaitElementPresent("#wysiwyg")
         dom.click("#wysiwyg")
-        webConfluence.setPageTitleInEditor(pageTitle)
+        webConfluence.setTitleInEditor(pageTitle)
         when(macroId) {
             "lively-button" -> {
                 insertLivelyMacro(macroId, mapOf(

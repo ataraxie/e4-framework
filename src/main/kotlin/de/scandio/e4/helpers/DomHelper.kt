@@ -1,7 +1,5 @@
 package de.scandio.e4.helpers
 
-import com.sun.org.apache.xpath.internal.operations.Bool
-import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.enjoy.wait
 import de.scandio.e4.worker.util.Util
 import org.openqa.selenium.By
@@ -16,8 +14,6 @@ import java.lang.Exception
 import java.net.URLEncoder
 import java.time.Duration
 import org.openqa.selenium.interactions.Actions
-import org.apache.tomcat.jni.Proc.wait
-
 
 
 class DomHelper(
@@ -270,5 +266,13 @@ class DomHelper(
     fun hoverOverElement(selector: String) {
         val builder = Actions(driver)
         builder.moveToElement(findElement(selector)).perform()
+    }
+
+    fun expectElementDisplayed(selector: String) {
+        assert(!findElement(selector).getCssValue("display").equals("none"))
+    }
+
+    fun expectElementNotDisplayed(selector: String) {
+        assert(findElement(selector).getCssValue("display").equals("none"))
     }
 }

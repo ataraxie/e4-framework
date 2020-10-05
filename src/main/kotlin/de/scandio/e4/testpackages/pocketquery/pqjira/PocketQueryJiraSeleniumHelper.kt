@@ -1,13 +1,11 @@
 package de.scandio.e4.testpackages.pocketquery.pqjira
 
-import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.testpackages.pocketquery.PocketQuerySeleniumHelper
 import de.scandio.e4.worker.interfaces.WebClient
 
 class PocketQueryJiraSeleniumHelper(
-        webClient: WebClient,
-        dom: DomHelper
-) : PocketQuerySeleniumHelper(webClient, dom) {
+        webClient: WebClient
+) : PocketQuerySeleniumHelper(webClient) {
 
     fun openProjectConfig(projectKey: String) {
         webClient.navigateTo("plugins/servlet/pocketquery/projectconfig?projectKey=$projectKey")
