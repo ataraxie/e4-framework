@@ -55,7 +55,7 @@ open class CreateBranchAction (
     }
 
     open fun createOriginPage(webConfluence: WebConfluence) {
-        webConfluence.createDefaultPage(spaceKey, originPageTitle)
+        webConfluence.createPageAndSave(spaceKey, originPageTitle)
     }
 
     open fun createBranch(webConfluence: WebConfluence) {

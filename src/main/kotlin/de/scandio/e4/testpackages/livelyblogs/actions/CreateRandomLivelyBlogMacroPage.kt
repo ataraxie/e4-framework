@@ -41,7 +41,7 @@ open class CreateRandomLivelyBlogMacroPage (
         webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey")
         dom.awaitElementPresent("#wysiwyg")
         dom.click("#wysiwyg")
-        webConfluence.setPageTitleInEditor(pageTitle)
+        webConfluence.setTitleInEditor(pageTitle)
         val paramMap = mapOf(
                 "layout" to rnd("default","image-left","image-right","image-embedded","image-fullwidth"),
                 "priorityTimeFrame" to rnd("3d", "5d", "10d"),

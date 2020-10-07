@@ -1,19 +1,40 @@
 package de.scandio.e4.testpackages.pocketquery
 
-import de.scandio.e4.helpers.DomHelper
+import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.worker.interfaces.WebClient
 import org.openqa.selenium.JavascriptExecutor
 import java.util.*
 
-abstract class PocketQuerySeleniumHelper(
-        protected val webClient: WebClient,
-        protected val dom: DomHelper
+open class PocketQuerySeleniumHelper(
+        protected val webClient: WebClient
 ) {
+
+    companion object {
+        fun String.trimLines() = replace("\n", "")
+        val WIKIPEDIA_ARTICLE_TITLE = "Vancouver"
+        val WIKIPEDIA_DATASOURCE_URL = "https://en.wikipedia.org/w/api.php"
+        val WIKIPEDIA_QUERY_URL = "?action=parse&page=$WIKIPEDIA_ARTICLE_TITLE&format=json"
+        val WIKIPEDIA_QUERY_JSON_PATH = "$.parse.text['*']"
+
+        val WIKIPEDIA_CONVERTER_CONTENT = """
+                function convert(json) {
+                    var parsedJsonObject = JSON.parse(json);
+                    return [{ 'wikipediaContent': parsedJsonObject }];
+                }
+            """.trimIndent().trimLines()
+
+        val WIKIPEDIA_TEMPLATE_CONTENT = """
+                    <link rel='stylesheet' href='https://en.wikipedia.org/w/load.php?debug=false&lang=en&modules=site.styles&only=styles&skin=vector'>
+                    ${'$'}result.get(0).wikipediaContent
+            """.trimIndent().trimLines()
+    }
 
     val DATASOURCE_TYPE_REST_CUSTOM = "4"
     val DATASOURCE_TYPE_JNDI = "6"
     val SIMPLE_QUERY_SQL = "SELECT id, user_name FROM cwd_user"
-    val WIKIPEDIA_REST_URL = "https://en.wikipedia.org/w/api.php"
+
+    val webConfluence = webClient as WebConfluence
+    val dom = webConfluence.dom
 
     fun createSqlDatasource(name: String, url: String, user: String, pwd: String, description: String = ""): String {
         //"jdbc:mysql://localhost/world"
@@ -34,7 +55,7 @@ abstract class PocketQuerySeleniumHelper(
         dom.insertText("#database-description", description)
         dom.click("#pocket-databases a.testconnection")
         dom.awaitHasText("#pocket-databases .nice-right .nice-status", "success")
-        submitForm("database", datasourceName)
+        submitForm("database")
         return datasourceName
     }
 
@@ -49,34 +70,34 @@ abstract class PocketQuerySeleniumHelper(
         dom.insertText("#database-description", description)
         dom.click("#pocket-databases a.testconnection")
         dom.awaitHasText("#pocket-databases .nice-right .nice-status", "success")
-        submitForm("database", datasourceName)
+        submitForm("database")
         return datasourceName
     }
 
     fun createWikipediaDatasource(name: String): String {
-        return createRestCustomDatasource(name, WIKIPEDIA_REST_URL)
+        return createRestCustomDatasource(name, WIKIPEDIA_DATASOURCE_URL)
     }
 
     fun createRestQuery(datasourceName: String, name: String, url: String, jsonPath: String = "", description: String = ""): String {
         goToAdminSection("query")
         openAddEntityForm("query")
-        val queryName = createBaseSqlQuery(datasourceName, name, url)
+        val queryName = createBaseQuery(datasourceName, name, url)
         dom.insertText("#query-jsonpath", jsonPath)
         dom.insertText("#query-description", description)
-        submitForm("query", queryName)
+        submitForm("query")
         return queryName
     }
 
     fun createSqlQuery(datasourceName: String, name: String, statementOrUrl: String, description: String = ""): String {
         goToAdminSection("query")
         openAddEntityForm("query")
-        val queryName = createBaseSqlQuery(datasourceName, name, statementOrUrl)
+        val queryName = createBaseQuery(datasourceName, name, statementOrUrl)
         dom.insertText("#query-description", description)
-        submitForm("query", queryName)
+        submitForm("query")
         return queryName
     }
 
-    fun createBaseSqlQuery(datasourceName: String, name: String, statementOrUrl: String): String {
+    fun createBaseQuery(datasourceName: String, name: String, statementOrUrl: String): String {
         goToAdminSection("query")
         openAddEntityForm("query")
         val queryName = "${name}_${Date().time}"
@@ -94,7 +115,7 @@ abstract class PocketQuerySeleniumHelper(
         dom.setSelectedOption("#database-type", DATASOURCE_TYPE_JNDI)
         dom.insertText("#database-resourcename", resourceName)
         dom.insertText("#database-description", description)
-        submitForm("database", datasourceName)
+        submitForm("database")
         return datasourceName
     }
 
@@ -135,7 +156,7 @@ abstract class PocketQuerySeleniumHelper(
         return entityTypePlural
     }
 
-    fun submitForm(entityType: String, entityName: String) {
+    fun submitForm(entityType: String) {
         dom.click("#pocket-${pluralEntityType(entityType)} .nice-right input.submit")
         dom.awaitNoClass("#pocket-${pluralEntityType(entityType)}", "form-visible")
     }
@@ -156,7 +177,7 @@ abstract class PocketQuerySeleniumHelper(
         insertEntityName(entityType, fullEntityName)
         dom.executeScript("$('#$entityType-content').data('codemirror').setValue(\"$content\")")
         dom.insertText("#$entityType-description", description)
-        submitForm(entityType, fullEntityName)
+        submitForm(entityType)
         return fullEntityName
     }
 
@@ -172,7 +193,7 @@ abstract class PocketQuerySeleniumHelper(
         goToAdminSection(sourceEntityType)
         openEditEntityForm(sourceEntityType, sourceEntityName)
         dom.setSelectedOption("#$sourceEntityType-$targetEntityType", targetEntityName)
-        submitForm(sourceEntityType, sourceEntityName)
+        submitForm(sourceEntityType)
         dom.awaitMilliseconds(50)
     }
 
@@ -189,31 +210,17 @@ abstract class PocketQuerySeleniumHelper(
         dom.awaitMilliseconds(50)
     }
 
-    fun createWikipediaSetup(description: String = ""): String {
-        val wikipediaTitle = "Vancouver"
-        val wikipediaQuery = "?action=parse&page=$wikipediaTitle&format=json"
-        val wikipediaJsonPath = "$.parse.text['*']"
-        val wikipediaConverter = """
-            function convert(json) {
-                var parsedJsonObject = JSON.parse(json);
-                return [{ 'wikipediaContent': parsedJsonObject }];
-            }
-        """.trimIndent().trimLines()
-        val innerTemplate = """
-                <link rel='stylesheet' href='https://en.wikipedia.org/w/load.php?debug=false&lang=en&modules=site.styles&only=styles&skin=vector'>
-                ${'$'}result.get(0).wikipediaContent
-        """.trimIndent().trimLines()
+    fun createWikipediaSetup(description: String = ""): QuerySetup {
+        val datasourceName = createRestCustomDatasource("WikipediaDS", WIKIPEDIA_DATASOURCE_URL)
+        val queryName = createRestQuery(datasourceName,
+                "WikipediaQuery", WIKIPEDIA_QUERY_URL, WIKIPEDIA_QUERY_JSON_PATH, description)
 
-        val wikipediaDatasourceName = createRestCustomDatasource("WikipediaDS", WIKIPEDIA_REST_URL)
-        val wikipediaQueryName = createRestQuery(wikipediaDatasourceName,
-                "WikipediaQuery", wikipediaQuery, wikipediaJsonPath)
+        val templateName = createTemplate("WikipediaTemplate", WIKIPEDIA_TEMPLATE_CONTENT)
+        val converterName = createConverter("WikipediaConverter", WIKIPEDIA_CONVERTER_CONTENT)
 
-        val wikipediaTemplateName = createTemplate("WikipediaTemplate", innerTemplate)
-        val wikipediaConverterName = createConverter("WikipediaConverter", wikipediaConverter)
-
-        setTemplateOnQuery(wikipediaQueryName, wikipediaTemplateName)
-        setConverterOnQuery(wikipediaQueryName, wikipediaConverterName)
-        return wikipediaQueryName
+        setTemplateOnQuery(queryName, templateName)
+        setConverterOnQuery(queryName, converterName)
+        return QuerySetup(datasourceName, queryName, templateName, converterName)
     }
 
     fun createSqlSetup(dbName: String, dbUrl: String, dbUser: String, dbPassword: String, description: String = ""): String {
@@ -224,6 +231,11 @@ abstract class PocketQuerySeleniumHelper(
                 SIMPLE_QUERY_SQL, description)
     }
 
-    fun String.trimLines() = replace("\n", "")
+    inner class QuerySetup (
+            val datasourceName: String,
+            val queryName: String,
+            val templateName: String,
+            val converterName: String
+    )
 
 }

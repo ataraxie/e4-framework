@@ -7,7 +7,7 @@ import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
 
 class CreateRandomPageAction(
-        val pageTitleBeginning: String
+        val pageTitle: String
 ) : Action() {
 
     private var start: Long = 0
@@ -17,7 +17,7 @@ class CreateRandomPageAction(
         val webConfluence = webClient as WebConfluence
         webConfluence.login()
         this.start = Date().time
-        webConfluence.createDefaultPage(pageTitleBeginning)
+        webConfluence.createPageAndSaveRandomSpace(pageTitle)
         this.end = Date().time
     }
 

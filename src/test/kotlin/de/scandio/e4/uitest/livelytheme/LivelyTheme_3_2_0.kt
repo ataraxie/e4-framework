@@ -40,7 +40,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
         val webConfluence = webClient() as WebConfluence
         val pageTitle = "PRODUCTS-925 (${Date().time})"
         webConfluence.login()
-        webConfluence.goToCreatePage(SPACEKEY, pageTitle)
+        webConfluence.createPageKeepOpen(SPACEKEY, pageTitle)
         webConfluence.insertMacro("lively-widget", "Widget", mapOf(
                 "title" to "PRODUCTS-925",
                 "backgroundStyle" to "colored",
@@ -61,7 +61,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
         val dom = webConfluence.dom
         val pageTitle = "PRODUCTS-1318 (${Date().time})"
         webConfluence.login()
-        webConfluence.goToCreatePage(SPACEKEY, pageTitle)
+        webConfluence.createPageKeepOpen(SPACEKEY, pageTitle)
         webConfluence.insertMacro("lively-widget", "Widget", mapOf(
                 "title" to "PRODUCTS-1318",
                 "height" to "100px"
@@ -81,7 +81,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
         val dom = webConfluence.dom
         val pageTitle = "PRODUCTS-1318 (${Date().time})"
         webConfluence.login()
-        webConfluence.goToCreatePage(SPACEKEY, pageTitle)
+        webConfluence.createPageKeepOpen(SPACEKEY, pageTitle)
         webConfluence.insertMacro("lively-widget", "Widget", mapOf(
                 "title" to "PRODUCTS-1318",
                 "height" to "100px"
@@ -101,7 +101,7 @@ class LivelyTheme_3_2_0 : BaseSeleniumTest() {
         val pageTitle = "PRODUCTS-376 (${Date().time})"
         val dom = webConfluence.dom
         webConfluence.login()
-        webConfluence.goToCreatePage(SPACEKEY, pageTitle)
+        webConfluence.createPageKeepOpen(SPACEKEY, pageTitle)
         webConfluence.openMacroBrowser("lively-widget", "Widget")
         webConfluence.setMacroParameters(mapOf("title" to "PRODUCTS-376"))
         dom.scrollToBottom(".macro-input-fields")

@@ -20,6 +20,10 @@ class WebConfluence(
         password: String
 ): WebAtlassian(driver, base, inputDir, outputDir, username, password) {
 
+    companion object {
+        val DUMMY_PAGE_CONTENT = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p><p></p>"
+    }
+
     override fun login() {
         // Do the following if you want to do it only initially when the browser is opened
         // if (driver.currentUrl.equals("about:blank") || driver.currentUrl.equals("data:,")) { // only login once!
@@ -54,7 +58,6 @@ class WebConfluence(
         dom.awaitElementPresent(loadedSelector)
     }
 
-
     fun goToPage(spaceKey: String, pageTitle: String) {
         val encodedPageTitle = URLEncoder.encode(pageTitle, "UTF-8")
         navigateTo("display/$spaceKey/$encodedPageTitle")
@@ -72,13 +75,19 @@ class WebConfluence(
         awaitEditPageLoaded()
     }
 
-    fun awaitEditPageLoaded() {
-        dom.awaitElementClickable("#content-title-div", 40)
-    }
-
     fun goToBlogpost(spaceKey: String, blogpostTitle: String, blogpostCreationDate: String) {
         val encodedTitle = URLEncoder.encode(blogpostTitle, "UTF-8")
         navigateTo("display/$spaceKey/$blogpostCreationDate/$encodedTitle")
+    }
+
+    fun goToCreatePage(spaceKey: String) {
+        navigateTo("pages/createpage.action?spaceKey=$spaceKey")
+        awaitEditorLoaded()
+    }
+
+    fun goToCreateBlogpost(spaceKey: String) {
+        navigateTo("pages/createblogpost.action?spaceKey=$spaceKey")
+        awaitEditorLoaded()
     }
 
     fun openMacroBrowser(macroId: String, macroSearchTerm: String) {
@@ -170,50 +179,74 @@ class WebConfluence(
         return dom.executeScript("AJS.Meta.get(\"page-id\")").toString().toInt()
     }
 
-    fun createDefaultPage(pageTitleBeginning: String) {
+    fun openCreatePageEditorByQuickCreate() {
         dom.removeElementWithJQuery(".aui-blanket")
         dom.click("#quick-create-page-button")
-        dom.awaitElementPresent("#wysiwyg")
-        val pageTitle = "$pageTitleBeginning $username (${Date().time})"
-        log.debug("Creating page with title $pageTitle")
-        publishPage(pageTitle)
+        awaitEditorLoaded()
     }
 
-    fun createDefaultPage(spaceKey: String, pageTitle: String) {
-        navigateTo("pages/createpage.action?spaceKey=$spaceKey")
-        dom.awaitElementPresent("#wysiwyg")
-        publishPage(pageTitle)
+    fun createPageAndSave(spaceKey: String, title: String, appendTimestamp: Boolean = true,
+                          content: String = DUMMY_PAGE_CONTENT): String {
+        val actualTitle = createPageKeepOpen(spaceKey, title, appendTimestamp, content)
+        savePageOrBlogPost()
+        return actualTitle
     }
 
-    fun createCustomPage(spaceKey: String, pageTitle: String, pageContentHtml: String) {
-        navigateTo("pages/createpage.action?spaceKey=$spaceKey")
-        dom.awaitElementPresent("#wysiwyg")
-        publishPage(pageTitle, pageContentHtml)
+    fun createPageAndSaveRandomSpace(title: String, appendTimestamp: Boolean = true,
+                                     content: String = DUMMY_PAGE_CONTENT): String {
+        openCreatePageEditorByQuickCreate()
+        return fillPageOrBlogpostAndSave(title, appendTimestamp, content)
     }
 
-    fun goToCreatePage(spaceKey: String, pageTitle: String) {
-        navigateTo("pages/createpage.action?spaceKey=$spaceKey")
-        dom.awaitElementPresent("#wysiwyg")
-        setPageTitleInEditor(pageTitle)
+    fun createPageKeepOpen(spaceKey: String, title: String, appendTimestamp: Boolean = true,
+                           content: String = DUMMY_PAGE_CONTENT): String {
+        goToCreatePage(spaceKey)
+        return fillPageOrBlogpost(title, appendTimestamp, content)
     }
 
-    fun setPageTitleInEditor(pageTitle: String) {
-        dom.click("#content-title-div", 40)
-        dom.insertText("#content-title", pageTitle)
+    fun fillPageOrBlogpostAndSave(title: String, appendTimestamp: Boolean = true,
+                                  content: String = DUMMY_PAGE_CONTENT): String {
+        val actualTitle = fillPageOrBlogpost(title, appendTimestamp, content)
+        savePageOrBlogPost()
+        return actualTitle
     }
 
-    private fun publishPage(pageTitle: String, pageContentHtml: String = "") {
-        var html = pageContentHtml
-        if (html.isEmpty()) {
-            html = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
+    fun createBlogpostKeepOpen(spaceKey: String, title: String, appendTimestamp: Boolean = true,
+                               content: String = DUMMY_PAGE_CONTENT): String {
+        goToCreateBlogpost(spaceKey)
+        return fillPageOrBlogpost(title, appendTimestamp, content)
+    }
+
+    fun createBlogpostAndSave(spaceKey: String, title: String, appendTimestamp: Boolean = true): String {
+        val actualTitle = createBlogpostKeepOpen(spaceKey, title, appendTimestamp)
+        savePageOrBlogPost()
+        return actualTitle
+    }
+
+    fun setTitleInEditor(title: String, appendTimestamp: Boolean = true): String {
+        var actualTitle = title
+        if (appendTimestamp) {
+            actualTitle += " (${Date().time})"
         }
+        dom.click("#content-title-div", 40)
+        dom.insertText("#content-title", actualTitle)
+        return actualTitle
+    }
+
+    private fun fillPageOrBlogpost(title: String, appendTimestamp: Boolean = true,
+                                   content: String = DUMMY_PAGE_CONTENT): String {
         if (dom.isElementPresent("#closeDisDialog")) {
             dom.click("#closeDisDialog")
             dom.awaitMilliseconds(100)
         }
-        setPageTitleInEditor(pageTitle)
-        dom.addTextTinyMce(html)
-        savePageOrBlogPost()
+        val titleWithTimestamp = setTitleInEditor(title, appendTimestamp)
+        focusAndUnfocusEditor()
+        addContentInEditor(content)
+        return titleWithTimestamp
+    }
+
+    fun addContentInEditor(content: String) {
+        dom.addTextTinyMce(content)
     }
 
     fun createEmptySpace(spaceKey: String, spaceName: String) {
@@ -417,23 +450,17 @@ class WebConfluence(
         dom.click("#likes-section .like-button")
     }
 
-    fun startCreateBlogpostKeepOpen(spaceKey: String, blogpostTitle: String) {
-        navigateTo("pages/createblogpost.action?spaceKey=$spaceKey") //Create a new blog post
-        dom.awaitElementPresent("#wysiwyg")
-        dom.click("#wysiwyg")
-        val content = "<h1>Lorem Ipsum</h1><p>${RandomData.STRING_LOREM_IPSUM}</p>"
-        setPageTitleInEditor(blogpostTitle)
-        focusAndUnfocusEditor()
-        dom.addTextTinyMce(content)
-    }
-
-    fun createBlogpostAndSave(spaceKey: String, blogpostTitle: String) {
-        startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
-        savePageOrBlogPost()
-    }
-
     fun focusMacroBrowserPreviewFrame() {
         driver.switchTo().frame("macro-preview-iframe")
+    }
+
+    fun awaitEditPageLoaded() {
+        dom.awaitElementClickable("#content-title-div", 40)
+    }
+
+    fun awaitEditorLoaded() {
+        dom.awaitElementPresent("#wysiwyg")
+        dom.click("#wysiwyg")
     }
 
 }

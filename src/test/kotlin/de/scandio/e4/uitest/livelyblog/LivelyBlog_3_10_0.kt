@@ -1,21 +1,9 @@
 package de.scandio.e4.uitest.livelyblog
 
 import de.scandio.e4.E4Env
-import de.scandio.e4.adhoc.BaseSeleniumTest
-import de.scandio.e4.clients.rest.RestConfluence
-import de.scandio.e4.clients.web.WebConfluence
-import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
-import de.scandio.e4.testpackages.livelyblogs.actions.*
-import de.scandio.e4.testpackages.vanilla.actions.CreateMultiplePagesActionRest
-import de.scandio.e4.testpackages.vanilla.actions.CreatePageAction
-import de.scandio.e4.testpackages.vanilla.actions.CreateSpaceAction
-import de.scandio.e4.worker.util.RandomData
-import org.junit.After
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
-import org.junit.jupiter.api.TestInstance
-import org.slf4j.LoggerFactory
 import java.util.*
 
 class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
@@ -32,7 +20,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
                     restConfluence.createSpace(spaceKey, spaceKey)
                     helper.setupFeaturedSpace(spaceKey)
                     // First, upload some attachments to some new random page such that we can create teaser images
-                    val pageId = restConfluence.createPage(spaceKey, "Page with all the attachments ${Date().time}", "Page used for attachments")
+                    val pageId = restConfluence.createPage(spaceKey, "LB E4 Attachment Page", "Page used for attachments")
                     val images = helper.prepareImages("random-image-1.jpg")
                     helper.uploadImages(pageId, images)
                 }
@@ -49,13 +37,12 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
     fun LBCSRV_16() {
         runWithDump {
             val categoryName = "E4${Date().time}"
-            val pageTitle = "New Page ${Date().time}"
-            val blogpostTitle = "New Blogpost with Label '${categoryName}'"
+            val blogpostTitle = "E4 LB Blog Post with Label '${categoryName}'"
             val blogpostId = restConfluence.createBlogpost(spaceKey, blogpostTitle, "Random Content")
             restConfluence.addLabelsToContentEntity(blogpostId, arrayListOf(categoryName))
             webConfluence.login()
             val categoryId = helper.addLivelyBlogCategoryReturnId(categoryName)
-            webConfluence.goToCreatePage(spaceKey, pageTitle)
+            webConfluence.createPageKeepOpen(spaceKey, "E4 LB Page")
             webConfluence.openMacroBrowser("lively-blog-posts-overview", "lively-blog-posts-overview")
             dom.awaitSeconds(3)
             webConfluence.focusMacroBrowserPreviewFrame()
@@ -70,8 +57,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
     fun LBCSRV_36() {
         runWithDump {
             webConfluence.login()
-            val blogpostTitle = "New Blogpost ${Date().time}"
-            webConfluence.createBlogpostAndSave(spaceKey, blogpostTitle)
+            val blogpostTitle = webConfluence.createBlogpostAndSave(spaceKey, "LB E4 Blog Post")
             webConfluence.addRandomComment("Heeellooo this is a Comment oh yeah!!")
             webConfluence.likeOrUnlikePageOrBlogpost()
             dom.awaitSeconds(3) // give index a bit
@@ -90,9 +76,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
     fun LBCSRV_32() {
         runWithDump {
             webConfluence.login()
-            val timestamp = Date().time
-            val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
-            webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
+            webConfluence.createBlogpostKeepOpen(spaceKey, "E4 LB Blog Post")
             dom.expectElementPresent(".info-no-teaser.active")
             webConfluence.insertRandomImageFromPage("Page")
             clickImage()
@@ -120,9 +104,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
     fun LBCSRV_31() {
         runWithDump {
             webConfluence.login()
-            val timestamp = Date().time
-            val blogpostTitle = "$spaceKey Blog Post ($timestamp)"
-            webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle) // create a blog post
+            val blogpostTitle = webConfluence.createBlogpostKeepOpen(spaceKey, "LB E4 Blog Post") // create a blog post
             webConfluence.savePageOrBlogPost() // save it
             dom.awaitSeconds(3) // give index a bit
             helper.goToBlogOverview() // go to blog overview
@@ -151,9 +133,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
     fun LBCSRV_15() {
         runWithDump {
             webConfluence.login()
-            dom.awaitSeconds(2)
-            val blogpostTitle = "$spaceKey Blog Post (${Date().time})"
-            webConfluence.startCreateBlogpostKeepOpen(spaceKey, blogpostTitle)
+            val blogpostTitle = webConfluence.createBlogpostKeepOpen(spaceKey, "E4 LB Blog Post")
             webConfluence.insertRandomImageFromPage("Page")
             expectButtonNotActive()
             clickTeaserButton()
@@ -169,7 +149,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             clickTeaserButton()
             expectButtonActive()
             webConfluence.savePageOrBlogPost()
-            dom.awaitSeconds(3) // Give the index a few seconds
+            dom.awaitSeconds(4) // Give the index a few seconds
             webConfluence.goToDashboard()
             dom.awaitSeconds(1)
             expectTeaserIsDisplayed(blogpostTitle)

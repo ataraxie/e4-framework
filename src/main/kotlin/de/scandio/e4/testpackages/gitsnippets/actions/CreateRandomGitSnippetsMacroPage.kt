@@ -25,7 +25,7 @@ open class CreateRandomGitSnippetsMacroPage (
         webConfluence.navigateTo("pages/createpage.action?spaceKey=$spaceKey")
         dom.awaitElementPresent("#wysiwyg")
         dom.click("#wysiwyg")
-        webConfluence.setPageTitleInEditor(pageTitle)
+        webConfluence.setTitleInEditor(pageTitle)
         val paramMap = mapOf(
                 "bitbucketUrl" to "${GitSnippetsTestPackage.REPOSITORY_PATH}/${WorkerUtils.getRandomItem(GitSnippetsTestPackage.FILE_PATHS)}"
         )

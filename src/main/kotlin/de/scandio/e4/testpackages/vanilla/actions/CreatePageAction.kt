@@ -29,7 +29,6 @@ class CreatePageAction(
             pageTitle += " (${Date().time})"
         }
 
-
         if (useRest) {
             val restConfluence = restClient as RestConfluence
             this.start = Date().time
@@ -38,11 +37,7 @@ class CreatePageAction(
             val webConfluence = webClient as WebConfluence
             webConfluence.login()
             this.start = Date().time
-            if (pageContent.isEmpty()) {
-                webConfluence.createDefaultPage(spaceKey, pageTitle)
-            } else {
-                webConfluence.createCustomPage(spaceKey, pageTitle, pageContent)
-            }
+            webConfluence.createPageAndSave(spaceKey, pageTitle, false, pageContent)
         }
 
         this.end = Date().time

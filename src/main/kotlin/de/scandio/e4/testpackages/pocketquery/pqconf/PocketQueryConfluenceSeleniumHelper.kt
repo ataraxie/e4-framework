@@ -1,16 +1,12 @@
 package de.scandio.e4.testpackages.pocketquery.pqconf
 
 import de.scandio.e4.clients.web.WebConfluence
-import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.testpackages.pocketquery.PocketQuerySeleniumHelper
 import de.scandio.e4.worker.interfaces.WebClient
-import java.util.*
 
 class PocketQueryConfluenceSeleniumHelper(
-        webClient: WebClient,
-        dom: DomHelper,
-        val pqSpaceKey: String
-) : PocketQuerySeleniumHelper(webClient, dom) {
+        webClient: WebClient
+) : PocketQuerySeleniumHelper(webClient) {
 
     fun insertPocketQueryMacro(
             queryName: String, paramsToCheck: List<String> = arrayListOf(),
@@ -35,24 +31,20 @@ class PocketQueryConfluenceSeleniumHelper(
     }
 
     fun setQueryInMacroBrowser(queryName: String) {
-        webConfluence().debugScreen("setQueryInMacroBrowser-1")
+        webConfluence.debugScreen("setQueryInMacroBrowser-1")
         setSelect2Option("#query-name-select", queryName)
-        webConfluence().debugScreen("setQueryInMacroBrowser-2")
+        webConfluence.debugScreen("setQueryInMacroBrowser-2")
     }
 
     fun createPocketQueryPage(
-            queryName: String, macroParamsToCheck: List<String> = arrayListOf(),
+            spaceKey: String,
+            queryName: String,
+            macroParamsToCheck: List<String> = arrayListOf(),
             queryParameters: Map<String, String> = mapOf()) {
 
-        val pageTitle = "PQ TestBasicSqlSetup (${Date().time})"
-        webConfluence().createDefaultPage(pqSpaceKey, pageTitle)
-        webConfluence().goToEditPage()
+        webConfluence.createPageKeepOpen(spaceKey, "PQ E4")
         insertPocketQueryMacro(queryName, macroParamsToCheck, queryParameters)
-        webConfluence().savePageOrBlogPost()
-    }
-
-    private fun webConfluence() : WebConfluence {
-        return this.webClient!! as WebConfluence
+        webConfluence.savePageOrBlogPost()
     }
 
 }
