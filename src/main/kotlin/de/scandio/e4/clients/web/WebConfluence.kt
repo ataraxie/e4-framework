@@ -90,6 +90,11 @@ class WebConfluence(
         awaitEditorLoaded()
     }
 
+    fun goToAdminChooseTheme() {
+        navigateTo("admin/choosetheme.action")
+        dom.awaitElementPresent("#choosethemeform")
+    }
+
     fun openMacroBrowser(macroId: String, macroSearchTerm: String) {
         log.debug("Inserting macro {{}}", macroId)
         driver.switchTo().frame("wysiwygTextarea_ifr")
@@ -235,10 +240,10 @@ class WebConfluence(
 
     private fun fillPageOrBlogpost(title: String, appendTimestamp: Boolean = true,
                                    content: String = DUMMY_PAGE_CONTENT): String {
-        if (dom.isElementPresent("#closeDisDialog")) {
-            dom.click("#closeDisDialog")
-            dom.awaitMilliseconds(100)
-        }
+//        if (dom.isElementPresent("#closeDisDialog")) { // FIXME: removed this because it was slow. Not sure if it's needed...
+//            dom.click("#closeDisDialog")
+//            dom.awaitMilliseconds(100)
+//        }
         val titleWithTimestamp = setTitleInEditor(title, appendTimestamp)
         focusAndUnfocusEditor()
         addContentInEditor(content)
@@ -461,6 +466,19 @@ class WebConfluence(
     fun awaitEditorLoaded() {
         dom.awaitElementPresent("#wysiwyg")
         dom.click("#wysiwyg")
+    }
+
+    // just a keyword, not the themeKey because we need to match the name in the UI
+    fun setGlobalConfluenceTheme(themeKeyword: String) {
+        goToAdminChooseTheme()
+        val currentThemeName = dom.findElement("#currentThemeName").text
+        val themeNameSlug = currentThemeName.trim().toLowerCase().replace(" ", "").replace("-", "")
+        if (!themeNameSlug.contains(themeKeyword)) {
+            dom.click("input[id*=\"${themeKeyword}\"]")
+            dom.click(".aui-button.submit")
+            dom.awaitSeconds(1)
+            dom.awaitElementPresent("#currentThemeName")
+        }
     }
 
 }

@@ -259,7 +259,7 @@ class DomHelper(
         findElement(selector)
     }
 
-    fun expectElementNotPresent(selector: String) {
+    fun expectElementNotPresent(selector: String) { // FIXME: this is slow because findElement is waiting! Should be improved!
         var elementFound = false
         try {
             findElement(selector)
