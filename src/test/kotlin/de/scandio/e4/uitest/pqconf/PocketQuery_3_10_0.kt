@@ -15,7 +15,6 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
         runWithDump {
             webConfluence.login()
             helper.goToPocketQueryAdmin()
-            helper.goToAdminSection("database")
             helper.openAddEntityForm("database")
             val datasourceName = helper.createJndiDatasource("ConfluenceDsJNDI", JNDI_RESOURCE_NAME)
             helper.openEditEntityForm("database", datasourceName)
@@ -53,7 +52,7 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
                     "JndiQueryDescription")
             // REST Query
             val restQuery = helper.createRestQuery(restDatasourceName, "DescriptionTestRestQuery",
-                    "?action=parse&page=Vancouver&format=json", "", "RestQueryDescription")
+                    "?action=parse&page=Vancouver&format=json", "RestQueryDescription")
             // Template
             val templateName = helper.createTemplate("DescriptionTestTemplate",
                     "DescriptionTestTemplate Content", "TemplateDescription")

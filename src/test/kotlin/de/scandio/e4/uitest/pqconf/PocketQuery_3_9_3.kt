@@ -1,6 +1,5 @@
 package de.scandio.e4.uitest.pqconf
 
-import de.scandio.e4.testpackages.pocketquery.PocketQuerySeleniumHelper.Companion.WIKIPEDIA_QUERY_JSON_PATH
 import de.scandio.e4.testpackages.pocketquery.PocketQuerySeleniumHelper.Companion.WIKIPEDIA_QUERY_URL
 import org.junit.Test
 
@@ -23,7 +22,7 @@ class PocketQuery_3_9_3 : AbstractPocketQueryConfluenceTestSuite() {
 
             val outerTemplateName = helper.createTemplate("RenderConfluenceMacro", outerTemplate)
             val outerQueryName = helper.createRestQuery(querySetup.datasourceName, "WikipediaQuery",
-                    WIKIPEDIA_QUERY_URL, WIKIPEDIA_QUERY_JSON_PATH)
+                    WIKIPEDIA_QUERY_URL)
             helper.setTemplateOnQuery(outerQueryName, outerTemplateName)
             helper.setConverterOnQuery(outerQueryName, querySetup.converterName)
 

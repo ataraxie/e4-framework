@@ -68,4 +68,24 @@ abstract class WebAtlassian(
         }
     }
 
+    open fun awaitSuccessFlag() {
+        dom.awaitElementPresent(".aui-flag[aria-hidden=\"false\"] .aui-message-success")
+    }
+
+    open fun activateAuiToggle(selector: String) {
+        val uncheckedToggle = dom.findElements("$selector:not([checked])")
+        if (uncheckedToggle.isNotEmpty()) {
+            uncheckedToggle[0].click()
+            dom.awaitMilliseconds(200)
+        }
+    }
+
+    open fun deactivateAuiToggle(selector: String) {
+        val checkedToggle = dom.findElements("$selector[checked]")
+        if (checkedToggle.isNotEmpty()) {
+            checkedToggle[0].click()
+            dom.awaitMilliseconds(200)
+        }
+    }
+
 }

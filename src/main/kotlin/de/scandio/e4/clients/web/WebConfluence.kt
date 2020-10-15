@@ -125,7 +125,7 @@ class WebConfluence(
             val selector = "#macro-browser-dialog #macro-param-$paramKey"
             val elem = dom.findElement(selector)
             if ("select" == elem.tagName) {
-                dom.setSelectedOption(selector, paramValue)
+                dom.setSelectedOptionByValue(selector, paramValue)
             } else if (elem.getAttribute("type") == "checkbox") {
                 if (elem.isSelected && paramValue == "false" || !elem.isSelected && paramValue == "true") {
                     dom.click(elem)
@@ -152,7 +152,7 @@ class WebConfluence(
         driver.switchTo().parentFrame()
         dom.click("#rte-button-insert")
         dom.click("#rte-insert-wikimarkup")
-        dom.setSelectedOption("#wiki-parser-selection-tool", "MARKDOWN")
+        dom.setSelectedOptionByValue("#wiki-parser-selection-tool", "MARKDOWN")
         dom.insertText("#insert-wiki-textarea", markdown)
         dom.click("#insert-wiki-markup-dialog .button-panel-button")
         dom.awaitElementClickable("#rte-button-publish")
