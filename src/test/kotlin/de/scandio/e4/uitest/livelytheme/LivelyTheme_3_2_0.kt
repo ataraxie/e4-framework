@@ -16,7 +16,6 @@ class LivelyTheme_3_2_0 : AbstractLivelyThemeTestSuite() {
     @Test // PRODUCTS-925 widget colors (flat style)
     fun products_925() {
         runWithDump {
-            webConfluence.login()
             webConfluence.createPageKeepOpen(SPACEKEY, "PRODUCTS-925")
             webConfluence.insertMacro("lively-widget", "Widget", mapOf(
                     "title" to "PRODUCTS-925",
@@ -35,7 +34,6 @@ class LivelyTheme_3_2_0 : AbstractLivelyThemeTestSuite() {
     @Test // PRODUCTS-1318 widget height
     fun products_1318_no_scroll() {
         runWithDump {
-            webConfluence.login()
             webConfluence.createPageKeepOpen(SPACEKEY, "PRODUCTS-1318")
             webConfluence.insertMacro("lively-widget", "Widget", mapOf(
                     "title" to "PRODUCTS-1318",
@@ -53,7 +51,6 @@ class LivelyTheme_3_2_0 : AbstractLivelyThemeTestSuite() {
     @Test // PRODUCTS-1318 widget height
     fun products_1318_scroll() {
         runWithDump {
-            webConfluence.login()
             webConfluence.createPageKeepOpen(SPACEKEY, "PRODUCTS-1318")
             webConfluence.insertMacro("lively-widget", "Widget", mapOf(
                     "title" to "PRODUCTS-1318",
@@ -71,7 +68,6 @@ class LivelyTheme_3_2_0 : AbstractLivelyThemeTestSuite() {
     @Test // PRODUCTS-376 custom css class
     fun products_376() {
         runWithDump {
-            webConfluence.login()
             webConfluence.createPageKeepOpen(SPACEKEY, "PRODUCTS-376")
             webConfluence.openMacroBrowser("lively-widget", "Widget")
             webConfluence.setMacroParameters(mapOf("title" to "PRODUCTS-376"))

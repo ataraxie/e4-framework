@@ -34,11 +34,11 @@ open class AbstractLivelyThemeTestSuite : BaseSeleniumTest() {
 
         @BeforeClass
         @JvmStatic internal open fun beforeAll() {
+            webConfluence.login()
             if (E4Env.PREPARATION_RUN) {
                 runWithDump {
                     restConfluence.createSpace(SPACEKEY, SPACENAME)
 
-                    webConfluence.login()
                     helper.setLivelyThemeGlobally()
                 }
             }
