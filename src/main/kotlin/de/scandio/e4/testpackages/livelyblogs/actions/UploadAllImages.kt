@@ -45,12 +45,11 @@ open class UploadAllImages (
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val restConfluence = restClient as RestConfluence
         val webConfluence = webClient as WebConfluence
-        val helper = LivelyBlogsSeleniumHelper(webClient)
         val pageId = restConfluence.getContentId(spaceKey, pageTitle)!!
-        val images = helper.prepareImages(this.filenameRegex)
+        val images = webConfluence.prepareImages(this.filenameRegex)
         webConfluence.login()
         this.start = Date().time
-        helper.uploadImages(pageId, images)
+        webConfluence.uploadImages(pageId, images)
         this.end = Date().time
     }
 

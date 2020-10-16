@@ -180,7 +180,7 @@ class WebConfluence(
         dom.awaitElementPresent("#main-content")
     }
 
-    fun getPageId(): Number {
+    fun getPageId(): Long {
         return dom.findElement("meta[name=\"ajs-page-id\"]").getAttribute("content").toLong()
     }
 
@@ -226,6 +226,12 @@ class WebConfluence(
         val actualTitle = createBlogpostKeepOpen(spaceKey, title, appendTimestamp)
         savePageOrBlogPost()
         return actualTitle
+    }
+
+    fun editCurrentlyOpenPageAddRandomContent() {
+        goToEditPage()
+        dom.addTextTinyMce(RandomData.STRING_LOREM_IPSUM_2)
+        savePageOrBlogPost()
     }
 
     fun setTitleInEditor(title: String, appendTimestamp: Boolean = true): String {
@@ -341,7 +347,7 @@ class WebConfluence(
         dom.click("form[name='editspacepermissions'] #edit")
         dom.insertText("#groups-to-add-autocomplete", groupName)
         dom.click("input[name='groupsToAddButton']")
-        dom.awaitSeconds(3) //TODO!!
+        dom.awaitSeconds(3) // FIXME: find way to remove explicit wait
 
         if (dom.isElementPresent(selector)) {
             dom.click(selector)
@@ -480,5 +486,35 @@ class WebConfluence(
             dom.awaitElementPresent("#currentThemeName")
         }
     }
+
+    fun prepareImages(filenameRegex: String): List<File> {
+        val images = getFilesFromInputDir(filenameRegex)
+        if (images.isEmpty()) {
+            repeat(10) {
+                val filename = "random-image-$it.jpg"
+                val path = "/images/$filename"
+                val inputUrl = javaClass.getResource(path)
+                val destUrl = "${inputDir}/$filename"
+                FileUtils.copyURLToFile(inputUrl, File(destUrl))
+            }
+        }
+        return images
+    }
+
+    fun uploadSingleImage(pageId: Long, image: File) {
+        navigateTo("pages/viewpageattachments.action?pageId=$pageId")
+        dom.awaitElementPresent("#upload-files")
+        dom.setFile("#file_0", image.absolutePath)
+        dom.click("#edit")
+        dom.awaitElementPresent(".filename[title='${image.name}']")
+        debugScreen("attachment-${image.name}")
+    }
+
+    fun uploadImages(pageId: Long, images: List<File>) {
+        for (image in images) {
+            uploadSingleImage(pageId, image)
+        }
+    }
+
 
 }

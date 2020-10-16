@@ -12,9 +12,11 @@ class PageBranchingSeleniumHelper(
     val webConfluence = webClient as WebConfluence
     val dom = webConfluence.dom
 
-    fun createBranchFromCurrentlyOpenPage(branchName: String): Number {
+    fun createBranchFromCurrentlyOpenPage(branchName: String): Long {
         val dom = DomHelper(webConfluence.driver)
+        dom.awaitMilliseconds(100)
         dom.click("#action-menu-link")
+        dom.awaitMilliseconds(100)
         dom.click(".pagebranching-create-branch-link")
         dom.insertText("input#branch-name", branchName, true)
         dom.click("#pagebranching-branch-page-button")
@@ -38,12 +40,14 @@ class PageBranchingSeleniumHelper(
     }
 
     fun editCurrentlyOpenBranchAndShowDiff() {
-        webConfluence.goToEditPage()
-        dom.addTextTinyMce(RandomData.STRING_LOREM_IPSUM_2)
-        webConfluence.savePageOrBlogPost()
+        webConfluence.editCurrentlyOpenPageAddRandomContent()
         dom.click("#content-metadata-pagebranching")
         dom.click("a.pagebranching-viewdiff-link")
         dom.awaitElementPresent("#num-changes-container .haschanges .count")
+    }
+
+    fun goToBranchesPage(spaceKey: String) {
+        webConfluence.goToPage(spaceKey, "Branches")
     }
 
 }

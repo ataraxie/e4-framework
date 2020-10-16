@@ -196,6 +196,10 @@ class DomHelper(
         return driver.findElement(By.cssSelector(cssSelector))
     }
 
+    fun findElementByXpath(xpath: String): WebElement {
+        return driver.findElement(By.xpath(xpath))
+    }
+
     fun findElements(cssSelector: String): List<WebElement> {
         return driver.findElements(By.cssSelector(cssSelector))
     }

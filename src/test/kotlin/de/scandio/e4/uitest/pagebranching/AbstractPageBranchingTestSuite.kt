@@ -15,11 +15,6 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import java.util.*
 
-// REQUIRES:
-// - Page Branching installed
-// - Confluence user admin/admin (if not configured differently with envvars)
-//
-// If you want the setup to run, set E4_PREPARATION_RUN envvar to true.
 @TestInstance(Lifecycle.PER_CLASS)
 open class AbstractPageBranchingTestSuite : BaseSeleniumTest() {
 
@@ -37,6 +32,14 @@ open class AbstractPageBranchingTestSuite : BaseSeleniumTest() {
         @AfterClass
         @JvmStatic internal fun afterAll() {
             webClient.quit()
+        }
+
+        fun createSpaceAndSetupPermissions() {
+            restConfluence.createSpace(SPACEKEY, SPACENAME)
+
+            webConfluence.login()
+            webConfluence.addSpaceGroupPermission(SPACEKEY, "confluence-users",
+                    "removepage", true)
         }
 
     }
