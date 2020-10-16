@@ -1,6 +1,7 @@
 package de.scandio.e4.testpackages.pagebranching.actions
 
 import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.testpackages.pagebranching.PageBranchingSeleniumHelper
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
@@ -35,22 +36,19 @@ class CreateOverviewPageAction(
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
+        val helper = PageBranchingSeleniumHelper(webClient)
         webConfluence.login()
         if ("PLACEHOLDER".equals(originPageTitle)) {
             originPageTitle = "CreateOverviewPageAction (${Date().time})"
-            super.createOriginPage(webConfluence)
+            webConfluence.createPageAndSave(spaceKey, originPageTitle)
         }
         if ("PLACEHOLDER".equals(branchName)) {
             branchName = "Branch (${Date().time})"
-            super.createBranch(webConfluence)
+            helper.createBranchFromCurrentlyOpenPage(branchName)
         }
 
-        webConfluence.goToPage(spaceKey, originPageTitle)
-
         this.start = Date().time
-        webConfluence.goToEditPage()
-        webConfluence.insertMacro("page-branching-overview", "page branching")
-        webConfluence.savePageOrBlogPost()
+        helper.addOverviewMacroToPage(spaceKey, originPageTitle)
         this.end = Date().time
     }
 

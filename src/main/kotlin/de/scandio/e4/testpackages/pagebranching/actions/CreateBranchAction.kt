@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.pagebranching.actions
 
-import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.testpackages.pagebranching.PageBranchingSeleniumHelper
 import de.scandio.e4.worker.interfaces.Action
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
@@ -38,40 +38,24 @@ open class CreateBranchAction (
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
+        val helper = PageBranchingSeleniumHelper(webClient)
 
         webConfluence.login()
 
         if (originPageTitle.equals("PLACEHOLDER")) {
             originPageTitle = "CreateBranchAction (${Date().time})"
-            createOriginPage(webConfluence)
+            webConfluence.createPageAndSave(spaceKey, originPageTitle)
         }
         if (branchName.equals("PLACEHOLDER")) {
             branchName = "Branch (${Date().time})"
         }
 
         this.start = Date().time
-        createBranch(webConfluence)
+        helper.createBranchFromCurrentlyOpenPage(branchName)
         this.end = Date().time
     }
 
-    open fun createOriginPage(webConfluence: WebConfluence) {
-        webConfluence.createPageAndSave(spaceKey, originPageTitle)
-    }
 
-    open fun createBranch(webConfluence: WebConfluence) {
-        val dom = DomHelper(webConfluence.driver)
-        webConfluence.goToPage(spaceKey, originPageTitle)
-        dom.awaitElementClickable("#action-menu-link")
-        dom.click("#action-menu-link")
-        dom.awaitElementClickable(".pagebranching-create-branch-link")
-        dom.click(".pagebranching-create-branch-link")
-        dom.awaitElementClickable("input#branch-name")
-        dom.clearText("input#branch-name")
-        dom.insertText("input#branch-name", branchName)
-        dom.click("#pagebranching-branch-page-button")
-        dom.awaitMilliseconds(2000)
-        dom.awaitElementPresent(".page-branching-branch-meta")
-    }
 
     override fun getTimeTaken(): Long {
         return this.end - this.start

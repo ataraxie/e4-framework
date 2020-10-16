@@ -18,11 +18,12 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             if (E4Env.PREPARATION_RUN) {
                 runWithDump {
                     restConfluence.createSpace(spaceKey, spaceKey)
+                    webConfluence.login()
                     helper.setupFeaturedSpace(spaceKey)
                     // First, upload some attachments to some new random page such that we can create teaser images
-                    val pageId = restConfluence.createPage(spaceKey, "LB E4 Attachment Page", "Page used for attachments")
-                    val images = helper.prepareImages("random-image-1.jpg")
-                    helper.uploadImages(pageId, images)
+                    val pageId = restConfluence.createPage(spaceKey, "LB E4 Attachment Page")
+                    val images = webConfluence.prepareImages("random-image-1.jpg")
+                    webConfluence.uploadImages(pageId, images)
                 }
             }
         }

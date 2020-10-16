@@ -14,26 +14,28 @@ class PocketQueryConfluenceSeleniumHelper(
 
         val webConfluence = webClient as WebConfluence
         webConfluence.openMacroBrowser("pocketquery", "pocketquery")
-        dom.awaitElementPresent("#macro-param-name")
-        dom.awaitMilliseconds(200) // FIXME need to wait for the macro browser content to be properly loaded
+        dom.awaitElementPresent("#pq-preview-form aui-toggle")
         setQueryInMacroBrowser(queryName)
         webConfluence.debugScreen("insertPocketQueryMacro-beforeMacroParamsCheckboxesCheck")
-        for (macroParam in paramsToCheck) {
-            dom.click("#macro-param-$macroParam")
+        for (paramKey in paramsToCheck) {
+            dom.click("#pq-field-$paramKey")
+            dom.awaitMilliseconds(100)
         }
         webConfluence.debugScreen("insertPocketQueryMacro-beforeQueryParametersInsert")
         for (paramKey in queryParameters.keys) {
             val paramValue = queryParameters[paramKey]
-            dom.insertText("#pocket-param-$paramKey", paramValue!!)
+            dom.insertText("input[data-parametername=\"$paramKey\"", paramValue!!)
         }
         webConfluence.debugScreen("insertPocketQueryMacro-beforeSave")
-        webConfluence.saveMacroBrowser()
+        savePreview()
+    }
+
+    fun savePreview() {
+        dom.click("#pq-dialog-preview button.confirm")
     }
 
     fun setQueryInMacroBrowser(queryName: String) {
-        webConfluence.debugScreen("setQueryInMacroBrowser-1")
-        setSelect2Option("#query-name-select", queryName)
-        webConfluence.debugScreen("setQueryInMacroBrowser-2")
+        dom.setSelect2OptionByText("select#pq-field-queryName", queryName)
     }
 
     fun createPocketQueryPage(

@@ -131,7 +131,7 @@ class RestConfluence(
         return ret
     }
 
-    fun createPage(spaceKey: String, pageTitle: String, content: String, parentPageTitle: String? = null): Long {
+    fun createPage(spaceKey: String, pageTitle: String, content: String = "", parentPageTitle: String? = null): Long {
         return createContentEntity("page", spaceKey, pageTitle, content, parentPageTitle)
     }
 

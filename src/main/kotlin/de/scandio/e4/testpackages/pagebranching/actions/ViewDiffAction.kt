@@ -2,6 +2,7 @@ package de.scandio.e4.testpackages.pagebranching.actions
 
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.testpackages.pagebranching.PageBranchingSeleniumHelper
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
 import de.scandio.e4.worker.util.RandomData
@@ -35,29 +36,22 @@ open class ViewDiffAction (
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
-        val dom = DomHelper(webConfluence.driver)
+        val helper = PageBranchingSeleniumHelper(webClient)
 
         webConfluence.login()
 
         if (originPageTitle.equals("PLACEHOLDER")) {
             super.originPageTitle = "ViewDiffAction (${Date().time})"
-            super.createOriginPage(webConfluence)
+            webConfluence.createPageAndSave(spaceKey, originPageTitle)
         }
         if (branchName.equals("PLACEHOLDER")) {
             super.branchName = "Branch (${Date().time})"
-            super.createBranch(webConfluence)
+            helper.createBranchFromCurrentlyOpenPage(branchName)
         }
 
         this.start = Date().time
         webConfluence.goToPage(spaceKey, "${super.branchName}: ${super.originPageTitle}")
-        webConfluence.goToEditPage()
-        dom.addTextTinyMce(RandomData.STRING_LOREM_IPSUM_2)
-        webConfluence.savePageOrBlogPost()
-        dom.click("#content-metadata-pagebranching")
-        dom.click("a.pagebranching-viewdiff-link")
-        dom.awaitElementPresent("#num-changes-container .haschanges .count")
-        assert(dom.findElement("#num-changes-container .haschanges .count").text == "1")
-        dom.findElement("#added-diff-0")
+        helper.editCurrentlyOpenBranchAndShowDiff()
         this.end = Date().time
     }
 

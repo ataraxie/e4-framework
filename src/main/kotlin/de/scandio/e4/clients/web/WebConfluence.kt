@@ -90,6 +90,11 @@ class WebConfluence(
         awaitEditorLoaded()
     }
 
+    fun goToAdminChooseTheme() {
+        navigateTo("admin/choosetheme.action")
+        dom.awaitElementPresent("#choosethemeform")
+    }
+
     fun openMacroBrowser(macroId: String, macroSearchTerm: String) {
         log.debug("Inserting macro {{}}", macroId)
         driver.switchTo().frame("wysiwygTextarea_ifr")
@@ -125,7 +130,7 @@ class WebConfluence(
             val selector = "#macro-browser-dialog #macro-param-$paramKey"
             val elem = dom.findElement(selector)
             if ("select" == elem.tagName) {
-                dom.setSelectedOption(selector, paramValue)
+                dom.setSelectedOptionByValue(selector, paramValue)
             } else if (elem.getAttribute("type") == "checkbox") {
                 if (elem.isSelected && paramValue == "false" || !elem.isSelected && paramValue == "true") {
                     dom.click(elem)
@@ -152,7 +157,7 @@ class WebConfluence(
         driver.switchTo().parentFrame()
         dom.click("#rte-button-insert")
         dom.click("#rte-insert-wikimarkup")
-        dom.setSelectedOption("#wiki-parser-selection-tool", "MARKDOWN")
+        dom.setSelectedOptionByValue("#wiki-parser-selection-tool", "MARKDOWN")
         dom.insertText("#insert-wiki-textarea", markdown)
         dom.click("#insert-wiki-markup-dialog .button-panel-button")
         dom.awaitElementClickable("#rte-button-publish")
@@ -175,8 +180,8 @@ class WebConfluence(
         dom.awaitElementPresent("#main-content")
     }
 
-    private fun getPageId(): Number {
-        return dom.executeScript("AJS.Meta.get(\"page-id\")").toString().toInt()
+    fun getPageId(): Long {
+        return dom.findElement("meta[name=\"ajs-page-id\"]").getAttribute("content").toLong()
     }
 
     fun openCreatePageEditorByQuickCreate() {
@@ -223,6 +228,12 @@ class WebConfluence(
         return actualTitle
     }
 
+    fun editCurrentlyOpenPageAddRandomContent() {
+        goToEditPage()
+        dom.addTextTinyMce(RandomData.STRING_LOREM_IPSUM_2)
+        savePageOrBlogPost()
+    }
+
     fun setTitleInEditor(title: String, appendTimestamp: Boolean = true): String {
         var actualTitle = title
         if (appendTimestamp) {
@@ -235,10 +246,10 @@ class WebConfluence(
 
     private fun fillPageOrBlogpost(title: String, appendTimestamp: Boolean = true,
                                    content: String = DUMMY_PAGE_CONTENT): String {
-        if (dom.isElementPresent("#closeDisDialog")) {
-            dom.click("#closeDisDialog")
-            dom.awaitMilliseconds(100)
-        }
+//        if (dom.isElementPresent("#closeDisDialog")) { // FIXME: removed this because it was slow. Not sure if it's needed...
+//            dom.click("#closeDisDialog")
+//            dom.awaitMilliseconds(100)
+//        }
         val titleWithTimestamp = setTitleInEditor(title, appendTimestamp)
         focusAndUnfocusEditor()
         addContentInEditor(content)
@@ -336,7 +347,7 @@ class WebConfluence(
         dom.click("form[name='editspacepermissions'] #edit")
         dom.insertText("#groups-to-add-autocomplete", groupName)
         dom.click("input[name='groupsToAddButton']")
-        dom.awaitSeconds(3) //TODO!!
+        dom.awaitSeconds(3) // FIXME: find way to remove explicit wait
 
         if (dom.isElementPresent(selector)) {
             dom.click(selector)
@@ -462,5 +473,48 @@ class WebConfluence(
         dom.awaitElementPresent("#wysiwyg")
         dom.click("#wysiwyg")
     }
+
+    // just a keyword, not the themeKey because we need to match the name in the UI
+    fun setGlobalConfluenceTheme(themeKeyword: String) {
+        goToAdminChooseTheme()
+        val currentThemeName = dom.findElement("#currentThemeName").text
+        val themeNameSlug = currentThemeName.trim().toLowerCase().replace(" ", "").replace("-", "")
+        if (!themeNameSlug.contains(themeKeyword)) {
+            dom.click("input[id*=\"${themeKeyword}\"]")
+            dom.click(".aui-button.submit")
+            dom.awaitSeconds(1)
+            dom.awaitElementPresent("#currentThemeName")
+        }
+    }
+
+    fun prepareImages(filenameRegex: String): List<File> {
+        val images = getFilesFromInputDir(filenameRegex)
+        if (images.isEmpty()) {
+            repeat(10) {
+                val filename = "random-image-$it.jpg"
+                val path = "/images/$filename"
+                val inputUrl = javaClass.getResource(path)
+                val destUrl = "${inputDir}/$filename"
+                FileUtils.copyURLToFile(inputUrl, File(destUrl))
+            }
+        }
+        return images
+    }
+
+    fun uploadSingleImage(pageId: Long, image: File) {
+        navigateTo("pages/viewpageattachments.action?pageId=$pageId")
+        dom.awaitElementPresent("#upload-files")
+        dom.setFile("#file_0", image.absolutePath)
+        dom.click("#edit")
+        dom.awaitElementPresent(".filename[title='${image.name}']")
+        debugScreen("attachment-${image.name}")
+    }
+
+    fun uploadImages(pageId: Long, images: List<File>) {
+        for (image in images) {
+            uploadSingleImage(pageId, image)
+        }
+    }
+
 
 }

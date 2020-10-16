@@ -54,9 +54,19 @@ class DomHelper(
         wait(ExpectedConditions.attributeContains(findElement(selector), attrName, attrValue))
     }
 
-    fun setSelectedOption(selector: String, value: String) {
+    fun setSelectedOptionByValue(selector: String, value: String) {
         val select = Select(findElement(selector))
         select.selectByValue(value)
+    }
+
+    fun setSelectedOptionByText(selector: String, text: String) {
+        val select = Select(findElement(selector))
+        select.selectByVisibleText(text)
+    }
+
+    fun setSelect2OptionByText(selector: String, text: String) {
+        setSelectedOptionByText(selector, text)
+        awaitMilliseconds(50)
     }
 
     fun executeScript(script: String, container: WebElement? = null): Any? {
@@ -186,6 +196,10 @@ class DomHelper(
         return driver.findElement(By.cssSelector(cssSelector))
     }
 
+    fun findElementByXpath(xpath: String): WebElement {
+        return driver.findElement(By.xpath(xpath))
+    }
+
     fun findElements(cssSelector: String): List<WebElement> {
         return driver.findElements(By.cssSelector(cssSelector))
     }
@@ -249,7 +263,7 @@ class DomHelper(
         findElement(selector)
     }
 
-    fun expectElementNotPresent(selector: String) {
+    fun expectElementNotPresent(selector: String) { // FIXME: this is slow because findElement is waiting! Should be improved!
         var elementFound = false
         try {
             findElement(selector)
@@ -275,4 +289,5 @@ class DomHelper(
     fun expectElementNotDisplayed(selector: String) {
         assert(findElement(selector).getCssValue("display").equals("none"))
     }
+
 }
