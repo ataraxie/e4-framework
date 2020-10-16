@@ -1,7 +1,7 @@
 package de.scandio.e4.testpackages.pagebranching.actions
 
-import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.clients.web.WebConfluence
+import de.scandio.e4.testpackages.pagebranching.PageBranchingSeleniumHelper
 import de.scandio.e4.worker.interfaces.RestClient
 import de.scandio.e4.worker.interfaces.WebClient
 import java.util.*
@@ -34,31 +34,21 @@ open class MergeBranchAction (
 
     override fun execute(webClient: WebClient, restClient: RestClient) {
         val webConfluence = webClient as WebConfluence
-        val dom = DomHelper(webConfluence.driver)
+        val helper = PageBranchingSeleniumHelper(webClient)
 
         webConfluence.login()
 
         if (originPageTitle.equals("PLACEHOLDER")) {
             super.originPageTitle = "MergeBranchAction (${Date().time})"
-            super.createOriginPage(webConfluence)
+            webConfluence.createPageAndSave(spaceKey, originPageTitle)
         }
         if (branchName.equals("PLACEHOLDER")) {
             super.branchName = "Branch (${Date().time})"
-            super.createBranch(webConfluence)
+            helper.createBranchFromCurrentlyOpenPage(branchName)
         }
 
         this.start = Date().time
-        dom.click("#action-menu-link")
-        dom.awaitElementClickable("#action-menu .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-1")
-        dom.click("#action-menu .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-2")
-        dom.awaitElementClickable("#merge-branch-confirmation-dialog .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-3")
-        dom.click("#merge-branch-confirmation-dialog .pagebranching-merge-link")
-        webConfluence.debugScreen("mergebranch-4")
-        dom.awaitElementPresent(".page-metadata-modification-info")
-        webConfluence.debugScreen("mergebranch-5")
+        helper.mergeCurrentlyOpenBranchPage()
         this.end = Date().time
     }
 

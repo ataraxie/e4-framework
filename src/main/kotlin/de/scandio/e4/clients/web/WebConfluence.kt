@@ -180,8 +180,8 @@ class WebConfluence(
         dom.awaitElementPresent("#main-content")
     }
 
-    private fun getPageId(): Number {
-        return dom.executeScript("AJS.Meta.get(\"page-id\")").toString().toInt()
+    fun getPageId(): Number {
+        return dom.findElement("meta[name=\"ajs-page-id\"]").getAttribute("content").toLong()
     }
 
     fun openCreatePageEditorByQuickCreate() {
