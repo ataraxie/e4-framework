@@ -38,6 +38,7 @@ class LivelyThemeSeleniumHelper(
 
     fun clickTab(elementKey: String) {
         dom.click(".menu-item a[href=\"#tabs-$elementKey\"]")
+        dom.awaitSeconds(1)
         dom.awaitElementClickable("#tabs-$elementKey.active-pane aui-toggle")
     }
 

@@ -18,8 +18,6 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     @Test // LTCSRV-22 Allow user to edit settings when Lively Theme is not globally enabled
     fun LTCSRV_22() {
         runWithDump {
-            webConfluence.login()
-
             helper.setDefaultThemeGlobally()
             helper.goToSettings()
             dom.expectElementPresent("#lively-theme-not-selected-message")
@@ -33,7 +31,6 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     @Test // LTCSRV-21 Settings revamp: check all tabs are there in correct order and dashboard is selected initially
     fun LTCSRV_21_check_tabs_and_order() {
         runWithDump {
-            webConfluence.login()
             helper.goToSettings()
 
             // check all tabs are there in correct order
@@ -50,10 +47,9 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     @Test // LTCSRV-21 Settings revamp: click all tabs and aui-toggles
     fun LTCSRV_21_click_through_tabs() {
         runWithDump {
-            webConfluence.login()
             helper.goToSettings()
 
-            testTabNavigation("dashboard", false)
+            testTabNavigation("dashboard")
             testTabNavigation("header")
             testTabNavigation("menu")
             testTabNavigation("submenu")
@@ -65,7 +61,6 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     @Test // LTCSRV-21 Settings revamp: test that the page pickers generally work
     fun LTCSRV_21_test_page_pickers() {
         runWithDump {
-            webConfluence.login()
             helper.goToSettings()
 
             testPagePicker("dashboard")
@@ -79,10 +74,9 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     @Test // LTCSRV-21 Settings revamp: test that the color pickers generally work
     fun LTCSRV_21_test_color_pickers() {
         runWithDump {
-            webConfluence.login()
             helper.goToSettings()
 
-            testColorPicker("dashboard", false)
+            testColorPicker("dashboard")
             testColorPicker("header")
             testColorPicker("menu")
             testColorPicker("submenu")
@@ -93,7 +87,6 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     @Test // LTCSRV-21 Settings revamp: test the favorites menu panel only has a toggle
     fun LTCSRV_21_test_favorites_menu_has_only_toggle() {
         runWithDump {
-            webConfluence.login()
             helper.goToSettings()
 
             helper.clickTab("favouritesMenu")
@@ -104,7 +97,6 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     @Test // LTCSRV-30 settings screenshots
     fun LTCSRV_30_screenshots() {
         runWithDump {
-            webConfluence.login()
             helper.goToSettings()
 
             clickTabAndExpectScreenshotVisible("dashboard")
@@ -124,7 +116,6 @@ class LivelyTheme_3_4_0 : AbstractLivelyThemeTestSuite() {
     private fun testTabNavigation(elementKey: String, clickTab: Boolean = true) {
         if (clickTab) {
             helper.clickTab(elementKey)
-            dom.awaitMilliseconds(300)
         }
         helper.clickToggleTwice(elementKey)
     }

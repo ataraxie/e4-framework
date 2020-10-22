@@ -21,7 +21,6 @@ class LivelyThemeSeleniumTestSuite : AbstractLivelyThemeTestSuite() {
             val pageTitle = "LT Complex Sample Page ${Date().time}"
             restConfluence.createPage(SPACEKEY, pageTitle, COMPLEX_SAMPLE_PAGE_XHTML)
 
-            webConfluence.login()
             webConfluence.goToPage(SPACEKEY, pageTitle)
 
             dom.awaitElementPresent("#main-content")
@@ -75,7 +74,6 @@ class LivelyThemeSeleniumTestSuite : AbstractLivelyThemeTestSuite() {
     @Test
     fun test_favorites_menu_configured_in_admin() {
         runWithDump {
-            webConfluence.login()
             helper.goToSettings()
             helper.clickTab("favouritesMenu")
             helper.activateToggle("favouritesMenu")
@@ -99,7 +97,6 @@ class LivelyThemeSeleniumTestSuite : AbstractLivelyThemeTestSuite() {
         val pageTitle = "LT $elementKey ${Date().time}"
         restConfluence.createPage(SPACEKEY, pageTitle, "<p>content-$elementKey</p>")
 
-        webConfluence.login()
         helper.goToSettings()
         helper.clickTab(elementKey)
         helper.activateToggle(elementKey)
