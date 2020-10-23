@@ -208,6 +208,7 @@ ${'$'}result.get(0).wikipediaContent
         setLinkedEntity("query", queryName, "converter", converterName)
     }
 
+    // FIXME: need to differentiate between query name and displayName here!
     fun createWikipediaSetup(description: String = ""): QuerySetup {
         val datasourceName = createRestCustomDatasource("WikipediaDS", WIKIPEDIA_DATASOURCE_URL)
         val queryName = createRestQuery(datasourceName,

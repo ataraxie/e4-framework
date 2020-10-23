@@ -12,10 +12,12 @@ class PocketQuery_3_9_3 : AbstractPocketQueryConfluenceTestSuite() {
     @Test // PRODUCTS-1419: NullPointerException for $PocketQuery.renderPocketQueryMacro
     fun testHelperRenderPocketQueryMacro() {
         runWithDump {
-            webConfluence.login()
             helper.goToPocketQueryAdmin()
             val querySetup = helper.createWikipediaSetup()
-            val outerTemplate = "\$PocketQuery.renderPocketQueryMacro('${querySetup.queryName}')"
+
+            // FIXME: this is currently not working!
+            val queryKey = dom.findElement("li[data-displayname=\"${querySetup.queryName}\"]").getAttribute("data-name")
+            val outerTemplate = "\$PocketQuery.renderPocketQueryMacro('${queryKey}')"
 
             helper.setTemplateOnQuery(querySetup.queryName, querySetup.templateName)
             helper.setConverterOnQuery(querySetup.queryName, querySetup.converterName)

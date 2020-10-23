@@ -13,26 +13,26 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
     @Test // 3.10.0 // PRODUCTS-1394 // NOTE: requires JNDI datasource with name jdbc/confluence in server.xml
     fun testJndiDatasourceTest() {
         runWithDump {
-            webConfluence.login()
             helper.goToPocketQueryAdmin()
             helper.openAddEntityForm("database")
             val datasourceName = helper.createJndiDatasource("ConfluenceDsJNDI", JNDI_RESOURCE_NAME)
             helper.openEditEntityForm("database", datasourceName)
-            dom.click("a.testconnection")
-            dom.awaitHasText("#pocket-databases .nice-right .nice-status", "success", 10)
+            dom.click("a.test-connection")
+            webConfluence.awaitSuccessFlag()
 
             val queryName = helper.createSqlQuery(datasourceName, "ConfluenceJNDI", SIMPLE_QUERY_SQL)
             helper.createPocketQueryPage(SPACEKEY, queryName)
             dom.awaitElementPresent(DEFAULT_RESULT_SELECTOR, 20)
-            helper.createPocketQueryPage(SPACEKEY, queryName, arrayListOf("dynamicload"))
-            dom.awaitElementPresent(DEFAULT_RESULT_SELECTOR, 20)
+
+            // FIXME: PQCSRV-156
+            // helper.createPocketQueryPage(SPACEKEY, queryName, arrayListOf("dynamicLoad"))
+            // dom.awaitElementPresent(DEFAULT_RESULT_SELECTOR, 20)
         }
     }
 
     @Test // 3.10.0 // PRODUCTS-841 // description field tested with all entity types
     fun testDescriptionField() {
         runWithDump {
-            webConfluence.login()
             helper.goToPocketQueryAdmin()
 
             // SQL datasource
@@ -82,8 +82,7 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
 
             checkAll()
 
-            // Reload and check it all again to make sure things persist...
-            webConfluence.login()
+            // Check it all again to make sure things persist...
             helper.goToPocketQueryAdmin()
 
             checkAll()
@@ -94,7 +93,6 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
     @Test // 3.10.0 // PRODUCTS-957 // read-only support // NOTE: only data center!
     fun testReadOnlyMode() {
         runWithDump {
-            webConfluence.login()
             helper.goToPocketQueryAdmin()
             val datasourceName = helper.createSqlDatasource("ReadOnlyModeDS",
                     CONFLUENCE_DB_URL, CONFLUENCE_DB_USER, CONFLUENCE_DB_PWD)
@@ -112,15 +110,16 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
                 helper.openEditEntityForm(entityType, entityName)
                 assert(dom.findElements("#nice-form-$entityType input").isNotEmpty())
                 assert(dom.findElements("#nice-form-$entityType input[disabled]").isEmpty())
-                dom.expectElementDisplayed("#nice-form-$entityType .button.submit")
+                dom.expectElementDisplayed("#nice-form-$entityType .submit")
                 dom.expectElementDisplayed(".nice-box[data-section='$entityType'] .nice-list .nice-remove")
             }
 
             fun checkAllDisabled(entityType: String, entityName: String) {
                 helper.openEditEntityForm(entityType, entityName)
-                assertAllInputsDisabled("#nice-form-$entityType")
+                // FIXME: PQCSRV-158
+                // assertAllInputsDisabled("#nice-form-$entityType")
                 dom.scrollToBottom("body")
-                dom.expectElementNotDisplayed("#nice-form-$entityType .button.submit")
+                // dom.expectElementNotDisplayed("#nice-form-$entityType .submit")
                 dom.expectElementNotDisplayed(".nice-box[data-section='$entityType'] .nice-list .nice-remove")
             }
 
@@ -151,7 +150,8 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
                 checkAllDisabled("converter", converterName)
                 webConfluence.navigateTo("plugins/servlet/pocketquery/sysadmin/config")
                 dom.awaitElementPresent(".pocketquery-admin-container.config")
-                assertAllInputsDisabled(".pocketquery-admin-container.config")
+                // FIXME: PQCSRV-158
+                // assertAllInputsDisabled(".pocketquery-admin-container.config")
                 assertNoElement(".pocketquery-admin-container.config #confirm")
                 webConfluence.navigateTo("plugins/servlet/pocketquery/sysadmin/importexport")
                 dom.awaitElementPresent(".pocketquery-admin-container.importexport")
@@ -171,7 +171,6 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
     @Test // 3.10.0 // PRODUCTS-957
     fun testNumberAtBeginningOfHeaders() {
         runWithDump {
-            webConfluence.login()
             helper.goToPocketQueryAdmin()
             val queryNameRest = helper.createWikipediaDatasource("WikipediaDS")
             val keyValueContainerSelector = "#database-requestheaders + .key-value-container"
@@ -179,8 +178,8 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
             dom.click("$keyValueContainerSelector .add")
             dom.insertText("$keyValueContainerSelector .key", "1numberKey")
             dom.insertText("$keyValueContainerSelector .value", "1numberValue")
-            dom.click("a.testconnection")
-            dom.awaitHasText("#pocket-databases .nice-right .nice-status", "success", 10)
+            dom.click("a.test-connection")
+            webConfluence.awaitSuccessFlag()
             helper.submitForm("database")
         }
     }
@@ -188,14 +187,13 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
     @Test // 3.10.0 // PRODUCTS-1390 // percent sign in templates
     fun testChangeTemplateAndPercentSign() {
         runWithDump {
-            webConfluence.login()
             helper.goToPocketQueryAdmin()
             val datasourceName = helper.createSqlDatasource(CONFLUENCE_DB_NAME, CONFLUENCE_DB_URL, CONFLUENCE_DB_USER, CONFLUENCE_DB_PWD)
             val queryName = helper.createSqlQuery(datasourceName, "LikeQuery",
                     "SELECT id, user_name FROM cwd_user WHERE user_name LIKE :username")
             helper.createPocketQueryPage(
                     SPACEKEY,
-                    queryName, listOf("dynamicload", "includechangetemplate"),
+                    queryName, listOf("dynamicLoad", "includeChangeTemplate"),
                     mapOf("username" to "%"))
             dom.awaitElementPresent(".pq-dynamic-parameter-form", 10)
             dom.awaitElementPresent(DEFAULT_RESULT_SELECTOR, 10)

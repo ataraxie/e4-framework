@@ -24,7 +24,7 @@ class PocketQueryConfluenceSeleniumTestSuite : AbstractPocketQueryConfluenceTest
             val querySetup = helper.createWikipediaSetup()
             helper.createPocketQueryPage(SPACEKEY, querySetup.queryName)
             dom.awaitElementPresent(WIKIPEDIA_RESULT_SELECTOR, 20)
-            helper.createPocketQueryPage(SPACEKEY, querySetup.queryName, arrayListOf("dynamicload"))
+            helper.createPocketQueryPage(SPACEKEY, querySetup.queryName, arrayListOf("dynamicLoad"))
             dom.awaitElementPresent(WIKIPEDIA_RESULT_SELECTOR, 20)
         }
     }

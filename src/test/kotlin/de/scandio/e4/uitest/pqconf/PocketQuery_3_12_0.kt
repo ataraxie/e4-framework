@@ -11,7 +11,6 @@ class PocketQuery_3_12_0 : AbstractPocketQueryConfluenceTestSuite() {
     @Test // XML responses (https://help.scandio.de/documentation/x/AoBbCQ)
     fun PQCSRV_8() {
         try {
-            webConfluence.login()
             helper.goToPocketQueryAdmin()
             val datasourceName = helper.createRestCustomDatasource("GithubRawDataSource", "https://raw.githubusercontent.com/", "Used for testing with raw Github content")
             val queryName = helper.createRestQuery(datasourceName, "GithubRawXmlQuery", "/fundapps/api-examples/master/Sample-XML/Swap.xml")
