@@ -95,6 +95,11 @@ class WebConfluence(
         dom.awaitElementPresent("#choosethemeform")
     }
 
+    fun goToConfluenceAdmin() {
+        navigateTo("admin/viewgeneralconfig.action")
+        dom.awaitElementPresent("form[name=\"editgeneralconfig\"]")
+    }
+
     fun openMacroBrowser(macroId: String, macroSearchTerm: String) {
         log.debug("Inserting macro {{}}", macroId)
         driver.switchTo().frame("wysiwygTextarea_ifr")

@@ -96,6 +96,11 @@ class DomHelper(
         wait(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)), duration)
     }
 
+    fun awaitElementPresentByXpath(xpath: String, duration: Long = this.defaultDuration) {
+        log.debug("Waiting for element {{}} to be present for {{}} seconds", xpath, duration)
+        wait(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)), duration)
+    }
+
     fun awaitElementNotPresent(selector: String, duration: Long = this.defaultDuration) {
         wait(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector))), duration)
     }

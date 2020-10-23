@@ -28,7 +28,7 @@ class PocketQuery_3_9_3 : AbstractPocketQueryConfluenceTestSuite() {
 
             helper.createPocketQueryPage(SPACEKEY, outerQueryName)
 
-            dom.awaitElementPresent(".pocketquery-result .mw-parser-output", 40)
+            dom.awaitElementPresent(WIKIPEDIA_RESULT_SELECTOR, 40)
         }
     }
 

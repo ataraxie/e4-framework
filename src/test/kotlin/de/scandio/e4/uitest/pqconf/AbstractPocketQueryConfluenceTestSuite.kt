@@ -32,13 +32,16 @@ open class AbstractPocketQueryConfluenceTestSuite() : BaseSeleniumTest() {
         val DEFAULT_RESULT_SELECTOR = ".pocketquery-result .pocketquery-table"
         val JNDI_RESOURCE_NAME = "jdbc/confluence"
 
-        val CONFLUENCE_DB_URL = System.getenv("CONFLUENCE_DB_URL")
-        val CONFLUENCE_DB_NAME = "confluence"
-        val CONFLUENCE_DB_USER = "confluence"
-        val CONFLUENCE_DB_PWD = "confluence"
+        val CONFLUENCE_DB_URL = PocketQuerySeleniumHelper.CONFLUENCE_DB_URL
+        val CONFLUENCE_DB_NAME = PocketQuerySeleniumHelper.CONFLUENCE_DB_NAME
+        val CONFLUENCE_DB_USER = PocketQuerySeleniumHelper.CONFLUENCE_DB_USER
+        val CONFLUENCE_DB_PWD = PocketQuerySeleniumHelper.CONFLUENCE_DB_PWD
+
+        val WIKIPEDIA_RESULT_SELECTOR = ".pocketquery-result .mw-parser-output"
 
         @BeforeClass
         @JvmStatic internal fun beforeAll() {
+            webConfluence.login()
             if (E4Env.PREPARATION_RUN) {
                 runWithDump {
                     restConfluence.createSpace(SPACEKEY, SPACENAME)

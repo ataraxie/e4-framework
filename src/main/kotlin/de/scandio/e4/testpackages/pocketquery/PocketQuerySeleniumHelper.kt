@@ -26,11 +26,16 @@ function convert(json) {
 <link rel='stylesheet' href='https://en.wikipedia.org/w/load.php?debug=false&lang=en&modules=site.styles&only=styles&skin=vector'>
 ${'$'}result.get(0).wikipediaContent
             """.trimIndent().trimLines()
-    }
 
-    val DATASOURCE_TYPE_REST_CUSTOM = "4"
-    val DATASOURCE_TYPE_JNDI = "6"
-    val SIMPLE_QUERY_SQL = "SELECT id, user_name FROM cwd_user"
+        val CONFLUENCE_DB_URL = System.getenv("CONFLUENCE_DB_URL")
+        val CONFLUENCE_DB_NAME = "confluence"
+        val CONFLUENCE_DB_USER = "confluence"
+        val CONFLUENCE_DB_PWD = "confluence"
+
+        val DATASOURCE_TYPE_REST_CUSTOM = "4"
+        val DATASOURCE_TYPE_JNDI = "6"
+        val SIMPLE_QUERY_SQL = "SELECT id, user_name FROM cwd_user"
+    }
 
     val webConfluence = webClient as WebConfluence
     val dom = webConfluence.dom
@@ -76,6 +81,10 @@ ${'$'}result.get(0).wikipediaContent
 
     fun createWikipediaDatasource(name: String): String {
         return createRestCustomDatasource(name, WIKIPEDIA_DATASOURCE_URL)
+    }
+
+    fun createConfluenceDatasource(name: String): String {
+        return createSqlDatasource(name, CONFLUENCE_DB_URL, CONFLUENCE_DB_USER, CONFLUENCE_DB_PWD)
     }
 
     fun createRestQuery(datasourceName: String, name: String, url: String, description: String = ""): String {
