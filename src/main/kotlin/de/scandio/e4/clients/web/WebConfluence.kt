@@ -69,10 +69,13 @@ class WebConfluence(
         dom.awaitElementPresent("#main-content")
     }
 
-    fun goToEditPage() {
-        dom.awaitElementClickable("#editPageLink")
+    fun goToEditCurrentPage() {
         dom.click("#editPageLink")
         awaitEditPageLoaded()
+    }
+
+    fun goToEditPage(pageId: Long) {
+        navigateTo("pages/editpage.action?pageId=${pageId}")
     }
 
     fun goToBlogpost(spaceKey: String, blogpostTitle: String, blogpostCreationDate: String) {
@@ -98,6 +101,16 @@ class WebConfluence(
     fun goToConfluenceAdmin() {
         navigateTo("admin/viewgeneralconfig.action")
         dom.awaitElementPresent("form[name=\"editgeneralconfig\"]")
+    }
+
+    fun goToAttachmentsOverview(pageId: Long) {
+        navigateTo("pages/viewpageattachments.action?pageId=$pageId")
+        dom.awaitElementPresent("#upload-files")
+    }
+
+    fun goToAttachmentsOverview(spaceKey: String, pageTitle: String) {
+        goToPage(spaceKey, pageTitle)
+        goToAttachmentsOverview(getPageId())
     }
 
     fun openMacroBrowser(macroId: String, macroSearchTerm: String) {
@@ -234,7 +247,7 @@ class WebConfluence(
     }
 
     fun editCurrentlyOpenPageAddRandomContent() {
-        goToEditPage()
+        goToEditCurrentPage()
         dom.addTextTinyMce(RandomData.STRING_LOREM_IPSUM_2)
         savePageOrBlogPost()
     }
@@ -369,6 +382,12 @@ class WebConfluence(
         return Actions(driver)
     }
 
+    fun addRandomContentToPage(pageId: Long) {
+        goToEditPage(pageId)
+        addContentInEditor(Random().nextInt().toString())
+        savePageOrBlogPost()
+    }
+
     fun simulateBulletList(bulletPoints: Array<String>) {
         val actions = Actions(driver)
         bulletPoints.forEach {
@@ -493,26 +512,27 @@ class WebConfluence(
     }
 
     fun prepareImages(filenameRegex: String): List<File> {
-        val images = getFilesFromInputDir(filenameRegex)
-        if (images.isEmpty()) {
-            repeat(10) {
-                val filename = "random-image-$it.jpg"
-                val path = "/images/$filename"
-                val inputUrl = javaClass.getResource(path)
-                val destUrl = "${inputDir}/$filename"
-                FileUtils.copyURLToFile(inputUrl, File(destUrl))
-            }
+        val images = getFilesFromInputDir(filenameRegex).sorted()
+        images.forEach {
+            val filename = it.name
+            val path = "/images/$filename"
+            val inputUrl = javaClass.getResource(path)
+            val destUrl = "${inputDir}/$filename"
+            FileUtils.copyURLToFile(inputUrl, File(destUrl))
         }
         return images
     }
 
-    fun uploadSingleImage(pageId: Long, image: File) {
-        navigateTo("pages/viewpageattachments.action?pageId=$pageId")
-        dom.awaitElementPresent("#upload-files")
+    fun uploadSingleImage(image: File) {
         dom.setFile("#file_0", image.absolutePath)
         dom.click("#edit")
         dom.awaitElementPresent(".filename[title='${image.name}']")
         debugScreen("attachment-${image.name}")
+    }
+
+    fun uploadSingleImage(pageId: Long, image: File) {
+        goToAttachmentsOverview(pageId)
+        uploadSingleImage(image)
     }
 
     fun uploadImages(pageId: Long, images: List<File>) {
@@ -521,5 +541,19 @@ class WebConfluence(
         }
     }
 
+    fun deleteAttachment(filename: String) {
+        dom.click("tr[data-attachment-filename=\"${filename}\"] .removeAttachmentLink")
+        dom.click("#attachment-removal-confirm-dialog .button-panel-submit-button")
+        dom.awaitSeconds(1)
+    }
 
+    fun renameAttachment(oldFilename: String, newFilename: String) {
+        dom.click("tr[data-attachment-filename=\"${oldFilename}\"] .editAttachmentLink")
+        dom.insertText("#newFileName", newFilename, true)
+        dom.click("#confirm")
+    }
+
+    fun removeAuiBlanket() {
+        dom.removeElementWithJQuery(".aui-blanket")
+    }
 }

@@ -53,7 +53,7 @@ public abstract class RestAtlassian implements RestClient {
 		return sendPostOrPutRequest(HttpMethod.PUT, urlAfterBaseUrl, body);
 	}
 
-	protected String sendPostRequest(String urlAfterBaseUrl, String body) {
+	public String sendPostRequest(String urlAfterBaseUrl, String body) {
 		return sendPostOrPutRequest(HttpMethod.POST, urlAfterBaseUrl, body);
 	}
 

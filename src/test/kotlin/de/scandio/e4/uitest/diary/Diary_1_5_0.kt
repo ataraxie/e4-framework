@@ -3,14 +3,10 @@ package de.scandio.e4.uitest.diary
 import de.scandio.e4.adhoc.BaseSeleniumTest
 import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.clients.web.WebConfluence
-import de.scandio.e4.testpackages.diary.actions.CreateDiaryEntryAction
-import de.scandio.e4.testpackages.gitsnippets.virtualusers.DiaryEntryCreator
 import org.junit.After
 import org.junit.Test
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 // REQUIRES:
 // - Diary 1.5.0+ installed
@@ -75,7 +71,7 @@ class Diary_1_5_0 : BaseSeleniumTest() {
         restConfluence.createPage(SPACEKEY, pageTitle, "")
         webConfluence.login()
         webConfluence.goToPage(SPACEKEY, pageTitle)
-        webConfluence.goToEditPage()
+        webConfluence.goToEditCurrentPage()
         webConfluence.insertMacro("diary", "Diary", macroParameters)
         webConfluence.savePageOrBlogPost()
         dom.awaitElementPresent(".sc-diary")

@@ -6,6 +6,7 @@ import de.scandio.e4.clients.rest.RestConfluence
 import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.testpackages.livelyblogs.LivelyBlogsSeleniumHelper
 import de.scandio.e4.testpackages.livelytheme.LivelyThemeSeleniumHelper
+import de.scandio.e4.testpackages.pagebranching.PageBranchingRestHelper
 import de.scandio.e4.testpackages.pagebranching.PageBranchingSeleniumHelper
 import de.scandio.e4.testpackages.pocketquery.pqconf.PocketQueryConfluenceSeleniumHelper
 import org.junit.AfterClass
@@ -24,24 +25,17 @@ open class AbstractPageBranchingTestSuite : BaseSeleniumTest() {
         @JvmStatic
         var restConfluence = restClient as RestConfluence
         @JvmStatic
-        var helper = PageBranchingSeleniumHelper(webConfluence)
+        var webHelper = PageBranchingSeleniumHelper(webConfluence)
+        @JvmStatic
+        var restHelper = PageBranchingRestHelper(restConfluence)
 
-        val SPACEKEY = if (E4Env.PREPARATION_RUN) "E4PB${Date().time}" else "PB"
+        val SPACEKEY = if (E4Env.PREPARATION_RUN) "E4PB${Date().time}" else "E4PB1603700919427"
         val SPACENAME = "E4 Page Branching"
 
         @AfterClass
         @JvmStatic internal fun afterAll() {
             webClient.quit()
         }
-
-        fun createSpaceAndSetupPermissions() {
-            restConfluence.createSpace(SPACEKEY, SPACENAME)
-
-            webConfluence.login()
-            webConfluence.addSpaceGroupPermission(SPACEKEY, "confluence-users",
-                    "removepage", true)
-        }
-
     }
 
     open fun expectPageInOverviewTable(pageId: Number) {

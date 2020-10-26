@@ -19,7 +19,7 @@ class SampleAdhocTest : BaseSeleniumTest() {
             val pageId = restConfluence.createPage("E4", pageTitle, pageMetadataContent, "E4 Home")
             webConfluence.login()
             webConfluence.goToPage(pageId)
-            webConfluence.goToEditPage()
+            webConfluence.goToEditCurrentPage()
             webConfluence.insertMacro("info", "info", mapOf(
                     "title" to "E4 Provided Title",
                     "icon" to "false"

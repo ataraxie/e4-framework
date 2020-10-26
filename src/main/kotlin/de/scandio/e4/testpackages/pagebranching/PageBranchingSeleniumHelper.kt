@@ -3,7 +3,6 @@ package de.scandio.e4.testpackages.pagebranching
 import de.scandio.e4.clients.web.WebConfluence
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.worker.interfaces.WebClient
-import de.scandio.e4.worker.util.RandomData
 
 class PageBranchingSeleniumHelper(
         protected val webClient: WebClient
@@ -34,7 +33,7 @@ class PageBranchingSeleniumHelper(
 
     fun addOverviewMacroToPage(spaceKey: String, pageTitle: String) {
         webConfluence.goToPage(spaceKey, pageTitle)
-        webConfluence.goToEditPage()
+        webConfluence.goToEditCurrentPage()
         webConfluence.insertMacro("page-branching-overview", "page branching")
         webConfluence.savePageOrBlogPost()
     }
@@ -48,6 +47,7 @@ class PageBranchingSeleniumHelper(
 
     fun goToBranchesPage(spaceKey: String) {
         webConfluence.goToPage(spaceKey, "Branches")
+        dom.awaitSeconds(1)
     }
 
 }

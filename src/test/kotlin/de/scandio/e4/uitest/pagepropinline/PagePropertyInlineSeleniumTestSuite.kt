@@ -28,7 +28,7 @@ class PagePropertyInlineSeleniumTestSuite : BaseSeleniumTest() {
             webConfluence.login()
             webConfluence.goToPage(pageId)
             expectElementPresent(".plugin-tabmeta-details .confluenceTh")
-            webConfluence.goToEditPage()
+            webConfluence.goToEditCurrentPage()
             webConfluence.insertMacro("page-property-inline", "page property inline", mapOf(
                     "key" to "Key1"
             ))

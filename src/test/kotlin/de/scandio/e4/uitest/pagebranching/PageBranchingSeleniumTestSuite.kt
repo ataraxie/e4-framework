@@ -19,7 +19,7 @@ class PageBranchingSeleniumTestSuite : AbstractPageBranchingTestSuite() {
         @JvmStatic internal fun beforeAll() {
             if (E4Env.PREPARATION_RUN) {
                 runWithDump {
-                    createSpaceAndSetupPermissions()
+                    webConfluence.login()
                 }
             }
         }
@@ -28,9 +28,8 @@ class PageBranchingSeleniumTestSuite : AbstractPageBranchingTestSuite() {
     @Test
     fun test_create_branch() {
         runWithDump {
-            webConfluence.login()
             webConfluence.createPageAndSave(SPACEKEY, "PB testBranchCreator Origin")
-            helper.createBranchFromCurrentlyOpenPage("Branch 1")
+            webHelper.createBranchFromCurrentlyOpenPage("Branch 1")
             dom.expectElementPresent(".page-branching-branch-meta")
         }
     }
@@ -38,10 +37,9 @@ class PageBranchingSeleniumTestSuite : AbstractPageBranchingTestSuite() {
     @Test
     fun test_merge_branch() {
         runWithDump {
-            webConfluence.login()
             webConfluence.createPageAndSave(SPACEKEY, "PB testBranchCreator Origin")
-            helper.createBranchFromCurrentlyOpenPage("Branch 1")
-            helper.mergeCurrentlyOpenBranchPage()
+            webHelper.createBranchFromCurrentlyOpenPage("Branch 1")
+            webHelper.mergeCurrentlyOpenBranchPage()
             dom.awaitSeconds(3) // FIXME: it fails when I remove this right now... need to inspect!
             dom.expectElementNotPresent(".page-branching-branch-meta")
         }
@@ -50,14 +48,13 @@ class PageBranchingSeleniumTestSuite : AbstractPageBranchingTestSuite() {
     @Test
     fun test_create_branch_overview() {
         runWithDump {
-            webConfluence.login()
             val originPageTitle = webConfluence.createPageAndSave(SPACEKEY, "PB testBranchOverviewCreator Origin")
-            val pageId1 = helper.createBranchFromCurrentlyOpenPage("Branch 1")
+            val pageId1 = webHelper.createBranchFromCurrentlyOpenPage("Branch 1")
             webConfluence.goToPage(SPACEKEY, originPageTitle)
-            val pageId2 = helper.createBranchFromCurrentlyOpenPage("Branch 2")
+            val pageId2 = webHelper.createBranchFromCurrentlyOpenPage("Branch 2")
             webConfluence.goToPage(SPACEKEY, originPageTitle)
-            val pageId3 = helper.createBranchFromCurrentlyOpenPage("Branch 3")
-            helper.addOverviewMacroToPage(SPACEKEY, originPageTitle)
+            val pageId3 = webHelper.createBranchFromCurrentlyOpenPage("Branch 3")
+            webHelper.addOverviewMacroToPage(SPACEKEY, originPageTitle)
             expectPageInOverviewTable(pageId1)
             expectPageInOverviewTable(pageId2)
             expectPageInOverviewTable(pageId3)
@@ -67,10 +64,9 @@ class PageBranchingSeleniumTestSuite : AbstractPageBranchingTestSuite() {
     @Test
     fun test_view_diff() {
         runWithDump {
-            webConfluence.login()
             webConfluence.createPageAndSave(SPACEKEY, "PB testDiffViewer Origin")
-            helper.createBranchFromCurrentlyOpenPage("Branch 1")
-            helper.editCurrentlyOpenBranchAndShowDiff()
+            webHelper.createBranchFromCurrentlyOpenPage("Branch 1")
+            webHelper.editCurrentlyOpenBranchAndShowDiff()
             val numChanges = dom.findElement("#num-changes-container .haschanges .count").text.toInt()
             assertEquals(1, numChanges)
             dom.expectElementPresent("#added-diff-0")

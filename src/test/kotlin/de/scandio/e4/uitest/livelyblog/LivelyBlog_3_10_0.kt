@@ -156,7 +156,7 @@ class LivelyBlog_3_10_0 : AbstractLivelyBlogTestSuite() {
             expectTeaserIsDisplayed(blogpostTitle)
             dom.click(".post[data-title=\"${blogpostTitle}\"] img[alt=\"${blogpostTitle}\"]")
             dom.awaitElementPresent("#main-content")
-            webConfluence.goToEditPage()
+            webConfluence.goToEditCurrentPage()
             clickImage()
             expectButtonActive()
             clickTeaserButton()

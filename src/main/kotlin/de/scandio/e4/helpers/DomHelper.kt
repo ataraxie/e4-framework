@@ -188,7 +188,9 @@ class DomHelper(
             val safeSelector = URLEncoder.encode("$selector", "UTF-8")
             this.util.takeScreenshot(driver, "$outDir/click-$safeSelector.png")
         }
-        awaitElementClickable(selector, awaitClickableSeconds)
+        if (awaitClickableSeconds > 0) {
+            awaitElementClickable(selector, awaitClickableSeconds)
+        }
         findElement(selector).click()
     }
 

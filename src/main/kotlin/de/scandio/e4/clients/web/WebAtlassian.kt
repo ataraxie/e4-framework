@@ -72,6 +72,12 @@ abstract class WebAtlassian(
         dom.awaitElementPresent(".aui-flag[aria-hidden=\"false\"] .aui-message-success")
     }
 
+    fun awaitErrorFlag(bodyContains: String) {
+        dom.awaitElementPresent(".aui-flag[aria-hidden=\"false\"] .aui-message-error")
+        val elem = dom.findElement(".aui-flag[aria-hidden=\"false\"] .aui-message-error")
+        assert(elem.text.contains(bodyContains))
+    }
+
     open fun activateAuiToggle(selector: String) {
         val uncheckedToggle = dom.findElements("$selector:not([checked])")
         if (uncheckedToggle.isNotEmpty()) {

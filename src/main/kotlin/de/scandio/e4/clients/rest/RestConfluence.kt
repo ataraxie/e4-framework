@@ -254,4 +254,9 @@ class RestConfluence(
         return java.lang.Long.parseLong(pages[0]["id"] as String)
     }
 
+    fun getAllSpaceKeys(): List<String> {
+        val spaces = getResultListFromResponse(sendGetRequestReturnBody("/rest/api/space?limit=1000"))
+        return spaces.map { it["key"].toString() }
+    }
+
 }
