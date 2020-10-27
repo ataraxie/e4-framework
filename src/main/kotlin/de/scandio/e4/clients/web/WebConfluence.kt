@@ -533,6 +533,7 @@ class WebConfluence(
     fun uploadSingleImage(pageId: Long, image: File) {
         goToAttachmentsOverview(pageId)
         uploadSingleImage(image)
+        dom.awaitSeconds(1)
     }
 
     fun uploadImages(pageId: Long, images: List<File>) {
@@ -551,6 +552,7 @@ class WebConfluence(
         dom.click("tr[data-attachment-filename=\"${oldFilename}\"] .editAttachmentLink")
         dom.insertText("#newFileName", newFilename, true)
         dom.click("#confirm")
+        dom.awaitSeconds(1)
     }
 
     fun removeAuiBlanket() {

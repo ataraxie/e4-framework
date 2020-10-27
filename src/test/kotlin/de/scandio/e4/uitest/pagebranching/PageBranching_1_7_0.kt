@@ -5,11 +5,11 @@ import de.scandio.e4.worker.util.RandomData
 import org.junit.BeforeClass
 import org.junit.FixMethodOrder
 import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.junit.runners.MethodSorters
-import org.springframework.core.annotation.Order
 import java.io.File
-import java.util.*
 import kotlin.test.assertEquals
 
 // REQUIRES:
@@ -28,7 +28,6 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
         var ID_C = 0L
         var ID_A1 = 0L
         var ID_A2 = 0L
-        var ID_A3 = 0L
         var ID_B1 = 0L
         var ID_B2 = 0L
         var ID_B3 = 0L
@@ -74,7 +73,6 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
             webConfluence.addRandomContentToPage(ID_A1)
             ID_A2 = restHelper.createBranch(ID_A, "A2")
             webConfluence.uploadSingleImage(ID_A2, ATT_D)
-            ID_A3 = restHelper.createBranch(ID_A, "A3")
 
             ID_B = restConfluence.createPage(SPACEKEY, "B", RandomData.STRING_LOREM_IPSUM)
             ID_B1 = restHelper.createBranch(ID_B, "B1")
@@ -86,16 +84,18 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
             webConfluence.uploadSingleImage(ID_B3, ATT_F)
 
             ID_C = restConfluence.createPage(SPACEKEY, "C", RandomData.STRING_LOREM_IPSUM)
+            ID_C1 = restHelper.createBranch(ID_C, "C1")
+            ID_C2 = restHelper.createBranch(ID_C, "C2")
+            ID_C3 = restHelper.createBranch(ID_C, "C3")
+
             webConfluence.uploadSingleImage(ID_C, ATT_H)
 
-            ID_C1 = restHelper.createBranch(ID_C, "C1")
             webConfluence.uploadSingleImage(ID_C1, ATT_H)
             webConfluence.uploadSingleImage(ID_C1, ATT_I)
 
-            ID_C2 = restHelper.createBranch(ID_C, "C2")
-            webConfluence.uploadSingleImage(ID_C1, ATT_J)
+            webConfluence.uploadSingleImage(ID_C2, ATT_J)
 
-            ID_C3 = restHelper.createBranch(ID_C, "C3")
+            webConfluence.dom.awaitSeconds(3) // Give index a bit
         }
 
     }
@@ -115,7 +115,7 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
 
             webHelper.goToBranchesPage(SPACEKEY)
             bulkMergeBranches(arrayListOf(ID_C1))
-            awaitAttachmentConflictFlag()
+            awaitConflictFlag()
             expectRowHasError(ID_C1)
 
             webConfluence.goToDashboard()
@@ -127,7 +127,7 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
         runWithDump {
             webHelper.goToBranchesPage(SPACEKEY)
             bulkMergeBranches(arrayListOf(ID_C1, ID_A1))
-            awaitAttachmentConflictFlag()
+            awaitConflictFlag()
             expectRowHasError(ID_C1)
             expectRowChecked(ID_C1)
             expectRowHasNoStatus(ID_A1)
@@ -141,17 +141,12 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
             webHelper.goToBranchesPage(SPACEKEY)
             dom.click("#bulk-select-all")
             bulkMergeBranches()
-            awaitContentConflictFlag()
+            awaitConflictFlag()
             expectRowHasNoStatus(ID_A1)
             expectRowHasNoStatus(ID_A2)
-            expectRowHasNoStatus(ID_A3)
-            // FIXME:
-//            expectRowHasError(ID_B1)
-//            expectRowHasError(ID_B2)
-//            expectRowHasError(ID_B3)
-            expectRowHasNoStatus(ID_B1)
-            expectRowHasNoStatus(ID_B2)
-            expectRowHasNoStatus(ID_B3)
+            expectRowHasError(ID_B1)
+            expectRowHasError(ID_B2)
+            expectRowHasError(ID_B3)
             expectRowHasError(ID_C1)
             expectRowHasError(ID_C2)
             expectRowHasError(ID_C3)
@@ -175,11 +170,11 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
     fun test_5_another_merge_success() {
         runWithDump {
             webHelper.goToBranchesPage(SPACEKEY)
-            bulkMergeBranches(arrayListOf(ID_B1, ID_B3, ID_C1, ID_C3))
+            bulkMergeBranches(arrayListOf(ID_B1, ID_B3, ID_C2, ID_C3))
             webConfluence.awaitSuccessFlag()
             expectRowHasSuccess(ID_B1)
             expectRowHasSuccess(ID_B3)
-            expectRowHasSuccess(ID_C1)
+            expectRowHasSuccess(ID_C2)
             expectRowHasSuccess(ID_C3)
             webConfluence.goToDashboard()
         }
@@ -188,22 +183,19 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
     @Test // Only two remaining branches that cannot be merged
     fun test_6_only_two_remaining_branches_with_errors() {
         runWithDump {
-//            webHelper.goToBranchesPage(SPACEKEY)
-//            val numRows = dom.findElements("tr[data-page-id]").size
-//            assertEquals(2, numRows)
-//            expectRowPresent(ID_B2)
-//            expectRowPresent(ID_C2)
-//
-//            bulkMergeBranches(arrayListOf(ID_B2, ID_C2))
-//            awaitContentConflictFlag()
-//            expectRowHasError(ID_B2)
-//            expectRowHasError(ID_C2)
-//
-//            bulkMergeBranches(arrayListOf(ID_B2))
-//            expectRowHasError(ID_B2)
-//
-//            bulkMergeBranches(arrayListOf(ID_C2))
-//            expectRowHasError(ID_C2)
+            dom.awaitSeconds(3)
+            webHelper.goToBranchesPage(SPACEKEY)
+            val numRows = dom.findElements("tr[data-page-id]").size
+            assertEquals(2, numRows)
+            expectRowPresent(ID_C1)
+
+            bulkMergeBranches(arrayListOf(ID_B2, ID_C1))
+            awaitConflictFlag()
+            expectRowHasError(ID_C1)
+
+            webHelper.goToBranchesPage(SPACEKEY)
+            bulkMergeBranches(arrayListOf(ID_C1))
+            expectRowHasError(ID_C1)
         }
     }
 
@@ -254,14 +246,7 @@ class PageBranching_1_7_0 : AbstractPageBranchingTestSuite() {
                 dom.click("#bulk-merge-branch-confirmation-dialog .pagebranching-merge-link", 0)
             }
         }
-    }
-
-    fun awaitContentConflictFlag() {
-        webConfluence.awaitErrorFlag("Content conflict")
-    }
-
-    fun awaitAttachmentConflictFlag() {
-        webConfluence.awaitErrorFlag("Attachment conflict")
+        dom.awaitSeconds(1)
     }
 
 }

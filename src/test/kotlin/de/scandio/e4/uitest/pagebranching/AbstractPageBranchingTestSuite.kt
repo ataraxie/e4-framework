@@ -29,7 +29,7 @@ open class AbstractPageBranchingTestSuite : BaseSeleniumTest() {
         @JvmStatic
         var restHelper = PageBranchingRestHelper(restConfluence)
 
-        val SPACEKEY = if (E4Env.PREPARATION_RUN) "E4PB${Date().time}" else "E4PB1603700919427"
+        val SPACEKEY = if (E4Env.PREPARATION_RUN) "E4PB${Date().time}" else "PB"
         val SPACENAME = "E4 Page Branching"
 
         @AfterClass
@@ -40,6 +40,10 @@ open class AbstractPageBranchingTestSuite : BaseSeleniumTest() {
 
     open fun expectPageInOverviewTable(pageId: Number) {
         dom.expectElementPresent("#pagebranching-overview-table tr[data-page-id=\"$pageId\"]")
+    }
+
+    open fun awaitConflictFlag() {
+        webConfluence.awaitErrorFlag("Merge failed")
     }
 
 }

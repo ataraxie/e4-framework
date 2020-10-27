@@ -264,6 +264,7 @@ class DomHelper(
 
     fun setFile(inputSelector: String, absolutePath: String) {
         findElement(inputSelector).sendKeys(absolutePath)
+        awaitMilliseconds(500)
     }
 
     fun expectElementPresent(selector: String) {

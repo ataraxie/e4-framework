@@ -19,6 +19,7 @@ class PageBranchingSeleniumTestSuite : AbstractPageBranchingTestSuite() {
         @JvmStatic internal fun beforeAll() {
             if (E4Env.PREPARATION_RUN) {
                 runWithDump {
+                    restConfluence.createSpace(SPACEKEY, SPACENAME)
                     webConfluence.login()
                 }
             }
