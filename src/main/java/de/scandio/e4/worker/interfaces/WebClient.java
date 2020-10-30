@@ -26,6 +26,7 @@ public interface WebClient {
 	void refreshDriver();
 
 	void navigateTo(String path);
+	void navigateTo(String path, boolean forceReload);
 	void navigateToBaseUrl();
 
 }

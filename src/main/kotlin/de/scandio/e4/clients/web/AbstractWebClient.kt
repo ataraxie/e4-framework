@@ -1,5 +1,6 @@
 package de.scandio.e4.clients.web
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import de.scandio.e4.E4Env
 import de.scandio.e4.helpers.DomHelper
 import de.scandio.e4.worker.factories.ClientFactory
@@ -86,13 +87,17 @@ abstract class AbstractWebClient(
         return dest
     }
 
-    override fun navigateTo(path: String) {
+    override fun navigateTo(path: String, forceReload: Boolean) {
         log.info("[SELENIUM] Navigating to {{}} with current URL {{}}", path, driver.currentUrl)
-        if (!driver.currentUrl.endsWith(path)) {
+        if (!driver.currentUrl.endsWith(path) || forceReload) {
             driver.navigate().to(base.resolve(path).toURL())
         } else {
             log.info("[SELENIUM] Already on page")
         }
+    }
+
+    override fun navigateTo(path: String) {
+        navigateTo(path, false)
     }
 
     override fun navigateToBaseUrl() {

@@ -61,6 +61,11 @@ public class NoopWebClient implements WebClient {
 	}
 
 	@Override
+	public void navigateTo(String path, boolean forceReload) {
+
+	}
+
+	@Override
 	public void navigateToBaseUrl() {
 
 	}
