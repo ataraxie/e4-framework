@@ -96,7 +96,7 @@ class GitSnippetsSeleniumTestSuite : AbstractGitSnippetsTestSuite() {
     fun test260AddAndRemoveBitbucketServer() {
 
         fun save() {
-            dom.click("#bitbucket-server-settings .aui-button.git-snippets-save-sources")
+            dom.click(".git-snippets-save-sources")
             webConfluence.awaitSuccessFlag()
         }
 

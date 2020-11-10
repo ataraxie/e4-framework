@@ -25,10 +25,10 @@ class GitSnippetsSeleniumHelper(
 
     fun goToGitSnippetsSettings(section: String = "bitbucket-server", additionalClickItem: String = "") {
         webConfluence.navigateTo("admin/plugins/git-snippets/settings.action", true)
-        dom.click("li[data-section-control=\"$section\"] a")
+        dom.click("li[data-settings-section=\"$section\"] a")
         if (StringUtils.isNotBlank(additionalClickItem)) {
             dom.awaitSeconds(1)
-            dom.click("li[data-section-control=\"$additionalClickItem\"] a")
+            dom.click("li[data-settings-section=\"$additionalClickItem\"] a")
         }
         dom.awaitSeconds(1) // FIXME: hard-coded interval! need to wait for event instead!
     }
