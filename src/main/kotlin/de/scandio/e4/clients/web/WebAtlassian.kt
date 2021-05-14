@@ -69,12 +69,12 @@ abstract class WebAtlassian(
     }
 
     open fun awaitSuccessFlag() {
-        dom.awaitElementPresent(".aui-flag[aria-hidden=\"false\"] .aui-message-success")
+        dom.awaitElementPresent(".aui-flag[open=\"open\"] .aui-message-success")
     }
 
     fun awaitErrorFlag(bodyContains: String) {
-        dom.awaitElementPresent(".aui-flag[aria-hidden=\"false\"] .aui-message-error")
-        val elem = dom.findElement(".aui-flag[aria-hidden=\"false\"] .aui-message-error")
+        dom.awaitElementPresent(".aui-flag[open=\"open\"] .aui-message-error")
+        val elem = dom.findElement(".aui-flag[open=\"open\"] .aui-message-error")
         assert(elem.text.contains(bodyContains))
     }
 

@@ -50,7 +50,7 @@ class PocketQueryConfluenceSeleniumTestSuite : AbstractPocketQueryConfluenceTest
         runWithDump {
             dom.click("#admin-menu-link")
             dom.awaitSeconds(1)
-            dom.click("#admin-menu-link-content[aria-hidden=\"false\"] #pocketquery-admin-link")
+            dom.click("#admin-menu-link-content.aui-dropdown2-in-header #pocketquery-admin-link")
             dom.awaitElementPresent(".pocketquery-view-admin")
             dom.awaitSeconds(1)
         }
@@ -116,6 +116,7 @@ class PocketQueryConfluenceSeleniumTestSuite : AbstractPocketQueryConfluenceTest
             val queryName = helper.createSqlQuery(dsName, "Content by Title", statement)
             val title1 = webConfluence.createPageAndSave(SPACEKEY, "One test_dynamic_parameter_form")
             val title2 = webConfluence.createPageAndSave(SPACEKEY, "One test_dynamic_parameter_form")
+            dom.awaitSeconds(3)
             webConfluence.createPageKeepOpen(SPACEKEY, "TEST test_dynamic_parameter_form")
             helper.insertPocketQueryMacro(queryName, arrayListOf("allowGetParams", "includeChangeTemplate"),
                     mapOf("Title" to title1))

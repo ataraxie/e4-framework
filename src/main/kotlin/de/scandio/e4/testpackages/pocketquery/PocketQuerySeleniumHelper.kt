@@ -63,7 +63,7 @@ ${'$'}result.get(0).wikipediaContent
     }
 
     fun clickTestDatasourceConnectionAwaitSuccess() {
-        dom.click("#pocket-databases a.test-connection")
+        dom.click("#pocket-databases .test-connection")
         webConfluence.awaitSuccessFlag()
     }
 
@@ -161,7 +161,7 @@ ${'$'}result.get(0).wikipediaContent
     }
 
     fun submitForm(entityType: String) {
-        dom.click("#pocket-${pluralEntityType(entityType)} .nice-right input.submit")
+        dom.click("#pocket-${pluralEntityType(entityType)} .nice-right button.submit")
         dom.awaitNoClass("#pocket-${pluralEntityType(entityType)}", "form-visible")
     }
 

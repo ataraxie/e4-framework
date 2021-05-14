@@ -15,8 +15,7 @@ class PocketQuery_3_9_3 : AbstractPocketQueryConfluenceTestSuite() {
             helper.goToPocketQueryAdmin()
             val querySetup = helper.createWikipediaSetup()
 
-            // FIXME: this is currently not working!
-            val queryKey = dom.findElement("li[data-displayname=\"${querySetup.queryName}\"]").getAttribute("data-name")
+            val queryKey = dom.findElement("li[data-displayname=\"${querySetup.queryName}\"]").getAttribute("data-entityname")
             val outerTemplate = "\$PocketQuery.renderPocketQueryMacro('${queryKey}')"
 
             helper.setTemplateOnQuery(querySetup.queryName, querySetup.templateName)

@@ -17,7 +17,7 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
             helper.openAddEntityForm("database")
             val datasourceName = helper.createJndiDatasource("ConfluenceDsJNDI", JNDI_RESOURCE_NAME)
             helper.openEditEntityForm("database", datasourceName)
-            dom.click("a.test-connection")
+            dom.click(".test-connection")
             webConfluence.awaitSuccessFlag()
 
             val queryName = helper.createSqlQuery(datasourceName, "ConfluenceJNDI", SIMPLE_QUERY_SQL)
@@ -178,7 +178,7 @@ class PocketQuery_3_10_0 : AbstractPocketQueryConfluenceTestSuite() {
             dom.click("$keyValueContainerSelector .add")
             dom.insertText("$keyValueContainerSelector .key", "1numberKey")
             dom.insertText("$keyValueContainerSelector .value", "1numberValue")
-            dom.click("a.test-connection")
+            dom.click(".test-connection")
             webConfluence.awaitSuccessFlag()
             helper.submitForm("database")
         }
